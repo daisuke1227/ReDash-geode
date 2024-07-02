@@ -1,10 +1,17 @@
 {
-	"geode": "2.0.0-beta.27",
-	"gd": "2.200",
+	"geode": "3.1.1",
+	"gd": {
+		"win": "2.206",
+		"android": "2.206",
+		"mac": "2.206"
+	},
 	"version": "v1.0.0",
 	"id": "ninxout.redash",
 	"name": "ReDash",
-	"developer": "ninXout",
+	"developers": [
+        "Weebify",
+        "ninXout"
+    ],
 	"description": "",
 	"resources": {
 		"spritesheets": {
@@ -12,23 +19,13 @@
                 "resources/redashsheet1/*.png"
             ]
         },
-        "fonts": {
-            "NewPusab": {
-                "path": "resources/pusab.otf",
-                "size": 128
-            }
-        },
+        "files": [
+            "resources/fonts/*.png",
+            "resources/fonts/*.fnt"
+        ],
         "sprites": [
             "resources/longButtonHalf-1.png",
             "resources/longButtonHalf-2.png"
         ]
-    },
-    "settings": {
-        "remove-account-stats": {
-            "name": "Remove Account Stats",
-            "description": "Remove the account information and stats from the top of the main menu",
-            "type": "bool",
-            "default": false
-        }
     }
 }

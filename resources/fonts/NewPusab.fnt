@@ -1,0 +1,607 @@
+info face="pusab.otf" size=32 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=1,1
+common lineHeight=21.216002 base=3 scaleW=221 scaleH=312 pages=1 packed=0
+page id=0 file="NewPusab.png"
+chars count=96
+char id=100 x=64 y=197 width=19 height=20 xoffset=0 yoffset=13 xadvance=18 page=0 chnl=0
+char id=101 x=142 y=197 width=18 height=20 xoffset=0 yoffset=13 xadvance=17 page=0 chnl=0
+char id=102 x=115 y=198 width=17 height=20 xoffset=0 yoffset=13 xadvance=17 page=0 chnl=0
+char id=103 x=85 y=214 width=20 height=20 xoffset=0 yoffset=13 xadvance=20 page=0 chnl=0
+char id=104 x=20 y=214 width=20 height=20 xoffset=0 yoffset=13 xadvance=20 page=0 chnl=0
+char id=105 x=162 y=203 width=10 height=20 xoffset=0 yoffset=13 xadvance=10 page=0 chnl=0
+char id=106 x=42 y=214 width=13 height=20 xoffset=0 yoffset=13 xadvance=13 page=0 chnl=0
+char id=107 x=174 y=218 width=19 height=20 xoffset=0 yoffset=13 xadvance=19 page=0 chnl=0
+char id=108 x=57 y=219 width=17 height=19 xoffset=0 yoffset=14 xadvance=17 page=0 chnl=0
+char id=109 x=134 y=219 width=22 height=20 xoffset=0 yoffset=13 xadvance=22 page=0 chnl=0
+char id=110 x=107 y=220 width=18 height=20 xoffset=0 yoffset=13 xadvance=18 page=0 chnl=0
+char id=111 x=76 y=236 width=20 height=20 xoffset=0 yoffset=13 xadvance=20 page=0 chnl=0
+char id=112 x=20 y=236 width=20 height=20 xoffset=0 yoffset=13 xadvance=19 page=0 chnl=0
+char id=113 x=158 y=240 width=20 height=21 xoffset=0 yoffset=13 xadvance=20 page=0 chnl=0
+char id=114 x=42 y=240 width=20 height=20 xoffset=0 yoffset=13 xadvance=19 page=0 chnl=0
+char id=115 x=180 y=240 width=19 height=20 xoffset=0 yoffset=13 xadvance=18 page=0 chnl=0
+char id=116 x=127 y=241 width=19 height=19 xoffset=0 yoffset=14 xadvance=19 page=0 chnl=0
+char id=117 x=98 y=242 width=19 height=19 xoffset=0 yoffset=14 xadvance=19 page=0 chnl=0
+char id=118 x=64 y=258 width=20 height=19 xoffset=0 yoffset=14 xadvance=20 page=0 chnl=0
+char id=119 x=119 y=262 width=22 height=20 xoffset=0 yoffset=13 xadvance=22 page=0 chnl=0
+char id=120 x=20 y=258 width=20 height=19 xoffset=0 yoffset=14 xadvance=20 page=0 chnl=0
+char id=121 x=180 y=262 width=20 height=19 xoffset=0 yoffset=14 xadvance=20 page=0 chnl=0
+char id=122 x=42 y=262 width=18 height=20 xoffset=0 yoffset=13 xadvance=17 page=0 chnl=0
+char id=123 x=86 y=258 width=10 height=29 xoffset=0 yoffset=7 xadvance=10 page=0 chnl=0
+char id=124 x=148 y=241 width=6 height=27 xoffset=0 yoffset=8 xadvance=6 page=0 chnl=0
+char id=125 x=156 y=263 width=10 height=29 xoffset=0 yoffset=7 xadvance=10 page=0 chnl=0
+char id=126 x=98 y=263 width=18 height=8 xoffset=0 yoffset=7 xadvance=18 page=0 chnl=0
+char id=32 x=0 y=0 width=0 height=0 xoffset=0 yoffset=0 xadvance=15.008 page=0 chln=0
+char id=33 x=20 y=20 width=12 height=22 xoffset=0 yoffset=11 xadvance=11 page=0 chnl=0
+char id=34 x=34 y=20 width=13 height=9 xoffset=0 yoffset=6 xadvance=13 page=0 chnl=0
+char id=35 x=49 y=20 width=23 height=12 xoffset=0 yoffset=10 xadvance=23 page=0 chnl=0
+char id=36 x=74 y=20 width=21 height=27 xoffset=0 yoffset=8 xadvance=21 page=0 chnl=0
+char id=37 x=97 y=20 width=27 height=23 xoffset=0 yoffset=10 xadvance=26 page=0 chnl=0
+char id=38 x=126 y=20 width=23 height=22 xoffset=0 yoffset=11 xadvance=23 page=0 chnl=0
+char id=39 x=151 y=20 width=7 height=9 xoffset=0 yoffset=6 xadvance=6 page=0 chnl=0
+char id=40 x=160 y=20 width=10 height=29 xoffset=0 yoffset=7 xadvance=10 page=0 chnl=0
+char id=41 x=172 y=20 width=10 height=29 xoffset=0 yoffset=7 xadvance=10 page=0 chnl=0
+char id=42 x=184 y=20 width=9 height=10 xoffset=1 yoffset=6 xadvance=10 page=0 chnl=0
+char id=43 x=184 y=32 width=16 height=16 xoffset=0 yoffset=15 xadvance=15 page=0 chnl=0
+char id=44 x=34 y=31 width=8 height=10 xoffset=0 yoffset=25 xadvance=7 page=0 chnl=0
+char id=45 x=44 y=34 width=13 height=6 xoffset=0 yoffset=20 xadvance=12 page=0 chnl=0
+char id=46 x=151 y=31 width=7 height=7 xoffset=0 yoffset=26 xadvance=7 page=0 chnl=0
+char id=47 x=59 y=34 width=12 height=23 xoffset=1 yoffset=10 xadvance=13 page=0 chnl=0
+char id=48 x=34 y=43 width=21 height=23 xoffset=0 yoffset=10 xadvance=20 page=0 chnl=0
+char id=49 x=126 y=44 width=16 height=22 xoffset=0 yoffset=11 xadvance=16 page=0 chnl=0
+char id=50 x=97 y=45 width=20 height=22 xoffset=0 yoffset=11 xadvance=20 page=0 chnl=0
+char id=51 x=73 y=49 width=20 height=22 xoffset=0 yoffset=11 xadvance=20 page=0 chnl=0
+char id=52 x=144 y=51 width=23 height=22 xoffset=0 yoffset=11 xadvance=23 page=0 chnl=0
+char id=53 x=169 y=51 width=20 height=23 xoffset=0 yoffset=10 xadvance=19 page=0 chnl=0
+char id=54 x=119 y=68 width=21 height=23 xoffset=0 yoffset=10 xadvance=21 page=0 chnl=0
+char id=55 x=20 y=68 width=20 height=22 xoffset=0 yoffset=11 xadvance=20 page=0 chnl=0
+char id=56 x=42 y=68 width=19 height=22 xoffset=0 yoffset=11 xadvance=19 page=0 chnl=0
+char id=57 x=95 y=69 width=21 height=23 xoffset=0 yoffset=10 xadvance=21 page=0 chnl=0
+char id=58 x=191 y=50 width=8 height=20 xoffset=0 yoffset=13 xadvance=7 page=0 chnl=0
+char id=59 x=63 y=59 width=8 height=22 xoffset=0 yoffset=13 xadvance=7 page=0 chnl=0
+char id=60 x=73 y=73 width=14 height=14 xoffset=0 yoffset=16 xadvance=13 page=0 chnl=0
+char id=61 x=142 y=75 width=12 height=10 xoffset=0 yoffset=18 xadvance=11 page=0 chnl=0
+char id=62 x=156 y=76 width=14 height=14 xoffset=0 yoffset=16 xadvance=13 page=0 chnl=0
+char id=63 x=172 y=76 width=20 height=22 xoffset=0 yoffset=11 xadvance=20 page=0 chnl=0
+char id=64 x=63 y=89 width=26 height=27 xoffset=0 yoffset=8 xadvance=25 page=0 chnl=0
+char id=65 x=142 y=92 width=23 height=22 xoffset=0 yoffset=11 xadvance=23 page=0 chnl=0
+char id=66 x=20 y=92 width=22 height=22 xoffset=0 yoffset=11 xadvance=21 page=0 chnl=0
+char id=67 x=91 y=94 width=23 height=23 xoffset=0 yoffset=10 xadvance=22 page=0 chnl=0
+char id=68 x=118 y=93 width=21 height=22 xoffset=0 yoffset=11 xadvance=21 page=0 chnl=0
+char id=69 x=167 y=100 width=20 height=22 xoffset=0 yoffset=11 xadvance=20 page=0 chnl=0
+char id=70 x=141 y=116 width=20 height=22 xoffset=0 yoffset=11 xadvance=19 page=0 chnl=0
+char id=71 x=20 y=116 width=23 height=23 xoffset=0 yoffset=10 xadvance=22 page=0 chnl=0
+char id=72 x=116 y=117 width=23 height=22 xoffset=0 yoffset=11 xadvance=23 page=0 chnl=0
+char id=73 x=45 y=92 width=12 height=22 xoffset=0 yoffset=11 xadvance=11 page=0 chnl=0
+char id=74 x=45 y=116 width=15 height=22 xoffset=0 yoffset=11 xadvance=15 page=0 chnl=0
+char id=75 x=62 y=118 width=22 height=22 xoffset=0 yoffset=11 xadvance=22 page=0 chnl=0
+char id=76 x=86 y=119 width=19 height=22 xoffset=0 yoffset=11 xadvance=19 page=0 chnl=0
+char id=77 x=163 y=124 width=25 height=22 xoffset=0 yoffset=11 xadvance=24 page=0 chnl=0
+char id=78 x=107 y=141 width=21 height=22 xoffset=0 yoffset=11 xadvance=21 page=0 chnl=0
+char id=79 x=130 y=141 width=23 height=23 xoffset=0 yoffset=10 xadvance=23 page=0 chnl=0
+char id=80 x=20 y=141 width=22 height=22 xoffset=0 yoffset=11 xadvance=22 page=0 chnl=0
+char id=81 x=44 y=142 width=23 height=24 xoffset=0 yoffset=10 xadvance=23 page=0 chnl=0
+char id=82 x=69 y=143 width=22 height=22 xoffset=0 yoffset=11 xadvance=22 page=0 chnl=0
+char id=8226 x=143 y=270 width=11 height=10 xoffset=0 yoffset=18 xadvance=10 page=0 chnl=0
+char id=83 x=155 y=148 width=21 height=23 xoffset=0 yoffset=10 xadvance=21 page=0 chnl=0
+char id=84 x=178 y=148 width=22 height=22 xoffset=0 yoffset=11 xadvance=21 page=0 chnl=0
+char id=85 x=93 y=165 width=22 height=22 xoffset=0 yoffset=11 xadvance=22 page=0 chnl=0
+char id=86 x=117 y=166 width=23 height=22 xoffset=0 yoffset=11 xadvance=23 page=0 chnl=0
+char id=87 x=20 y=168 width=25 height=22 xoffset=0 yoffset=11 xadvance=25 page=0 chnl=0
+char id=88 x=47 y=168 width=23 height=22 xoffset=0 yoffset=11 xadvance=23 page=0 chnl=0
+char id=89 x=178 y=172 width=23 height=22 xoffset=0 yoffset=11 xadvance=22 page=0 chnl=0
+char id=90 x=142 y=173 width=20 height=22 xoffset=0 yoffset=11 xadvance=20 page=0 chnl=0
+char id=91 x=72 y=167 width=11 height=28 xoffset=0 yoffset=7 xadvance=11 page=0 chnl=0
+char id=92 x=85 y=189 width=13 height=23 xoffset=0 yoffset=10 xadvance=13 page=0 chnl=0
+char id=93 x=164 y=173 width=11 height=28 xoffset=0 yoffset=7 xadvance=11 page=0 chnl=0
+char id=94 x=100 y=189 width=13 height=9 xoffset=0 yoffset=6 xadvance=13 page=0 chnl=0
+char id=95 x=115 y=190 width=16 height=6 xoffset=0 yoffset=31 xadvance=15 page=0 chnl=0
+char id=96 x=133 y=190 width=7 height=6 xoffset=0 yoffset=5 xadvance=7 page=0 chnl=0
+char id=97 x=20 y=192 width=21 height=20 xoffset=0 yoffset=13 xadvance=20 page=0 chnl=0
+char id=98 x=43 y=192 width=19 height=20 xoffset=0 yoffset=13 xadvance=19 page=0 chnl=0
+char id=99 x=177 y=196 width=20 height=20 xoffset=0 yoffset=13 xadvance=20 page=0 chnl=0
+kernings count=506
+kerning first=/ second=/ amount=-2
+kerning first=A second=C amount=-1
+kerning first=A second=G amount=-1
+kerning first=A second=O amount=-1
+kerning first=A second=Q amount=-1
+kerning first=A second=T amount=-4
+kerning first=A second=U amount=-1
+kerning first=A second=V amount=-4
+kerning first=A second=W amount=-2
+kerning first=A second=Y amount=-5
+kerning first=A second=c amount=0
+kerning first=A second=g amount=0
+kerning first=A second=o amount=0
+kerning first=A second=q amount=0
+kerning first=A second=t amount=-3
+kerning first=A second=u amount=0
+kerning first=A second=v amount=-3
+kerning first=A second=w amount=-1
+kerning first=A second=y amount=-4
+kerning first=B second=J amount=0
+kerning first=B second=T amount=0
+kerning first=B second=V amount=0
+kerning first=B second=X amount=0
+kerning first=B second=Y amount=-1
+kerning first=B second=i amount=0
+kerning first=B second=j amount=0
+kerning first=C second=A amount=-1
+kerning first=C second=J amount=-2
+kerning first=C second=T amount=-1
+kerning first=C second=V amount=-1
+kerning first=C second=W amount=0
+kerning first=C second=X amount=-1
+kerning first=C second=Y amount=-1
+kerning first=C second=Z amount=0
+kerning first=C second=a amount=-1
+kerning first=C second=j amount=-2
+kerning first=C second=x amount=0
+kerning first=C second=y amount=0
+kerning first=D second=A amount=-1
+kerning first=D second=J amount=-2
+kerning first=D second=T amount=-1
+kerning first=D second=V amount=-1
+kerning first=D second=W amount=0
+kerning first=D second=X amount=-2
+kerning first=D second=Y amount=-2
+kerning first=D second=Z amount=0
+kerning first=D second=a amount=-1
+kerning first=D second=j amount=-2
+kerning first=D second=x amount=0
+kerning first=D second=y amount=-1
+kerning first=E second=C amount=0
+kerning first=E second=G amount=0
+kerning first=E second=O amount=0
+kerning first=E second=Q amount=0
+kerning first=F second=A amount=-3
+kerning first=F second=C amount=-1
+kerning first=F second=G amount=-1
+kerning first=F second=J amount=-3
+kerning first=F second=M amount=-1
+kerning first=F second=O amount=-1
+kerning first=F second=Q amount=-1
+kerning first=F second=S amount=0
+kerning first=F second=Y amount=0
+kerning first=F second=a amount=-3
+kerning first=F second=c amount=-1
+kerning first=F second=g amount=-1
+kerning first=F second=j amount=-2
+kerning first=F second=m amount=-1
+kerning first=F second=o amount=-1
+kerning first=F second=q amount=-1
+kerning first=F second=s amount=-1
+kerning first=F second=t amount=0
+kerning first=F second=y amount=0
+kerning first=G second=T amount=0
+kerning first=G second=V amount=0
+kerning first=G second=Y amount=-1
+kerning first=H second=B amount=0
+kerning first=H second=D amount=0
+kerning first=H second=E amount=0
+kerning first=H second=F amount=0
+kerning first=H second=H amount=0
+kerning first=H second=I amount=0
+kerning first=H second=K amount=0
+kerning first=H second=L amount=0
+kerning first=H second=N amount=0
+kerning first=H second=P amount=0
+kerning first=H second=R amount=0
+kerning first=H second=b amount=0
+kerning first=H second=d amount=0
+kerning first=H second=e amount=0
+kerning first=H second=f amount=0
+kerning first=H second=h amount=0
+kerning first=H second=i amount=0
+kerning first=H second=k amount=0
+kerning first=H second=l amount=0
+kerning first=H second=m amount=0
+kerning first=H second=n amount=0
+kerning first=H second=p amount=0
+kerning first=H second=r amount=0
+kerning first=H second=u amount=0
+kerning first=I second=B amount=0
+kerning first=I second=D amount=0
+kerning first=I second=E amount=0
+kerning first=I second=F amount=0
+kerning first=I second=H amount=0
+kerning first=I second=I amount=0
+kerning first=I second=K amount=0
+kerning first=I second=L amount=0
+kerning first=I second=N amount=0
+kerning first=I second=P amount=0
+kerning first=I second=R amount=0
+kerning first=I second=b amount=0
+kerning first=I second=d amount=0
+kerning first=I second=e amount=0
+kerning first=I second=f amount=0
+kerning first=I second=h amount=0
+kerning first=I second=i amount=0
+kerning first=I second=k amount=0
+kerning first=I second=l amount=0
+kerning first=I second=n amount=0
+kerning first=I second=p amount=0
+kerning first=I second=r amount=0
+kerning first=J second=A amount=-1
+kerning first=J second=J amount=-2
+kerning first=J second=a amount=-1
+kerning first=J second=j amount=-2
+kerning first=K second=C amount=-1
+kerning first=K second=G amount=-1
+kerning first=K second=O amount=-1
+kerning first=K second=Q amount=-1
+kerning first=K second=T amount=0
+kerning first=K second=U amount=0
+kerning first=K second=V amount=0
+kerning first=K second=Y amount=0
+kerning first=K second=c amount=0
+kerning first=K second=g amount=0
+kerning first=K second=o amount=0
+kerning first=K second=q amount=0
+kerning first=K second=t amount=-1
+kerning first=K second=u amount=0
+kerning first=K second=v amount=-1
+kerning first=K second=w amount=-1
+kerning first=K second=y amount=-1
+kerning first=L second=A amount=0
+kerning first=L second=C amount=-1
+kerning first=L second=G amount=-1
+kerning first=L second=J amount=0
+kerning first=L second=O amount=-1
+kerning first=L second=Q amount=-1
+kerning first=L second=T amount=-4
+kerning first=L second=U amount=-1
+kerning first=L second=V amount=-5
+kerning first=L second=W amount=-2
+kerning first=L second=X amount=0
+kerning first=L second=Y amount=-5
+kerning first=L second=a amount=0
+kerning first=L second=c amount=-1
+kerning first=L second=g amount=-1
+kerning first=L second=o amount=-1
+kerning first=L second=q amount=-1
+kerning first=L second=t amount=-3
+kerning first=L second=u amount=-1
+kerning first=L second=v amount=-4
+kerning first=L second=w amount=-1
+kerning first=L second=x amount=0
+kerning first=L second=y amount=-4
+kerning first=M second=T amount=-1
+kerning first=M second=V amount=-1
+kerning first=M second=W amount=-1
+kerning first=M second=Y amount=-2
+kerning first=M second=t amount=-1
+kerning first=M second=v amount=-1
+kerning first=M second=w amount=0
+kerning first=M second=y amount=-1
+kerning first=N second=B amount=0
+kerning first=N second=D amount=0
+kerning first=N second=E amount=0
+kerning first=N second=F amount=0
+kerning first=N second=H amount=0
+kerning first=N second=I amount=0
+kerning first=N second=K amount=0
+kerning first=N second=L amount=0
+kerning first=N second=M amount=0
+kerning first=N second=N amount=0
+kerning first=N second=P amount=0
+kerning first=N second=R amount=0
+kerning first=N second=b amount=0
+kerning first=N second=d amount=0
+kerning first=N second=e amount=0
+kerning first=N second=f amount=0
+kerning first=N second=h amount=0
+kerning first=N second=i amount=0
+kerning first=N second=k amount=0
+kerning first=N second=l amount=0
+kerning first=N second=m amount=0
+kerning first=N second=n amount=0
+kerning first=N second=p amount=0
+kerning first=N second=r amount=0
+kerning first=N second=u amount=0
+kerning first=O second=A amount=-1
+kerning first=O second=J amount=-2
+kerning first=O second=T amount=-1
+kerning first=O second=V amount=-1
+kerning first=O second=X amount=-1
+kerning first=O second=Y amount=-1
+kerning first=O second=Z amount=0
+kerning first=O second=a amount=-1
+kerning first=O second=j amount=-2
+kerning first=O second=x amount=0
+kerning first=O second=y amount=0
+kerning first=P second=A amount=-3
+kerning first=P second=J amount=-3
+kerning first=P second=M amount=0
+kerning first=P second=T amount=-1
+kerning first=P second=V amount=-1
+kerning first=P second=W amount=0
+kerning first=P second=X amount=-1
+kerning first=P second=Y amount=-1
+kerning first=P second=Z amount=0
+kerning first=P second=a amount=-3
+kerning first=P second=j amount=-2
+kerning first=P second=m amount=0
+kerning first=P second=t amount=0
+kerning first=P second=v amount=0
+kerning first=P second=y amount=0
+kerning first=Q second=A amount=-1
+kerning first=Q second=J amount=-1
+kerning first=Q second=T amount=-1
+kerning first=Q second=V amount=-1
+kerning first=Q second=X amount=-1
+kerning first=Q second=Y amount=-1
+kerning first=Q second=Z amount=0
+kerning first=Q second=a amount=-1
+kerning first=Q second=d amount=0
+kerning first=Q second=h amount=0
+kerning first=Q second=i amount=0
+kerning first=Q second=j amount=-1
+kerning first=Q second=k amount=0
+kerning first=Q second=x amount=0
+kerning first=Q second=y amount=0
+kerning first=R second=T amount=0
+kerning first=R second=V amount=0
+kerning first=R second=Y amount=-1
+kerning first=S second=A amount=0
+kerning first=S second=J amount=-1
+kerning first=S second=a amount=0
+kerning first=S second=j amount=-1
+kerning first=T second=A amount=-4
+kerning first=T second=C amount=-1
+kerning first=T second=G amount=-1
+kerning first=T second=J amount=-3
+kerning first=T second=M amount=-1
+kerning first=T second=O amount=-1
+kerning first=T second=Q amount=-1
+kerning first=T second=S amount=0
+kerning first=T second=T amount=0
+kerning first=T second=Y amount=0
+kerning first=T second=a amount=-5
+kerning first=T second=c amount=-2
+kerning first=T second=g amount=-2
+kerning first=T second=j amount=-3
+kerning first=T second=l amount=0
+kerning first=T second=m amount=-1
+kerning first=T second=n amount=0
+kerning first=T second=o amount=-2
+kerning first=T second=q amount=-2
+kerning first=T second=s amount=-1
+kerning first=T second=t amount=0
+kerning first=T second=u amount=0
+kerning first=T second=v amount=0
+kerning first=T second=y amount=0
+kerning first=U second=A amount=-1
+kerning first=U second=J amount=-1
+kerning first=U second=a amount=-1
+kerning first=U second=h amount=0
+kerning first=U second=i amount=0
+kerning first=U second=j amount=-1
+kerning first=V second=A amount=-4
+kerning first=V second=C amount=-1
+kerning first=V second=G amount=-1
+kerning first=V second=J amount=-3
+kerning first=V second=M amount=-1
+kerning first=V second=O amount=-1
+kerning first=V second=Q amount=-1
+kerning first=V second=S amount=0
+kerning first=V second=a amount=-4
+kerning first=V second=c amount=-1
+kerning first=V second=g amount=-1
+kerning first=V second=j amount=-2
+kerning first=V second=m amount=-1
+kerning first=V second=o amount=-1
+kerning first=V second=q amount=-1
+kerning first=V second=s amount=-1
+kerning first=V second=t amount=0
+kerning first=W second=A amount=-1
+kerning first=W second=J amount=-1
+kerning first=W second=a amount=-1
+kerning first=W second=j amount=-1
+kerning first=X second=C amount=-1
+kerning first=X second=G amount=-1
+kerning first=X second=O amount=-1
+kerning first=X second=Q amount=-1
+kerning first=X second=c amount=-1
+kerning first=X second=g amount=-1
+kerning first=X second=o amount=-1
+kerning first=X second=q amount=-1
+kerning first=X second=t amount=-1
+kerning first=X second=u amount=-1
+kerning first=X second=v amount=-1
+kerning first=X second=w amount=-1
+kerning first=X second=y amount=-1
+kerning first=Y second=A amount=-4
+kerning first=Y second=C amount=-1
+kerning first=Y second=G amount=-1
+kerning first=Y second=J amount=-3
+kerning first=Y second=M amount=-1
+kerning first=Y second=O amount=-1
+kerning first=Y second=Q amount=-1
+kerning first=Y second=S amount=-1
+kerning first=Y second=T amount=0
+kerning first=Y second=a amount=-4
+kerning first=Y second=b amount=0
+kerning first=Y second=c amount=-2
+kerning first=Y second=d amount=0
+kerning first=Y second=e amount=0
+kerning first=Y second=f amount=0
+kerning first=Y second=g amount=-2
+kerning first=Y second=h amount=0
+kerning first=Y second=i amount=0
+kerning first=Y second=j amount=-3
+kerning first=Y second=k amount=0
+kerning first=Y second=l amount=-1
+kerning first=Y second=m amount=-2
+kerning first=Y second=n amount=-1
+kerning first=Y second=o amount=-2
+kerning first=Y second=p amount=0
+kerning first=Y second=q amount=-2
+kerning first=Y second=r amount=0
+kerning first=Y second=s amount=-1
+kerning first=Y second=t amount=-1
+kerning first=Y second=u amount=-1
+kerning first=Y second=v amount=-1
+kerning first=Y second=w amount=0
+kerning first=Y second=x amount=0
+kerning first=Y second=y amount=0
+kerning first=Y second=z amount=0
+kerning first=Z second=C amount=0
+kerning first=Z second=G amount=0
+kerning first=Z second=O amount=0
+kerning first=Z second=Q amount=0
+kerning first=\ second=\ amount=-2
+kerning first=a second=c amount=0
+kerning first=a second=g amount=0
+kerning first=a second=o amount=0
+kerning first=a second=q amount=0
+kerning first=a second=t amount=-3
+kerning first=a second=u amount=0
+kerning first=a second=v amount=-3
+kerning first=a second=w amount=-1
+kerning first=a second=y amount=-4
+kerning first=b second=x amount=0
+kerning first=b second=y amount=0
+kerning first=c second=a amount=0
+kerning first=c second=j amount=-1
+kerning first=c second=t amount=0
+kerning first=c second=v amount=0
+kerning first=c second=x amount=-1
+kerning first=c second=y amount=-1
+kerning first=d second=a amount=-1
+kerning first=d second=j amount=-1
+kerning first=d second=t amount=-1
+kerning first=d second=v amount=-1
+kerning first=d second=x amount=-1
+kerning first=d second=y amount=-1
+kerning first=d second=z amount=0
+kerning first=e second=c amount=0
+kerning first=e second=g amount=0
+kerning first=e second=o amount=0
+kerning first=e second=q amount=0
+kerning first=f second=a amount=-2
+kerning first=f second=c amount=0
+kerning first=f second=g amount=-1
+kerning first=f second=j amount=-2
+kerning first=f second=m amount=-1
+kerning first=f second=o amount=-1
+kerning first=f second=q amount=0
+kerning first=g second=y amount=-1
+kerning first=h second=b amount=0
+kerning first=h second=d amount=0
+kerning first=h second=e amount=0
+kerning first=h second=f amount=0
+kerning first=h second=h amount=0
+kerning first=h second=i amount=0
+kerning first=h second=k amount=0
+kerning first=h second=l amount=0
+kerning first=h second=m amount=0
+kerning first=h second=n amount=0
+kerning first=h second=p amount=0
+kerning first=h second=r amount=0
+kerning first=h second=u amount=0
+kerning first=i second=b amount=0
+kerning first=i second=d amount=0
+kerning first=i second=e amount=0
+kerning first=i second=f amount=0
+kerning first=i second=h amount=0
+kerning first=i second=i amount=0
+kerning first=i second=k amount=0
+kerning first=i second=l amount=0
+kerning first=i second=n amount=0
+kerning first=i second=p amount=0
+kerning first=i second=r amount=0
+kerning first=i second=u amount=0
+kerning first=j second=a amount=-1
+kerning first=j second=j amount=-1
+kerning first=k second=c amount=0
+kerning first=k second=g amount=0
+kerning first=k second=o amount=0
+kerning first=k second=q amount=0
+kerning first=l second=c amount=-1
+kerning first=l second=g amount=-1
+kerning first=l second=o amount=-1
+kerning first=l second=q amount=-1
+kerning first=l second=t amount=-3
+kerning first=l second=u amount=-1
+kerning first=l second=v amount=-4
+kerning first=l second=w amount=-1
+kerning first=l second=x amount=0
+kerning first=l second=y amount=-4
+kerning first=m second=t amount=-1
+kerning first=m second=v amount=-1
+kerning first=m second=w amount=-1
+kerning first=m second=y amount=-1
+kerning first=n second=b amount=0
+kerning first=n second=d amount=0
+kerning first=n second=e amount=0
+kerning first=n second=f amount=0
+kerning first=n second=h amount=0
+kerning first=n second=i amount=0
+kerning first=n second=k amount=0
+kerning first=n second=l amount=0
+kerning first=n second=n amount=0
+kerning first=n second=p amount=0
+kerning first=n second=r amount=0
+kerning first=n second=u amount=0
+kerning first=o second=a amount=-1
+kerning first=o second=j amount=-1
+kerning first=o second=t amount=0
+kerning first=o second=v amount=0
+kerning first=o second=x amount=-1
+kerning first=o second=y amount=-1
+kerning first=p second=a amount=-2
+kerning first=p second=j amount=-2
+kerning first=p second=t amount=0
+kerning first=p second=v amount=0
+kerning first=p second=x amount=-1
+kerning first=p second=y amount=-1
+kerning first=q second=a amount=-1
+kerning first=q second=j amount=-1
+kerning first=q second=t amount=0
+kerning first=q second=v amount=0
+kerning first=q second=x amount=-1
+kerning first=q second=y amount=-1
+kerning first=r second=y amount=0
+kerning first=s second=a amount=0
+kerning first=s second=j amount=0
+kerning first=t second=a amount=-4
+kerning first=t second=c amount=-1
+kerning first=t second=g amount=-1
+kerning first=t second=j amount=-2
+kerning first=t second=m amount=-1
+kerning first=t second=o amount=-1
+kerning first=t second=q amount=-1
+kerning first=u second=a amount=0
+kerning first=u second=b amount=0
+kerning first=u second=d amount=0
+kerning first=u second=e amount=0
+kerning first=u second=f amount=0
+kerning first=u second=h amount=0
+kerning first=u second=i amount=0
+kerning first=u second=j amount=-1
+kerning first=u second=k amount=0
+kerning first=u second=l amount=0
+kerning first=u second=n amount=0
+kerning first=u second=p amount=0
+kerning first=u second=r amount=0
+kerning first=v second=a amount=-3
+kerning first=v second=c amount=0
+kerning first=v second=g amount=0
+kerning first=v second=j amount=-2
+kerning first=v second=m amount=0
+kerning first=v second=o amount=0
+kerning first=v second=q amount=0
+kerning first=w second=a amount=-1
+kerning first=w second=j amount=-1
+kerning first=x second=c amount=-1
+kerning first=x second=g amount=-1
+kerning first=x second=o amount=-1
+kerning first=x second=q amount=-1
+kerning first=y second=a amount=-4
+kerning first=y second=c amount=-1
+kerning first=y second=g amount=-1
+kerning first=y second=j amount=-2
+kerning first=y second=m amount=-1
+kerning first=y second=o amount=-1
+kerning first=y second=q amount=-1
+kerning first=y second=s amount=0
