@@ -3,9 +3,10 @@
 using namespace geode::prelude;
 
 // my fucking fault
+// it doesnt even work lmao
 void SecretLayer2_onBack(SecretLayer2* self, cocos2d::CCObject* sender) {
-    CCScene* sc = CCScene::create();
-    sc->addChild(MenuLayer::scene(false));
+    log::info("onBack");
+    CCScene* sc = MenuLayer::scene(false);
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 }
 
