@@ -1,6 +1,7 @@
 #include "RDButton.hpp"
 #include "RDDailyButton.hpp"
 #include "hooks/GauntletSelectLayer.hpp"
+#include "hooks/LevelInfoLayer.hpp"
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
@@ -163,19 +164,21 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->setID("dailies-menu"_spr);
 		dailiesMenu->setContentSize({ 675.f , 100.f });
 		dailiesMenu->ignoreAnchorPointForPosition(false);
-		dailiesMenu->setPosition({ 256.5f , 270.f });
+		dailiesMenu->setPosition({ 255.f , 206.25f });
 		dailiesMenu->setScale(0.75f);
 
-		dailiesMenu->addChild(RDDailyButton::create(false, { 25.f , -85.f }, { 230.f , 135.f }));
-		dailiesMenu->addChild(RDDailyButton::create(true, { 425.f , -85.f }, { 230.f , 135.f }));
+		dailiesMenu->addChild(RDDailyButton::create(false, { 25.f , 0.f }, { 230.f , 135.f }));
+		dailiesMenu->addChild(RDDailyButton::create(true, { 425.f , 0.f }, { 230.f , 135.f }));
 		menu->addChild(dailiesMenu);
 
 		if (loader->isModLoaded("alphalaneous.pages_api")) {
 			bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
-			bottomMenu->setContentHeight(265.f);
+			bottomMenu->setUserObject("disable-pages", CCBool::create(true)); 
+			// bottomMenu->setContentHeight(265.f);
 			bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
 
 			rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
+    		rightMenu->setUserObject("disable-pages", CCBool::create(true)); 
 			rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false));
 		}
 
