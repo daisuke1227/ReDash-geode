@@ -15,6 +15,6 @@ $execute {
         reinterpret_cast<void*>(geode::addresser::getNonVirtual(&SecretLayer2::onBack)),
         &SecretLayer2_onBack,
         "SecretLayer2::onBack",
-        tulip::hook::TulipConvention::Thiscall
+        tulip::hook::TulipConvention::Fastcall
     );
 }

@@ -1,6 +1,7 @@
 #include "RDButton.hpp"
-#include "RDDailyButton.hpp"
+#include "RDDailyNode.hpp"
 #include "RDStatsNode.hpp"
+#include "RDMainButton.hpp"
 
 #include "hooks/GauntletSelectLayer.hpp"
 #include "hooks/SecretRewardsLayer.hpp"
@@ -20,10 +21,15 @@ class $modify(CrazyLayer, MenuLayer) {
 
 	bool init() {
 		if (!MenuLayer::init()) return false;
+
 		
 		auto loader = Loader::get();
 		auto mod = Mod::get();
 		auto gsm = GameStatsManager::sharedState();
+		auto glm = GameLevelManager::get();
+		
+		glm->getGJDailyLevelState(GJTimedLevelType::Daily);
+		glm->getGJDailyLevelState(GJTimedLevelType::Weekly);
 
 		if (auto closeMenu = this->getChildByID("close-menu")) {
 			if (!closeMenu->getChildByID("close-button")) {
@@ -131,8 +137,9 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->setPosition({ 255.f , 206.25f });
 		dailiesMenu->setScale(0.75f);
 
-		dailiesMenu->addChild(RDDailyButton::create(false, { 25.f , 0.f }, { 230.f , 135.f }));
-		dailiesMenu->addChild(RDDailyButton::create(true, { 425.f , 0.f }, { 230.f , 135.f }));
+		dailiesMenu->addChild(RDDailyNode::create(false, { 25.f , 0.f }, { 230.f , 135.f }));
+		dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, menu_selector(MenuLayer::onPlay)));
+		dailiesMenu->addChild(RDDailyNode::create(true, { 425.f , 0.f }, { 230.f , 135.f }));
 		menu->addChild(dailiesMenu);
 
 		auto statsMenu = CCMenu::create();

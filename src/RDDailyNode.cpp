@@ -1,11 +1,9 @@
-#include "RDDailyButton.hpp"
+#include "RDDailyNode.hpp"
 
-bool RDDailyButton::init(bool isWeekly, CCPoint position, CCSize size) {
+bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size) {
     if (!CCNode::init()) return false;
 
     auto GLM = GameLevelManager::get();
-    GLM->getGJDailyLevelState(GJTimedLevelType::Daily);
-    GLM->getGJDailyLevelState(GJTimedLevelType::Weekly);
 
     auto background = CCScale9Sprite::create(isWeekly ? "GJ_square05.png" : "GJ_square01.png");
     background->setContentSize(size);
@@ -39,7 +37,7 @@ bool RDDailyButton::init(bool isWeekly, CCPoint position, CCSize size) {
     auto viewButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png"),
         this,
-        menu_selector(RDDailyButton::onView)
+        menu_selector(RDDailyNode::onView)
     );
     viewButton->setScale(0.6f);
     viewButton->m_baseScale = 0.6f;
@@ -153,11 +151,11 @@ bool RDDailyButton::init(bool isWeekly, CCPoint position, CCSize size) {
     bonusMenu->updateLayout();
     
     auto time = isWeekly ? GLM->m_weeklyTimeLeft : GLM->m_dailyTimeLeft;
-    auto label = CCLabelBMFont::create(std::to_string(time).c_str(), "goldFont.fnt");
-    label->setScale(0.75f);
-    label->setPosition({ size.width*4/5, size.height/6 });
+    auto label = CCLabelBMFont::create(GameToolbox::getTimeString(time, false).c_str(), "bigFont.fnt");
+    label->setScale(0.5f);
+    label->setAnchorPoint({ 1, 0.5f });
+    label->setPosition({ innerBG->getPositionX() + innerBG->getScaledContentSize().width/2 , size.height/7 });
     this->addChild(label);
-    
 
     this->setPosition(position);
     this->setContentSize(size);
@@ -165,13 +163,13 @@ bool RDDailyButton::init(bool isWeekly, CCPoint position, CCSize size) {
     return true;
 }
 
-void RDDailyButton::onView(CCObject* sender) {
+void RDDailyNode::onView(CCObject* sender) {
     auto sc = LevelInfoLayer::scene(m_currentLevel, m_isWeekly);
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 }
 
-RDDailyButton* RDDailyButton::create(bool isWeekly, CCPoint position, CCSize size) {
-    auto ret = new RDDailyButton();
+RDDailyNode* RDDailyNode::create(bool isWeekly, CCPoint position, CCSize size) {
+    auto ret = new RDDailyNode();
     ret->m_isWeekly = isWeekly;
     if (ret && ret->init(isWeekly, position, size)) {
         ret->autorelease();
