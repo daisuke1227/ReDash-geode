@@ -89,9 +89,7 @@ bool RDDailyButton::init(bool isWeekly, CCPoint position, CCSize size) {
     nameLabel->setPositionY(baseY + menuSize.height*3/4);
     menu->addChild(nameLabel);
 
-    std::ostringstream creatorStr;
-    creatorStr << "by " << level->m_creatorName;
-    auto creatorLabel = CCLabelBMFont::create(creatorStr.str().c_str(), "goldFont.fnt");
+    auto creatorLabel = CCLabelBMFont::create(("by " + level->m_creatorName).c_str(), "goldFont.fnt");
     creatorLabel->setAnchorPoint({ 0, 0.5f });
     creatorLabel->setScale(0.5f);
     creatorLabel->setPositionX(nameLabel->getPositionX());
