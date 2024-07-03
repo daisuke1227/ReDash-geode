@@ -13,6 +13,11 @@ bool RDButton::init(CCObject* target, std::string title, std::string description
 	buttonSpr2->setPosition(ccp(75.f, 17.f));
 	spriteNode->addChild(buttonSpr2);
 
+	// auto buttonSpr = CCScale9Sprite::create("RD_longButton.png"_spr);
+	// buttonSpr->setContentSize({150.f, 70.f});
+	// buttonSpr->setPosition(ccp(75.f, 35.f));
+	// spriteNode->addChild(buttonSpr, -1);
+
     auto icon = CCSprite::createWithSpriteFrameName(sprite.c_str());
     icon->setPosition(ccp(122, 34));
     icon->setScale(1.55f);

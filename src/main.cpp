@@ -1,10 +1,17 @@
 #include "RDButton.hpp"
 #include "RDDailyButton.hpp"
+#include "RDStatsNode.hpp"
+
 #include "hooks/GauntletSelectLayer.hpp"
-#include "hooks/LevelInfoLayer.hpp"
+#include "hooks/SecretRewardsLayer.hpp"
+#include "hooks/SecretLayer2.hpp"
+
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
+
+#include <fmt/core.h>
+#define MAX_SECRET_COINS 164
 
 class $modify(CrazyLayer, MenuLayer) {
 	static void onModify(auto& self) {
@@ -16,6 +23,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		
 		auto loader = Loader::get();
 		auto mod = Mod::get();
+		auto gsm = GameStatsManager::sharedState();
 
 		if (auto closeMenu = this->getChildByID("close-menu")) {
 			if (!closeMenu->getChildByID("close-button")) {
@@ -54,10 +62,10 @@ class $modify(CrazyLayer, MenuLayer) {
 		bottomMenu->setZOrder(1);
 		
 		auto rightMenu = this->getChildByID("right-side-menu");
-		rightMenu->setPosition(ccp(213.f, 25.f));
+		rightMenu->setPosition(ccp(177.5f, 25.f));
 		rightMenu->setScale(0.75f);
 		rightMenu->setLayout(RowLayout::create()->setAxisAlignment(AxisAlignment::Start)->setAxisReverse(true));
-		rightMenu->setContentWidth(505.f);
+		rightMenu->setContentWidth(425.f);
 		rightMenu->updateLayout();
 		rightMenu->getChildByID("daily-chest-button")->setZOrder(4);
 
@@ -85,50 +93,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		bottomMenuBG->setPositionY(CCDirector::get()->getWinSize().height / 2.f);
 		bottomMenuBG->setContentSize({54.f, 302.f});
 		addChild(bottomMenuBG);
-
-		// background for the account username thing
-
-		// if (!Mod::get()->getSettingValue<bool>("remove-account-stats")) { // then make the account stats (obviously)
-		// 	CCMenu* accountUsernameMenu = CCMenu::create();
-		// 	accountUsernameMenu->setScale(0.5f);
-		// 	accountUsernameMenu->setPosition(200.f, 302.f);
-		// 	accountUsernameMenu->setLayout(RowLayout::create()->setAxisAlignment(AxisAlignment::Start)->setAutoScale(false)->setCrossAxisOverflow(false)->setGap(27.f));
-		// 	//accountUsernameMenu->setContentWidth(570.f);
-		// 	accountUsernameMenu->setContentHeight(53.f);
-
-		// 	SimplePlayer* playerNode = SimplePlayer::create(GameManager::get()->getPlayerFrame());
-		// 	playerNode->setColor(GameManager::get()->colorForIdx(GameManager::get()->getPlayerColor()));
-		// 	playerNode->setSecondColor(GameManager::get()->colorForIdx(GameManager::get()->getPlayerColor2()));
-		// 	playerNode->setScale(1.25f);
-		// 	accountUsernameMenu->addChild(playerNode);
-
-		// 	CCLabelBMFont* usernameLabel = CCLabelBMFont::create(GJAccountManager::get()->m_username.c_str(), "goldFont.fnt");
-		// 	accountUsernameMenu->addChild(usernameLabel);
-
-		// 	addChild(accountUsernameMenu, 1);
-		// 	accountUsernameMenu->updateLayout();
-
-		// 	CCScale9Sprite* accUsrBG = CCScale9Sprite::create("square02b_001.png");
-		// 	accUsrBG->setScale(0.5f);
-		// 	accUsrBG->setColor({0,0,0});
-		// 	accUsrBG->setOpacity(100);
-		// 	accUsrBG->setPosition(accountUsernameMenu->getPosition());
-		// 	accUsrBG->setContentSize({accountUsernameMenu->getContentWidth() + 55.f, accountUsernameMenu->getContentHeight() + 5.f});
-		// 	addChild(accUsrBG);
-		// }
-
-		// CCMenu* timedLevels = CCMenu::create();
-		// timedLevels->setID("timed-levels-menu"_spr);
-		// timedLevels->setLayout(ColumnLayout::create()->setGap(10.f));
-		// timedLevels->setScale(0.7f);
-		// timedLevels->setPosition({490.f, 200.f});
-
-		// timedLevels->addChild(CCMenuItemSpriteExtra::create(CircleButtonSprite::createWithSpriteFrameName("gj_dailyCrown_001.png"), this, menu_selector(CreatorLayer::onDailyLevel)));
-		// timedLevels->addChild(CCMenuItemSpriteExtra::create(CircleButtonSprite::createWithSpriteFrameName("gj_weeklyCrown_001.png"), this, menu_selector(CreatorLayer::onWeeklyLevel)));
-
-		// addChild(timedLevels);
-
-		// timedLevels->updateLayout();
 
 		auto menu = CCMenu::create();
 		menu->setID("redash-menu"_spr);
@@ -171,10 +135,81 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->addChild(RDDailyButton::create(true, { 425.f , 0.f }, { 230.f , 135.f }));
 		menu->addChild(dailiesMenu);
 
+		auto statsMenu = CCMenu::create();
+		statsMenu->setID("stats-menu"_spr);
+		statsMenu->setContentSize({ 460.f , 25.f });
+		statsMenu->ignoreAnchorPointForPosition(false);
+		statsMenu->setPosition({ 190.f , 313.75f });
+		statsMenu->setScale(0.6f);
+		statsMenu->setLayout(
+			RowLayout::create()
+				->setAxisAlignment(AxisAlignment::Start)
+				->setGap(25.f)
+				->setAutoScale(false)
+		);
+
+		statsMenu->addChild(RDStatsNode::create("GJ_starsIcon_001.png", fmt::format("{}", gsm->getStat("6"))));
+		statsMenu->addChild(RDStatsNode::create("GJ_moonsIcon_001.png", fmt::format("{}", gsm->getStat("28"))));
+		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon_001.png", fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS)));
+		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon2_001.png", fmt::format("{}", gsm->getStat("12"))));
+		statsMenu->addChild(RDStatsNode::create("GJ_demonIcon_001.png", fmt::format("{}", gsm->getStat("5"))));
+		statsMenu->updateLayout();
+
+		menu->addChild(statsMenu);
+
+		auto menuButUnder = CCMenu::create();
+		menuButUnder->setID("bottom-menu"_spr);
+		menuButUnder->setAnchorPoint({ 1.f, 0.5f });
+		menuButUnder->setContentSize({ 200.f, 48.25f });
+		menuButUnder->setPosition({ 490.f, 25.f });
+		menuButUnder->setScale(0.75f);
+		menuButUnder->setLayout(
+			RowLayout::create()
+				->setAxisReverse(true)
+				->setAxisAlignment(AxisAlignment::End)
+				->setAutoScale(false)
+		);
+
+		auto creatorSpr = CCSprite::createWithSpriteFrameName("GJ_creatorBtn_001.png");
+		creatorSpr->setScale(0.9f);
+		menuButUnder->addChild(CCMenuItemSpriteExtra::create(creatorSpr, this, menu_selector(MenuLayer::onCreator)));
+		auto treasureSpr = CCSprite::createWithSpriteFrameName("secretDoorBtn_open_001.png");
+		treasureSpr->setScale(1.25f);
+		menuButUnder->addChild(CCMenuItemSpriteExtra::create(treasureSpr, this, menu_selector(CreatorLayer::onTreasureRoom)));
+		menuButUnder->updateLayout();
+
+		menu->addChild(menuButUnder);
+
+		auto topMenu = CCMenu::create();
+		topMenu->setID("top-menu"_spr);
+		topMenu->setAnchorPoint({ 1.f, 0.5f});
+		topMenu->setContentSize({ 150.f, 48.25f });
+		topMenu->setPosition({ 490.f, 300.f });
+		topMenu->setScale(0.75f);
+		topMenu->setLayout(
+			RowLayout::create()
+				->setAxisReverse(true)
+				->setAxisAlignment(AxisAlignment::End)
+				->setAutoScale(false)
+				->setGap(10.f)
+		);
+
+		auto garageSpr = CCSprite::createWithSpriteFrameName("garageRope_001.png");
+		auto garageButton = CCMenuItemSpriteExtra::create(garageSpr, this, menu_selector(MenuLayer::onGarage));
+		garageButton->setScale(4/3);
+		topMenu->addChild(garageButton);
+		topMenu->addChild(CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName(gsm->getStat("13") > 49 ? "GJ_lock_open_001.png" : "GJ_lockGray_001.png"), this, menu_selector(CreatorLayer::onSecretVault)));
+		topMenu->updateLayout();
+
+		garageButton->m_animationType = MenuAnimationType::Move;
+		garageButton->m_startPosition = garageSpr->getPosition();
+		garageButton->m_offset = ccp(0.f, -8.f);
+
+		menu->addChild(topMenu);
+
 		if (loader->isModLoaded("alphalaneous.pages_api")) {
 			bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
 			bottomMenu->setUserObject("disable-pages", CCBool::create(true)); 
-			// bottomMenu->setContentHeight(265.f);
 			bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
 
 			rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
@@ -187,18 +222,4 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		return true;
 	}
-};
-
-class $modify(Balls, CCKeyboardDispatcher) {
-	void xd(CCObject* sender) {
-		CCScene* sc = CreatorLayer::scene();
-		CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
-	}
-
-    bool dispatchKeyboardMSG(cocos2d::enumKeyCodes key, bool down, bool repeat) {
-        if (key == enumKeyCodes::KEY_OEMMinus && down && this->m_bAltPressed)
-            Balls::xd(nullptr);
-
-        return CCKeyboardDispatcher::dispatchKeyboardMSG(key, down, repeat);
-    }
 };

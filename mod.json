@@ -24,8 +24,7 @@
             "resources/fonts/*.fnt"
         ],
         "sprites": [
-            "resources/longButtonHalf-1.png",
-            "resources/longButtonHalf-2.png"
+            "resources/*.png"
         ]
     }
 }

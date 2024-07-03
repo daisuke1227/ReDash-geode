@@ -42,6 +42,8 @@ bool RDDailyButton::init(bool isWeekly, CCPoint position, CCSize size) {
         menu_selector(RDDailyButton::onView)
     );
     viewButton->setScale(0.6f);
+    viewButton->m_baseScale = 0.6f;
+    viewButton->m_scaleMultiplier = 1.15f;
     viewButton->setPosition({ size.width*5.5f/6.5f, size.height/2.f }); // dont ask...
     menu->addChild(viewButton);
 
