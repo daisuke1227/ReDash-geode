@@ -1,6 +1,6 @@
 #include "RDDailyNode.hpp"
 
-bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size) {
+bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string id) {
     if (!CCNode::init()) return false;
 
     auto GLM = GameLevelManager::get();
@@ -82,24 +82,36 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size) {
     auto menuSize = innerBG->getScaledContentSize();
     auto baseY = innerBG->getPositionY() - menuSize.height/2;
 
+    auto maxX = viewButton->getPositionX() - viewButton->getScaledContentWidth()/2 - difficultySprite->getPositionX() - difficultySprite->getScaledContentWidth()/2 - 5.f;
+
     auto nameLabel = CCLabelBMFont::create(level->m_levelName.c_str(), "bigFont.fnt");
     nameLabel->setScale(0.5f);
+    if (nameLabel->getScaledContentWidth() > maxX) {
+        nameLabel->setScale(maxX / nameLabel->getContentWidth());
+    }
     nameLabel->setAnchorPoint({ 0, 0.5f });
     nameLabel->setPositionX(difficultySprite->getPositionX() + difficultySprite->getScaledContentWidth()/2 + 5.f);
     nameLabel->setPositionY(baseY + menuSize.height*3/4);
     menu->addChild(nameLabel);
 
-    auto creatorLabel = CCLabelBMFont::create((std::string("by ") + level->m_creatorName).c_str(), "goldFont.fnt");
-    creatorLabel->setAnchorPoint({ 0, 0.5f });
+    log::info("{}", level->m_accountID.value());
+    auto creatorLabel = CCLabelBMFont::create(fmt::format("by {}", level->m_creatorName).c_str(), "goldFont.fnt");
     creatorLabel->setScale(0.5f);
+    if (creatorLabel->getScaledContentWidth() > maxX) {
+        creatorLabel->setScale(maxX / creatorLabel->getContentWidth());
+    }
+    creatorLabel->setAnchorPoint({ 0, 0.5f });
     creatorLabel->setPositionX(nameLabel->getPositionX());
     creatorLabel->setPositionY(baseY + menuSize.height/2);
     menu->addChild(creatorLabel);
 
     auto songLabel = CCLabelBMFont::create(MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)->m_songName.c_str(), "bigFont.fnt");
+    songLabel->setScale(0.35f);
+    if (songLabel->getScaledContentWidth() > maxX) {
+        songLabel->setScale(maxX / songLabel->getContentWidth());
+    }
     songLabel->setAnchorPoint({ 0, 0.5f });
     songLabel->setColor({ 250, 110, 245 });
-    songLabel->setScale(0.35f);
     songLabel->setPositionX(nameLabel->getPositionX());
     songLabel->setPositionY(baseY + menuSize.height/4);
     menu->addChild(songLabel);
@@ -147,18 +159,34 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size) {
     bonusLabel->setScale(0.4f);
     bonusMenu->addChild(bonusLabel);
 
-
     bonusMenu->updateLayout();
+
     
-    auto time = isWeekly ? GLM->m_weeklyTimeLeft : GLM->m_dailyTimeLeft;
-    auto label = CCLabelBMFont::create(GameToolbox::getTimeString(time, false).c_str(), "bigFont.fnt");
-    label->setScale(0.5f);
-    label->setAnchorPoint({ 1, 0.5f });
-    label->setPosition({ innerBG->getPositionX() + innerBG->getScaledContentSize().width/2 , size.height/7 });
-    this->addChild(label);
+
+    auto time = (m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily);
+    if (time < 0) time = 0;
+    auto timeLabel = CCLabelBMFont::create(GameToolbox::getTimeString(time, true).c_str(), "gjFont16.fnt");
+    if ((m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily) == 0) timeLabel->setVisible(false);
+    timeLabel->setScale(0.55f);
+    timeLabel->setAnchorPoint({ 1, 0.5f });
+    timeLabel->setPosition({ innerBG->getPositionX() + innerBG->getScaledContentSize().width/2 , size.height/9 });
+    this->addChild(timeLabel);
+    m_timeLabel = timeLabel;
+
+    auto timeLeftLabel = CCLabelBMFont::create(isWeekly ? "New Weekly in:" : "New Daily in:", "bigFont.fnt");
+    timeLeftLabel->setScale(0.3f);
+    timeLeftLabel->setAnchorPoint({ 1, 0.5f });
+    timeLeftLabel->setPosition({ timeLabel->getPositionX(), timeLabel->getPositionY() + timeLabel->getScaledContentHeight()/2 + timeLeftLabel->getScaledContentHeight()/2});
+    timeLeftLabel->setColor({ 200, 200, 200 });
+    this->addChild(timeLeftLabel);
+
+    if ((isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily) > 0) {
+        this->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
+    }
 
     this->setPosition(position);
     this->setContentSize(size);
+    this->setID(id);
 
     return true;
 }
@@ -168,10 +196,15 @@ void RDDailyNode::onView(CCObject* sender) {
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 }
 
-RDDailyNode* RDDailyNode::create(bool isWeekly, CCPoint position, CCSize size) {
+void RDDailyNode::updateTimeLabel(float dt) {
+    m_timeLabel->setString(GameToolbox::getTimeString((m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily), true).c_str());
+    m_timeLabel->setVisible(true);
+}
+
+RDDailyNode* RDDailyNode::create(bool isWeekly, CCPoint position, CCSize size, std::string id) {
     auto ret = new RDDailyNode();
     ret->m_isWeekly = isWeekly;
-    if (ret && ret->init(isWeekly, position, size)) {
+    if (ret && ret->init(isWeekly, position, size, id)) {
         ret->autorelease();
         return ret;
     }

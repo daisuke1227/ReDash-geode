@@ -1,11 +1,11 @@
-#include "RDButton.hpp"
-#include "RDDailyNode.hpp"
-#include "RDStatsNode.hpp"
-#include "RDMainButton.hpp"
+#include "ui/RDButton.hpp"
+// #include "RDDailyNode.hpp"
+#include "ui/RDStatsNode.hpp"
+#include "ui/RDMainButton.hpp"
 
-#include "hooks/GauntletSelectLayer.hpp"
-#include "hooks/SecretRewardsLayer.hpp"
-#include "hooks/SecretLayer2.hpp"
+#include "hooks/onBackHooks.hpp"
+#include "hooks/GameLevelManager.hpp"
+#include "hooks/PlayLayer.hpp"
 
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
@@ -22,14 +22,17 @@ class $modify(CrazyLayer, MenuLayer) {
 	bool init() {
 		if (!MenuLayer::init()) return false;
 
-		
 		auto loader = Loader::get();
 		auto mod = Mod::get();
 		auto gsm = GameStatsManager::sharedState();
 		auto glm = GameLevelManager::get();
 		
-		glm->getGJDailyLevelState(GJTimedLevelType::Daily);
-		glm->getGJDailyLevelState(GJTimedLevelType::Weekly);
+		if (TimelyLeft::Weekly < 1) {
+			glm->getGJDailyLevelState(GJTimedLevelType::Weekly);
+		}
+		if (TimelyLeft::Daily < 1) {
+			glm->getGJDailyLevelState(GJTimedLevelType::Daily);
+		}
 
 		if (auto closeMenu = this->getChildByID("close-menu")) {
 			if (!closeMenu->getChildByID("close-button")) {
@@ -125,7 +128,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		mainMenu->addChild(RDButton::create(this, "Scores", "Global\n[n]", "RD_leaderboards.png"_spr, menu_selector(CreatorLayer::onLeaderboards)));
 		mainMenu->addChild(RDButton::create(this, "Gauntlets", "[s]\nGauntlet\nAdded", "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets)));
 		mainMenu->addChild(RDButton::create(this, "Featured", "[n] new\nLevels", "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels)));
-		mainMenu->addChild(RDButton::create(this, "Paths", "Place\nholder!", "RD_paths_02.png"_spr,  menu_selector(CreatorLayer::onPaths)));
+		mainMenu->addChild(RDButton::create(this, "Paths", "<<<<Place<<<<\n>>>holder!>>>>", "RD_paths_02.png"_spr,  menu_selector(CreatorLayer::onPaths)));
 		mainMenu->addChild(RDButton::create(this, "Search", "Search\nFor levels\nOnline!", "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels)));
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);
@@ -137,9 +140,9 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->setPosition({ 255.f , 206.25f });
 		dailiesMenu->setScale(0.75f);
 
-		dailiesMenu->addChild(RDDailyNode::create(false, { 25.f , 0.f }, { 230.f , 135.f }));
+		dailiesMenu->addChild(RDDailyNode::create(false, { 25.f , 0.f }, { 230.f , 135.f }, "daily-node"));
 		dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, menu_selector(MenuLayer::onPlay)));
-		dailiesMenu->addChild(RDDailyNode::create(true, { 425.f , 0.f }, { 230.f , 135.f }));
+		dailiesMenu->addChild(RDDailyNode::create(true, { 425.f , 0.f }, { 230.f , 135.f }, "weekly-node"));
 		menu->addChild(dailiesMenu);
 
 		auto statsMenu = CCMenu::create();
