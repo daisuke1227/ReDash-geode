@@ -19,7 +19,9 @@ class $modify(MyGLM, GameLevelManager) {
     void onGetGJDailyLevelStateCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetGJDailyLevelStateCompleted(response, tag);
 
-        auto timeLeft = std::stoi(response.substr(response.find('|') + 1));
+
+        auto responseStd = std::string(response.c_str());
+        auto timeLeft = std::stoi(responseStd.substr(responseStd.find('|') + 1));
 
         if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
             if (tag == "daily_state") {
