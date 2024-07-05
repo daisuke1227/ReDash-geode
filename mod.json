@@ -26,5 +26,23 @@
         "sprites": [
             "resources/*.png"
         ]
+    },
+    "settings": {
+        "disable-creator-button": {
+            "type": "bool",
+            "default": false
+        },
+        "use-pusab": {
+            "type": "bool",
+            "default": false
+        },
+        "main-levels-leftmost": {
+            "type": "bool",
+            "default": false
+        },
+        "hide-main-levels-stats": {
+            "type": "bool",
+            "default": false
+        }
     }
 }
