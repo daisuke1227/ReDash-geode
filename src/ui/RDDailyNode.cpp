@@ -46,87 +46,89 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     menu->addChild(viewButton);
 
     // 00 : na
-    // 01 : easy
-    // 02 : normal
-    // 03 : hard
-    // 04 : harder
-    // 05 : insane
-    // 06 : hard demon = 0 + 4 + 2
+    // 01 : easy 1 2
+    // 02 : normal 3 4
+    // 03 : hard 5 6
+    // 04 : harder 7 8 9 10
+    // 05 : insane 10 11 12
+    // 06 : hard demon 14 15
     // 07 : easy demon = m_demonDifficulty + 4
     // 08 : medium demon = m_demonDifficulty + 4
     // 09 : insane demon = m_demonDifficulty + 4
     // 10 : extreme demon = m_demonDifficulty + 4
     // auto : auto
 
-    auto level = GLM->getSavedDailyLevel(isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk);
-    m_currentLevel = level;
-    int difficultyRating = 0;
-    int featureRating = 0;
+    if (isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk  > 0) {
+        auto level = GLM->getSavedDailyLevel(isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk);
+        m_currentLevel = level;
+        int difficultyRating = 0;
+        int featureRating = 0;
 
-    if (level->m_demon.value()) {
-        if (level->m_demonDifficulty == 0) difficultyRating += 2;
-        difficultyRating = level->m_demonDifficulty + 4;
-    } else {
-        difficultyRating = level->getAverageDifficulty();
+        if (level->m_demon.value()) {
+            if (level->m_demonDifficulty == 0) difficultyRating += 2;
+            difficultyRating = level->m_demonDifficulty + 4;
+        } else {
+            difficultyRating = level->getAverageDifficulty();
+        }
+
+        if (level->m_featured) featureRating += 1;
+        featureRating += level->m_isEpic;
+
+        auto difficultySprite = GJDifficultySprite::create(difficultyRating, GJDifficultyName::Short);
+        difficultySprite->updateFeatureState(as<GJFeatureState>(featureRating));
+        difficultySprite->setScale(0.8f);
+        difficultySprite->setPosition({ size.width/7.5f, viewButton->getPositionY() + 2.5f });
+        menu->addChild(difficultySprite);
+
+        auto menuSize = innerBG->getScaledContentSize();
+        auto baseY = innerBG->getPositionY() - menuSize.height/2;
+
+        auto maxX = viewButton->getPositionX() - viewButton->getScaledContentWidth()/2 - difficultySprite->getPositionX() - difficultySprite->getScaledContentWidth()/2 - 5.f;
+
+        auto nameLabel = CCLabelBMFont::create(level->m_levelName.c_str(), "bigFont.fnt");
+        nameLabel->setScale(0.5f);
+        if (nameLabel->getScaledContentWidth() > maxX) {
+            nameLabel->setScale(maxX / nameLabel->getContentWidth());
+        }
+        nameLabel->setAnchorPoint({ 0, 0.5f });
+        nameLabel->setPositionX(difficultySprite->getPositionX() + difficultySprite->getScaledContentWidth()/2 + 5.f);
+        nameLabel->setPositionY(baseY + menuSize.height*3/4);
+        menu->addChild(nameLabel);
+
+        log::info("{}", level->m_accountID.value());
+        auto creatorLabel = CCLabelBMFont::create(fmt::format("by {}", level->m_creatorName).c_str(), "goldFont.fnt");
+        creatorLabel->setScale(0.5f);
+        if (creatorLabel->getScaledContentWidth() > maxX) {
+            creatorLabel->setScale(maxX / creatorLabel->getContentWidth());
+        }
+        creatorLabel->setAnchorPoint({ 0, 0.5f });
+        creatorLabel->setPositionX(nameLabel->getPositionX());
+        creatorLabel->setPositionY(baseY + menuSize.height/2);
+        menu->addChild(creatorLabel);
+
+        auto songLabel = CCLabelBMFont::create(MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)->m_songName.c_str(), "bigFont.fnt");
+        songLabel->setScale(0.35f);
+        if (songLabel->getScaledContentWidth() > maxX) {
+            songLabel->setScale(maxX / songLabel->getContentWidth());
+        }
+        songLabel->setAnchorPoint({ 0, 0.5f });
+        songLabel->setColor({ 250, 110, 245 });
+        songLabel->setPositionX(nameLabel->getPositionX());
+        songLabel->setPositionY(baseY + menuSize.height/4);
+        menu->addChild(songLabel);
+
+        auto starsLabel = CCLabelBMFont::create(std::to_string(level->m_stars).c_str(), "bigFont.fnt");
+        starsLabel->setScale(0.32f);
+        starsLabel->setPositionX(difficultySprite->getPositionX() - 5.f);
+        starsLabel->setPositionY(baseY + menuSize.height/6);
+        menu->addChild(starsLabel);
+
+        auto starSprite = CCSprite::createWithSpriteFrameName("star_small01_001.png");
+        starSprite->setScale(0.8f);
+        starSprite->setPositionX(starsLabel->getPositionX() + starsLabel->getScaledContentWidth()/2 + 5.f);
+        starSprite->setPositionY(baseY + menuSize.height/6);
+        menu->addChild(starSprite);
     }
-
-    if (level->m_featured) featureRating += 1;
-    featureRating += level->m_isEpic;
-
-    auto difficultySprite = GJDifficultySprite::create(difficultyRating, GJDifficultyName::Short);
-    difficultySprite->updateFeatureState(as<GJFeatureState>(featureRating));
-    difficultySprite->setScale(0.8f);
-    difficultySprite->setPosition({ size.width/7.5f, viewButton->getPositionY() + 2.5f });
-    menu->addChild(difficultySprite);
-
-    auto menuSize = innerBG->getScaledContentSize();
-    auto baseY = innerBG->getPositionY() - menuSize.height/2;
-
-    auto maxX = viewButton->getPositionX() - viewButton->getScaledContentWidth()/2 - difficultySprite->getPositionX() - difficultySprite->getScaledContentWidth()/2 - 5.f;
-
-    auto nameLabel = CCLabelBMFont::create(level->m_levelName.c_str(), "bigFont.fnt");
-    nameLabel->setScale(0.5f);
-    if (nameLabel->getScaledContentWidth() > maxX) {
-        nameLabel->setScale(maxX / nameLabel->getContentWidth());
-    }
-    nameLabel->setAnchorPoint({ 0, 0.5f });
-    nameLabel->setPositionX(difficultySprite->getPositionX() + difficultySprite->getScaledContentWidth()/2 + 5.f);
-    nameLabel->setPositionY(baseY + menuSize.height*3/4);
-    menu->addChild(nameLabel);
-
-    log::info("{}", level->m_accountID.value());
-    auto creatorLabel = CCLabelBMFont::create(fmt::format("by {}", level->m_creatorName).c_str(), "goldFont.fnt");
-    creatorLabel->setScale(0.5f);
-    if (creatorLabel->getScaledContentWidth() > maxX) {
-        creatorLabel->setScale(maxX / creatorLabel->getContentWidth());
-    }
-    creatorLabel->setAnchorPoint({ 0, 0.5f });
-    creatorLabel->setPositionX(nameLabel->getPositionX());
-    creatorLabel->setPositionY(baseY + menuSize.height/2);
-    menu->addChild(creatorLabel);
-
-    auto songLabel = CCLabelBMFont::create(MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)->m_songName.c_str(), "bigFont.fnt");
-    songLabel->setScale(0.35f);
-    if (songLabel->getScaledContentWidth() > maxX) {
-        songLabel->setScale(maxX / songLabel->getContentWidth());
-    }
-    songLabel->setAnchorPoint({ 0, 0.5f });
-    songLabel->setColor({ 250, 110, 245 });
-    songLabel->setPositionX(nameLabel->getPositionX());
-    songLabel->setPositionY(baseY + menuSize.height/4);
-    menu->addChild(songLabel);
-
-    auto starsLabel = CCLabelBMFont::create(std::to_string(level->m_stars).c_str(), "bigFont.fnt");
-    starsLabel->setScale(0.32f);
-    starsLabel->setPositionX(difficultySprite->getPositionX() - 5.f);
-    starsLabel->setPositionY(baseY + menuSize.height/6);
-    menu->addChild(starsLabel);
-
-    auto starSprite = CCSprite::createWithSpriteFrameName("star_small01_001.png");
-    starSprite->setScale(0.8f);
-    starSprite->setPositionX(starsLabel->getPositionX() + starsLabel->getScaledContentWidth()/2 + 5.f);
-    starSprite->setPositionY(baseY + menuSize.height/6);
-    menu->addChild(starSprite);
 
     auto bonusBG = CCScale9Sprite::create("GJ_square02.png");
     bonusBG->setScale(0.5f);
