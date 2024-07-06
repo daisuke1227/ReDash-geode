@@ -28,106 +28,30 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     innerBG->setColor({ 0, 0, 0 });
     innerBG->setOpacity(50);
     this->addChild(innerBG);
+    m_innerBG = innerBG;
 
     auto menu = CCMenu::create();
     menu->setPosition({ 0.f, 0.f });
     menu->setContentSize(size);
     this->addChild(menu);
+    m_menu = menu;
 
-    auto viewButton = CCMenuItemSpriteExtra::create(
-        CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png"),
-        this,
-        menu_selector(RDDailyNode::onView)
-    );
-    viewButton->setScale(0.6f);
-    viewButton->m_baseScale = 0.6f;
-    viewButton->m_scaleMultiplier = 1.15f;
-    viewButton->setPosition({ size.width*5.5f/6.5f, size.height/2.f }); // dont ask...
-    menu->addChild(viewButton);
+    auto loadingCircle = LoadingCircle::create();
+    loadingCircle->setScale(0.75f);
+    loadingCircle->setContentSize({ 0 , 0 });
+    loadingCircle->setPosition({ size.width/2, size.height/2 });
+    loadingCircle->setVisible(false);
+    loadingCircle->m_sprite->setPosition({ 0 , 0 });
+    loadingCircle->m_sprite->runAction(CCRepeatForever::create(CCRotateBy::create(1, 360)));
+    loadingCircle->setID("loading-circle");
+    this->addChild(loadingCircle);
+    m_loadingCircle = loadingCircle;
 
-    // 00 : na
-    // 01 : easy 1 2
-    // 02 : normal 3 4
-    // 03 : hard 5 6
-    // 04 : harder 7 8 9 10
-    // 05 : insane 10 11 12
-    // 06 : hard demon 14 15
-    // 07 : easy demon = m_demonDifficulty + 4
-    // 08 : medium demon = m_demonDifficulty + 4
-    // 09 : insane demon = m_demonDifficulty + 4
-    // 10 : extreme demon = m_demonDifficulty + 4
-    // auto : auto
-
-    if (isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk  > 0) {
-        auto level = GLM->getSavedDailyLevel(isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk);
-        m_currentLevel = level;
-        int difficultyRating = 0;
-        int featureRating = 0;
-
-        if (level->m_demon.value()) {
-            if (level->m_demonDifficulty == 0) difficultyRating += 2;
-            difficultyRating = level->m_demonDifficulty + 4;
-        } else {
-            difficultyRating = level->getAverageDifficulty();
-        }
-
-        if (level->m_featured) featureRating += 1;
-        featureRating += level->m_isEpic;
-
-        auto difficultySprite = GJDifficultySprite::create(difficultyRating, GJDifficultyName::Short);
-        difficultySprite->updateFeatureState(as<GJFeatureState>(featureRating));
-        difficultySprite->setScale(0.8f);
-        difficultySprite->setPosition({ size.width/7.5f, viewButton->getPositionY() + 2.5f });
-        menu->addChild(difficultySprite);
-
-        auto menuSize = innerBG->getScaledContentSize();
-        auto baseY = innerBG->getPositionY() - menuSize.height/2;
-
-        auto maxX = viewButton->getPositionX() - viewButton->getScaledContentWidth()/2 - difficultySprite->getPositionX() - difficultySprite->getScaledContentWidth()/2 - 5.f;
-
-        auto nameLabel = CCLabelBMFont::create(level->m_levelName.c_str(), "bigFont.fnt");
-        nameLabel->setScale(0.5f);
-        if (nameLabel->getScaledContentWidth() > maxX) {
-            nameLabel->setScale(maxX / nameLabel->getContentWidth());
-        }
-        nameLabel->setAnchorPoint({ 0, 0.5f });
-        nameLabel->setPositionX(difficultySprite->getPositionX() + difficultySprite->getScaledContentWidth()/2 + 5.f);
-        nameLabel->setPositionY(baseY + menuSize.height*3/4);
-        menu->addChild(nameLabel);
-
-        log::info("{}", level->m_accountID.value());
-        auto creatorLabel = CCLabelBMFont::create(fmt::format("by {}", level->m_creatorName).c_str(), "goldFont.fnt");
-        creatorLabel->setScale(0.5f);
-        if (creatorLabel->getScaledContentWidth() > maxX) {
-            creatorLabel->setScale(maxX / creatorLabel->getContentWidth());
-        }
-        creatorLabel->setAnchorPoint({ 0, 0.5f });
-        creatorLabel->setPositionX(nameLabel->getPositionX());
-        creatorLabel->setPositionY(baseY + menuSize.height/2);
-        menu->addChild(creatorLabel);
-
-        auto songLabel = CCLabelBMFont::create(MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)->m_songName.c_str(), "bigFont.fnt");
-        songLabel->setScale(0.35f);
-        if (songLabel->getScaledContentWidth() > maxX) {
-            songLabel->setScale(maxX / songLabel->getContentWidth());
-        }
-        songLabel->setAnchorPoint({ 0, 0.5f });
-        songLabel->setColor({ 250, 110, 245 });
-        songLabel->setPositionX(nameLabel->getPositionX());
-        songLabel->setPositionY(baseY + menuSize.height/4);
-        menu->addChild(songLabel);
-
-        auto starsLabel = CCLabelBMFont::create(std::to_string(level->m_stars).c_str(), "bigFont.fnt");
-        starsLabel->setScale(0.32f);
-        starsLabel->setPositionX(difficultySprite->getPositionX() - 5.f);
-        starsLabel->setPositionY(baseY + menuSize.height/6);
-        menu->addChild(starsLabel);
-
-        auto starSprite = CCSprite::createWithSpriteFrameName("star_small01_001.png");
-        starSprite->setScale(0.8f);
-        starSprite->setPositionX(starsLabel->getPositionX() + starsLabel->getScaledContentWidth()/2 + 5.f);
-        starSprite->setPositionY(baseY + menuSize.height/6);
-        menu->addChild(starSprite);
+    if (auto level = GLM->getSavedDailyLevel(m_isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk)) {
+        RDDailyNode::setupLevelMenu(level);
+    } else {
+        GLM->downloadLevel(m_isWeekly ? -2 : -1, false);
+        m_loadingCircle->setVisible(true);
     }
 
     auto bonusBG = CCScale9Sprite::create("GJ_square02.png");
@@ -164,11 +88,9 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     bonusMenu->updateLayout();
 
     
-
     auto time = (m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily);
     if (time < 0) time = 0;
-    auto timeLabel = CCLabelBMFont::create(GameToolbox::getTimeString(time, true).c_str(), "gjFont16.fnt");
-    if ((m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily) == 0) timeLabel->setVisible(false);
+    auto timeLabel = CCLabelBMFont::create(GameToolbox::getTimeString(time, true).c_str(), Mod::get()->getSettingValue<bool>("use-pusab") ? "bigFont.fnt" : "gjFont16.fnt");
     timeLabel->setScale(0.55f);
     timeLabel->setAnchorPoint({ 1, 0.5f });
     timeLabel->setPosition({ innerBG->getPositionX() + innerBG->getScaledContentSize().width/2 , size.height/9 });
@@ -181,6 +103,25 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     timeLeftLabel->setPosition({ timeLabel->getPositionX(), timeLabel->getPositionY() + timeLabel->getScaledContentHeight()/2 + timeLeftLabel->getScaledContentHeight()/2});
     timeLeftLabel->setColor({ 200, 200, 200 });
     this->addChild(timeLeftLabel);
+    m_timeLeftLabel = timeLeftLabel;
+
+    auto timerLoadingCircle = LoadingCircle::create();
+    timerLoadingCircle->setScale(0.45f);
+    timerLoadingCircle->setContentSize({ 0 , 0 });
+    timerLoadingCircle->setPositionX(timeLeftLabel->getPositionX() - timeLeftLabel->getScaledContentWidth()/2);
+    timerLoadingCircle->setPositionY((timeLeftLabel->getPositionY() + timeLabel->getPositionY())/2);
+    timerLoadingCircle->setVisible(false);
+    timerLoadingCircle->m_sprite->setPosition({ 0 , 0 });
+    timerLoadingCircle->m_sprite->runAction(CCRepeatForever::create(CCRotateBy::create(1, 360)));
+    this->addChild(timerLoadingCircle);
+    m_timerLoadingCircle = timerLoadingCircle;
+
+    if ((m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily) == 0) {
+        timeLabel->setVisible(false);
+        timeLeftLabel->setVisible(false);
+        timerLoadingCircle->setVisible(true);
+    }
+
 
     if ((isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily) > 0) {
         this->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
@@ -198,9 +139,166 @@ void RDDailyNode::onView(CCObject* sender) {
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 }
 
+void RDDailyNode::onSkiplevel(CCObject* sender) {
+    geode::createQuickPopup(
+        "Skip level",
+        fmt::format("There is a <cy>new</c> {} level available.\nSkip the current level and load the next?", m_isWeekly ? "weekly" : "daily"),
+        "Cancel", "Skip",
+        [this](auto, bool btn2) {
+            if (btn2) {
+                m_loadingCircle->setVisible(true);
+                m_menu->removeAllChildren();
+                GameLevelManager::get()->downloadLevel(m_isWeekly ? -2 : -1, false);
+            }
+        }
+    );
+}
+
+void RDDailyNode::onCreatorLabel(CCObject* sender) {
+    ProfilePage::create(m_currentLevel->m_accountID.value(), false)->show();
+}
+
+void RDDailyNode::onReload(CCObject* sender) {
+    m_loadingCircle->setVisible(true);
+    m_menu->removeAllChildren();
+
+    if (m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily == 0) GameLevelManager::get()->getGJDailyLevelState(m_isWeekly ? GJTimedLevelType::Weekly : GJTimedLevelType::Daily);
+    GameLevelManager::get()->downloadLevel(m_isWeekly ? -2 : -1, false);
+}
+
+void RDDailyNode::downloadLevelFailed() {
+    m_loadingCircle->setVisible(false);
+    m_menu->removeAllChildren();
+
+    auto reloadButton = CCMenuItemSpriteExtra::create(
+        CCSprite::createWithSpriteFrameName("GJ_updateBtn_001.png"),
+        this,
+        menu_selector(RDDailyNode::onReload)
+    );
+    reloadButton->m_scaleMultiplier = 1.15f;
+    reloadButton->setPosition({ m_menu->getContentWidth()*5.5f/6.5f, m_menu->getContentHeight()/2.f });
+    m_menu->addChild(reloadButton);
+
+    auto label = CCLabelBMFont::create("Something went wrong...", "goldFont.fnt");
+    label->setScale(0.5f);
+    label->setPositionX((m_innerBG->getPositionX() - m_innerBG->getScaledContentWidth()/2 + reloadButton->getPositionX() - reloadButton->getScaledContentWidth()/2)/2);
+    label->setPositionY(reloadButton->getPositionY());
+    m_menu->addChild(label);
+}
+
+void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
+    auto GLM = GameLevelManager::get();
+
+    m_menu->removeAllChildren();
+    m_loadingCircle->setVisible(false);
+
+    m_currentLevel = level;
+    int difficultyRating = 0;
+    int featureRating = 0;
+    if (level->m_demon.value()) {
+        if (level->m_demonDifficulty == 0) difficultyRating += 2;
+        difficultyRating = level->m_demonDifficulty + 4;
+    } else {
+        difficultyRating = level->getAverageDifficulty();
+    }
+
+    if (level->m_featured) featureRating += 1;
+    featureRating += level->m_isEpic;
+
+    auto viewButton = CCMenuItemSpriteExtra::create(
+        CCSprite::createWithSpriteFrameName("GJ_playBtn2_001.png"),
+        this,
+        menu_selector(RDDailyNode::onView)
+    );
+    viewButton->setScale(0.6f);
+    viewButton->m_baseScale = 0.6f;
+    viewButton->m_scaleMultiplier = 1.15f;
+    viewButton->setPosition({ m_menu->getContentWidth()*5.5f/6.5f, m_menu->getContentHeight()/2.f }); // dont ask...
+    m_menu->addChild(viewButton, 10);
+
+    auto skipButton = CCMenuItemSpriteExtra::create(
+        CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"),
+        this,
+        menu_selector(RDDailyNode::onSkiplevel)
+    );
+
+    if (m_isWeekly ? GLM->m_weeklyIDUnk < GLM->m_weeklyID : GLM->m_dailyIDUnk < GLM->m_dailyID) {
+        skipButton->setVisible(true);
+    } else {
+        skipButton->setVisible(false);
+    }
+    skipButton->setScale(0.5f);
+    skipButton->setPosition({ m_innerBG->getPositionX() - m_innerBG->getScaledContentSize().width/2 + 5.f, m_innerBG->getPositionY() + m_innerBG->getScaledContentSize().height/2 });
+    skipButton->m_baseScale = 0.5f;
+    skipButton->m_scaleMultiplier = 1.2f;
+    m_menu->addChild(skipButton, 10);
+    m_skipButton = skipButton;
+
+    auto difficultySprite = GJDifficultySprite::create(difficultyRating, GJDifficultyName::Short);
+    difficultySprite->updateFeatureState(as<GJFeatureState>(featureRating));
+    difficultySprite->setScale(0.8f);
+    difficultySprite->setPosition({ m_menu->getContentWidth()/7.5f, viewButton->getPositionY() + 2.5f });
+    m_menu->addChild(difficultySprite);
+
+    auto menuSize = m_innerBG->getScaledContentSize();
+    auto baseY = m_innerBG->getPositionY() - menuSize.height/2;
+
+    auto maxX = viewButton->getPositionX() - viewButton->getScaledContentWidth()/2 - difficultySprite->getPositionX() - difficultySprite->getScaledContentWidth()/2 - 5.f;
+
+    auto nameLabel = CCLabelBMFont::create(level->m_levelName.c_str(), "bigFont.fnt");
+    nameLabel->setScale(0.5f);
+    if (nameLabel->getScaledContentWidth() > maxX) {
+        nameLabel->setScale(maxX / nameLabel->getContentWidth());
+    }
+    nameLabel->setAnchorPoint({ 0, 0.5f });
+    nameLabel->setPositionX(difficultySprite->getPositionX() + difficultySprite->getScaledContentWidth()/2 + 5.f);
+    nameLabel->setPositionY(baseY + menuSize.height*3/4);
+    m_menu->addChild(nameLabel);
+
+    auto creatorLabel = CCLabelBMFont::create(fmt::format("by {}", level->m_creatorName).c_str(), "goldFont.fnt");
+    creatorLabel->setScale(0.5f);
+    if (creatorLabel->getScaledContentWidth() > maxX) {
+        creatorLabel->setScale(maxX / creatorLabel->getContentWidth());
+    }
+    auto creatorButton = CCMenuItemSpriteExtra::create(
+        creatorLabel,
+        this,
+        menu_selector(RDDailyNode::onCreatorLabel)
+    );
+    creatorButton->setPositionX(nameLabel->getPositionX() + creatorLabel->getScaledContentWidth()/2);
+    creatorButton->setPositionY(baseY + menuSize.height/2);
+    creatorButton->m_scaleMultiplier = 1.1f;
+    m_menu->addChild(creatorButton);
+
+    auto songLabel = CCLabelBMFont::create(MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)->m_songName.c_str(), "bigFont.fnt");
+    songLabel->setScale(0.35f);
+    if (songLabel->getScaledContentWidth() > maxX) {
+        songLabel->setScale(maxX / songLabel->getContentWidth());
+    }
+    songLabel->setAnchorPoint({ 0, 0.5f });
+    songLabel->setColor({ 250, 110, 245 });
+    songLabel->setPositionX(nameLabel->getPositionX());
+    songLabel->setPositionY(baseY + menuSize.height/4);
+    m_menu->addChild(songLabel);
+
+    auto starsLabel = CCLabelBMFont::create(std::to_string(level->m_stars).c_str(), "bigFont.fnt");
+    starsLabel->setScale(0.32f);
+    starsLabel->setPositionX(difficultySprite->getPositionX() - 5.f);
+    starsLabel->setPositionY(baseY + menuSize.height/6);
+    m_menu->addChild(starsLabel);
+
+    auto starSprite = CCSprite::createWithSpriteFrameName("star_small01_001.png");
+    starSprite->setScale(0.8f);
+    starSprite->setPositionX(starsLabel->getPositionX() + starsLabel->getScaledContentWidth()/2 + 5.f);
+    starSprite->setPositionY(baseY + menuSize.height/6);
+    m_menu->addChild(starSprite);
+}
+
 void RDDailyNode::updateTimeLabel(float dt) {
     m_timeLabel->setString(GameToolbox::getTimeString((m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily), true).c_str());
     m_timeLabel->setVisible(true);
+    m_timeLeftLabel->setVisible(true);
+    m_timerLoadingCircle->setVisible(false);
 }
 
 RDDailyNode* RDDailyNode::create(bool isWeekly, CCPoint position, CCSize size, std::string id) {

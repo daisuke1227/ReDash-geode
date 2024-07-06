@@ -151,6 +151,16 @@ bool RDMainButton::init(CCPoint position, CCSize size, cocos2d::SEL_MenuHandler 
         checkSprite->setVisible(true);
     }
 
+    if (Mod::get()->getSettingValue<bool>("hide-main-levels-stats")) {
+        coin1Sprite->setVisible(false);
+        coin2Sprite->setVisible(false);
+        coin3Sprite->setVisible(false);
+        orbsLabel->setVisible(false);
+        orbSprite->setVisible(false);
+        percentLabel->setVisible(false);
+        checkSprite->setVisible(false);
+    }
+
     auto lastPlayedLabel = CCLabelBMFont::create("Last Played:", "goldFont.fnt");
     lastPlayedLabel->setScale(0.4f);
     lastPlayedLabel->setPosition({ size.width/2, innerBG->getPositionY() + innerBG->getScaledContentHeight()/2 + 2.f });

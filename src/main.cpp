@@ -19,6 +19,26 @@ class $modify(CrazyLayer, MenuLayer) {
         self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api
     }
 
+	void onHideMenu(CCObject* sender) {
+		if (!as<CCMenuItemToggler*>(sender)->isOn()) {
+			this->getChildByID("redash-menu"_spr)->setVisible(false);
+			this->getChildByID("bottom-menu")->setVisible(false);
+			this->getChildByID("bottom-menu-bg"_spr)->setVisible(false);
+			this->getChildByID("right-side-menu")->setVisible(false);
+			this->getChildByID("profile-menu")->setVisible(false);
+			this->getChildByID("close-menu")->setVisible(false);
+			this->getChildByID("player-username")->setVisible(false);
+		} else {
+			this->getChildByID("redash-menu"_spr)->setVisible(true);
+			this->getChildByID("bottom-menu")->setVisible(true);
+			this->getChildByID("bottom-menu-bg"_spr)->setVisible(true);
+			this->getChildByID("right-side-menu")->setVisible(true);
+			this->getChildByID("profile-menu")->setVisible(true);
+			this->getChildByID("close-menu")->setVisible(true);
+			this->getChildByID("player-username")->setVisible(true);
+		}
+	}
+
 	bool init() {
 		if (!MenuLayer::init()) return false;
 
@@ -54,13 +74,17 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 		}
 
-		// MAIN MENU CHANGES (MIGHT BE BREAKING SOME STUFF)
+		// MAIN MENU CHANGES (MIGHT BE BREAKING SOME STUFF) - ninXout
+		// no it isn't - Weebify
 
 		this->getChildByID("main-title")->setVisible(false);
 
 		this->getChildByID("more-games-menu")->setVisible(false);
-		this->getChildByID("social-media-menu")->setVisible(false); // might make RobTop logo visible later
-		this->getChildByID("main-menu")->setVisible(false); // hehehehe >:D
+		this->getChildByID("social-media-menu")->setVisible(false); // might make RobTop logo visible later // no
+		this->getChildByID("main-menu")->setVisible(false); // hehehehe >:D // ????
+
+		if (this->getChildByID("level-editor-hint")) this->getChildByID("level-editor-hint")->setVisible(false);
+		if (this->getChildByID("character-select-hint")) this->getChildByID("character-select-hint")->setVisible(false);
 
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		bottomMenu->setPosition(ccp(540.f, 190.f));
@@ -91,11 +115,13 @@ class $modify(CrazyLayer, MenuLayer) {
 		this->getChildByID("profile-menu")->setScale(0.75f);
 		this->getChildByID("profile-menu")->setZOrder(1);		
 
-		// NEW STUFF YAYY :D
+		// NEW STUFF YAYY :D - ninXout
+		// yay - Weebify
 
 		// background for the menu on the right (the one with the Geode and settings buttons)
 
 		CCScale9Sprite* bottomMenuBG = CCScale9Sprite::create("square02b_001.png");
+		bottomMenuBG->setID("bottom-menu-bg"_spr);
 		bottomMenuBG->setColor({0,0,0});
 		bottomMenuBG->setOpacity(100);
 		bottomMenuBG->setPosition(bottomMenu->getPosition());
@@ -140,8 +166,13 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->setPosition({ 255.f , 206.25f });
 		dailiesMenu->setScale(0.75f);
 
-		dailiesMenu->addChild(RDDailyNode::create(false, { 25.f , 0.f }, { 230.f , 135.f }, "daily-node"));
-		dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, menu_selector(MenuLayer::onPlay)));
+		if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
+			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, menu_selector(MenuLayer::onPlay)));
+			dailiesMenu->addChild(RDDailyNode::create(false, { 185.f , 0.f }, { 230.f , 135.f }, "daily-node"));
+		} else {
+			dailiesMenu->addChild(RDDailyNode::create(false, { 25.f , 0.f }, { 230.f , 135.f }, "daily-node"));
+			dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, menu_selector(MenuLayer::onPlay)));
+		}
 		dailiesMenu->addChild(RDDailyNode::create(true, { 425.f , 0.f }, { 230.f , 135.f }, "weekly-node"));
 		menu->addChild(dailiesMenu);
 
@@ -170,25 +201,28 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto menuButUnder = CCMenu::create();
 		menuButUnder->setID("bottom-menu"_spr);
 		menuButUnder->setAnchorPoint({ 1.f, 0.5f });
-		menuButUnder->setContentSize({ 200.f, 48.25f });
-		menuButUnder->setPosition({ 490.f, 25.f });
+		menuButUnder->setContentSize({ 150.f, 48.25f });
+		menuButUnder->setPosition({ 445.f, 25.f }); // ...
 		menuButUnder->setScale(0.75f);
 		menuButUnder->setLayout(
 			RowLayout::create()
 				->setAxisReverse(true)
 				->setAxisAlignment(AxisAlignment::End)
 				->setAutoScale(false)
+				->setGap(0.f)
 		);
 
-		auto creatorSpr = CCSprite::createWithSpriteFrameName("GJ_creatorBtn_001.png");
-		creatorSpr->setScale(0.9f);
-		menuButUnder->addChild(CCMenuItemSpriteExtra::create(creatorSpr, this, menu_selector(MenuLayer::onCreator)));
+		if (!Mod::get()->getSettingValue<bool>("disable-creator-button")) {
+			auto creatorSpr = CCSprite::createWithSpriteFrameName("GJ_creatorBtn_001.png");
+			creatorSpr->setScale(0.9f);
+			menuButUnder->addChild(CCMenuItemSpriteExtra::create(creatorSpr, this, menu_selector(MenuLayer::onCreator)));
+		}
 		auto treasureSpr = CCSprite::createWithSpriteFrameName("secretDoorBtn_open_001.png");
 		treasureSpr->setScale(1.25f);
 		menuButUnder->addChild(CCMenuItemSpriteExtra::create(treasureSpr, this, menu_selector(CreatorLayer::onTreasureRoom)));
-		menuButUnder->updateLayout();
 
 		menu->addChild(menuButUnder);
+		menuButUnder->updateLayout();
 
 		auto topMenu = CCMenu::create();
 		topMenu->setID("top-menu"_spr);
@@ -229,6 +263,25 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		bottomMenu->updateLayout();
 		rightMenu->updateLayout();
+
+		auto hideBtnMenu = CCMenu::create();
+		hideBtnMenu->setID("hide-button-menu"_spr);
+		hideBtnMenu->setAnchorPoint({ 1.f, 0.5f });
+		hideBtnMenu->setContentSize({ 48.25f, 48.25f });
+		hideBtnMenu->setPosition({ 440.f, 0.f });
+		hideBtnMenu->setScale(0.75f);
+		this->addChild(hideBtnMenu, 100);
+
+		auto spr1 = CCSprite::create("RD_hideButton_01.png"_spr);
+		auto spr2 = CCSprite::create("RD_hide_02.png"_spr);
+		spr2->setOpacity(50);
+		auto hideToggler = CCMenuItemToggler::create(spr1, spr2, this, menu_selector(CrazyLayer::onHideMenu));
+		hideToggler->setID("hide-button");
+		hideToggler->setPosition({ hideBtnMenu->getContentWidth() / 2.f, hideBtnMenu->getContentHeight() / 2.f });
+		hideBtnMenu->addChild(hideToggler);
+
+
+
 
 		return true;
 	}

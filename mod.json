@@ -7,7 +7,7 @@
 	},
 	"version": "v1.0.0",
 	"id": "ninxout.redash",
-	"name": "ReDash",
+	"name": "Overcharged Main Menu",
 	"developers": [
         "Weebify",
         "ninXout"
@@ -29,18 +29,22 @@
     },
     "settings": {
         "disable-creator-button": {
+            "name": "Disable Creator Layer Button",
             "type": "bool",
             "default": false
         },
         "use-pusab": {
+            "name": "Use Pusab for Timer",
             "type": "bool",
             "default": false
         },
         "main-levels-leftmost": {
+            "name": "Leftmost Main levels button",
             "type": "bool",
             "default": false
         },
         "hide-main-levels-stats": {
+            "name": "Hide Main levels stats",
             "type": "bool",
             "default": false
         }
