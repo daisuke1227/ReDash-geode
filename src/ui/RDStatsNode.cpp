@@ -1,6 +1,6 @@
 #include "RDStatsNode.hpp"
 
-bool RDStatsNode::init(std::string sprite, std::string string) {
+bool RDStatsNode::init(std::string sprite, std::string string, std::string id) {
     if (!CCNode::init()) return false;
 
     auto icon = CCSprite::createWithSpriteFrameName(sprite.c_str());
@@ -53,6 +53,7 @@ bool RDStatsNode::init(std::string sprite, std::string string) {
 
     this->setContentSize({ bg0->getScaledContentWidth() + bg1->getScaledContentWidth() + bg2->getScaledContentWidth(), 30.f});
     this->setPositionY(15.f);
+    this->setID(id);
 
     if (sprite == "GJ_moonsIcon_001.png") {
         icon->setScale(1.75f);
@@ -61,9 +62,9 @@ bool RDStatsNode::init(std::string sprite, std::string string) {
     return true;
 }
 
-RDStatsNode* RDStatsNode::create(std::string sprite, std::string string) {
+RDStatsNode* RDStatsNode::create(std::string sprite, std::string string, std::string id) {
     auto ret = new RDStatsNode();
-    if (ret && ret->init(sprite, string)) {
+    if (ret && ret->init(sprite, string, id)) {
         ret->autorelease();
         return ret;
     }

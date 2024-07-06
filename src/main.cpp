@@ -14,6 +14,7 @@
 #include <fmt/core.h>
 #define MAX_SECRET_COINS 164
 
+
 class $modify(CrazyLayer, MenuLayer) {
 	static void onModify(auto& self) {
         self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api
@@ -21,21 +22,23 @@ class $modify(CrazyLayer, MenuLayer) {
 
 	void onHideMenu(CCObject* sender) {
 		if (!as<CCMenuItemToggler*>(sender)->isOn()) {
-			this->getChildByID("redash-menu"_spr)->setVisible(false);
-			this->getChildByID("bottom-menu")->setVisible(false);
-			this->getChildByID("bottom-menu-bg"_spr)->setVisible(false);
-			this->getChildByID("right-side-menu")->setVisible(false);
-			this->getChildByID("profile-menu")->setVisible(false);
-			this->getChildByID("close-menu")->setVisible(false);
-			this->getChildByID("player-username")->setVisible(false);
+			this->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->setVisible(false);
+			this->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->setVisible(false);
+			// this->getChildByID("bottom-menu")->setVisible(false);
+			// this->getChildByID("bottom-menu-bg"_spr)->setVisible(false);
+			// this->getChildByID("right-side-menu")->setVisible(false);
+			// this->getChildByID("profile-menu")->setVisible(false);
+			// this->getChildByID("close-menu")->setVisible(false);
+			// this->getChildByID("player-username")->setVisible(false);
 		} else {
-			this->getChildByID("redash-menu"_spr)->setVisible(true);
-			this->getChildByID("bottom-menu")->setVisible(true);
-			this->getChildByID("bottom-menu-bg"_spr)->setVisible(true);
-			this->getChildByID("right-side-menu")->setVisible(true);
-			this->getChildByID("profile-menu")->setVisible(true);
-			this->getChildByID("close-menu")->setVisible(true);
-			this->getChildByID("player-username")->setVisible(true);
+			this->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->setVisible(true);
+			this->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->setVisible(true);
+			// this->getChildByID("bottom-menu")->setVisible(true);
+			// this->getChildByID("bottom-menu-bg"_spr)->setVisible(true);
+			// this->getChildByID("right-side-menu")->setVisible(true);
+			// this->getChildByID("profile-menu")->setVisible(true);
+			// this->getChildByID("close-menu")->setVisible(true);
+			// this->getChildByID("player-username")->setVisible(true);
 		}
 	}
 
@@ -148,6 +151,12 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 		);
 
+		// for (int i = 1; i <= 10; i++) {
+		int i = gsm->m_activePath;
+		log::info("{}: {}", i - 24, gsm->isItemUnlocked(UnlockType::GJItem, i - 24));
+		log::warn("{}/1000", gsm->getStat(std::to_string(i).c_str()));
+		// }
+
 		mainMenu->addChild(RDButton::create(this, "Create", "You have\n[n] Levels", "RD_create.png"_spr, menu_selector(CreatorLayer::onMyLevels)));
 		mainMenu->addChild(RDButton::create(this, "Saved", "You have\n[n] Saved\nLevels", "RD_saved.png"_spr, menu_selector(CreatorLayer::onSavedLevels)));
 		mainMenu->addChild(RDButton::create(this, "Lists", "[n] new\nLists", "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists)));
@@ -189,11 +198,11 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 		);
 
-		statsMenu->addChild(RDStatsNode::create("GJ_starsIcon_001.png", fmt::format("{}", gsm->getStat("6"))));
-		statsMenu->addChild(RDStatsNode::create("GJ_moonsIcon_001.png", fmt::format("{}", gsm->getStat("28"))));
-		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon_001.png", fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS)));
-		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon2_001.png", fmt::format("{}", gsm->getStat("12"))));
-		statsMenu->addChild(RDStatsNode::create("GJ_demonIcon_001.png", fmt::format("{}", gsm->getStat("5"))));
+		statsMenu->addChild(RDStatsNode::create("GJ_starsIcon_001.png", fmt::format("{}", gsm->getStat("6")), "stars-stats"));
+		statsMenu->addChild(RDStatsNode::create("GJ_moonsIcon_001.png", fmt::format("{}", gsm->getStat("28")), "moons-stats"));
+		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon_001.png", fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS), "sectet-coins-stats"));
+		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon2_001.png", fmt::format("{}", gsm->getStat("12")), "user-coins-stats"));
+		statsMenu->addChild(RDStatsNode::create("GJ_demonIcon_001.png", fmt::format("{}", gsm->getStat("5")), "demons-stats"));
 		statsMenu->updateLayout();
 
 		menu->addChild(statsMenu);
@@ -273,8 +282,8 @@ class $modify(CrazyLayer, MenuLayer) {
 		this->addChild(hideBtnMenu, 100);
 
 		auto spr1 = CCSprite::create("RD_hideButton_01.png"_spr);
-		auto spr2 = CCSprite::create("RD_hide_02.png"_spr);
-		spr2->setOpacity(50);
+		auto spr2 = CCSprite::create("RD_hideButton_02.png"_spr);
+		// spr2->setOpacity(50);
 		auto hideToggler = CCMenuItemToggler::create(spr1, spr2, this, menu_selector(CrazyLayer::onHideMenu));
 		hideToggler->setID("hide-button");
 		hideToggler->setPosition({ hideBtnMenu->getContentWidth() / 2.f, hideBtnMenu->getContentHeight() / 2.f });

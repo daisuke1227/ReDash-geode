@@ -31,7 +31,7 @@
         "disable-creator-button": {
             "name": "Disable Creator Layer Button",
             "type": "bool",
-            "default": false
+            "default": true
         },
         "use-pusab": {
             "name": "Use Pusab for Timer",

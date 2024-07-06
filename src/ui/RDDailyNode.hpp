@@ -20,6 +20,7 @@ public:
     void onSkiplevel(CCObject* sender);
     void onCreatorLabel(CCObject* sender);
     void onReload(CCObject* sender);
+    void onTheSafe(CCObject* sender);
 
     void downloadLevelFailed();
     void setupLevelMenu(GJGameLevel* level);
