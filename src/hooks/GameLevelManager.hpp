@@ -5,15 +5,22 @@ using namespace geode::prelude;
 
 class $modify(MyGLM, GameLevelManager) {
     void updateTimers() {
-        TimelyLeft::Daily--;
-        TimelyLeft::Weekly--;
+        Variables::DailyLeft--;
+        Variables::WeeklyLeft--;
 
-        if (TimelyLeft::Weekly < 1) {
+        if (Variables::WeeklyLeft < 1) {
 		    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Weekly);
 		}
-		if (TimelyLeft::Daily < 1) {
+		if (Variables::DailyLeft < 1) {
 		    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Daily);
 		};
+    }
+
+    void onGetLeaderboardScoresCompleted(gd::string response, gd::string tag) {
+        GameLevelManager::onGetLeaderboardScoresCompleted(response, tag);
+
+        log::info("{}: {}", tag, response);
+        GameLevelManager::responseToDict(response, false);
     }
 
     // /* 0x158 0x4 int */ int	m_dailyTimeLeft;
@@ -76,7 +83,7 @@ class $modify(MyGLM, GameLevelManager) {
                         this->downloadLevel(-1, false);
                     }
 
-                    TimelyLeft::Daily = timeLeft;
+                    Variables::DailyLeft = timeLeft;
 
                     if (auto dailyNode = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("daily-node"))) {
                         dailyNode->updateTimeLabel(1.f);
@@ -95,7 +102,7 @@ class $modify(MyGLM, GameLevelManager) {
                         this->downloadLevel(-2, false);
                     }
                     
-                    TimelyLeft::Weekly = timeLeft;
+                    Variables::WeeklyLeft = timeLeft;
 
                     if (auto weeklyNode = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("weekly-node"))) {
                         weeklyNode->updateTimeLabel(1.f);

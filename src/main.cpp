@@ -14,6 +14,22 @@
 #include <fmt/core.h>
 #define MAX_SECRET_COINS 164
 
+std::string getPathString(int n) {
+	switch (n) {
+		case 1: return "Fire";
+		case 2: return "Ice";
+		case 3: return "Poison";
+		case 4: return "Shadow";
+		case 5: return "Lava";
+		case 6: return "Earth";
+		case 7: return "Blood";
+		case 8: return "Metal";
+		case 9: return "Light";
+		case 10: return "Souls";
+		default: return "None";
+	}
+}
+
 
 class $modify(CrazyLayer, MenuLayer) {
 	static void onModify(auto& self) {
@@ -48,13 +64,19 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto loader = Loader::get();
 		auto mod = Mod::get();
 		auto gsm = GameStatsManager::sharedState();
-		auto glm = GameLevelManager::get();
+		auto glm = GameLevelManager::sharedState();
+		auto gm = GameManager::sharedState();
 		
-		if (TimelyLeft::Weekly < 1) {
+		if (Variables::WeeklyLeft < 1) {
 			glm->getGJDailyLevelState(GJTimedLevelType::Weekly);
 		}
-		if (TimelyLeft::Daily < 1) {
+		if (Variables::DailyLeft < 1) {
 			glm->getGJDailyLevelState(GJTimedLevelType::Daily);
+		}
+		if (Variables::OldStarsCount != gsm->getStat("6")) {
+			glm->getLeaderboardScores("leaderboard_global");
+			Variables::OldStarsCount = gsm->getStat("6");
+			Variables::GlobalRank = 0;
 		}
 
 		if (auto closeMenu = this->getChildByID("close-menu")) {
@@ -151,19 +173,17 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 		);
 
-		// for (int i = 1; i <= 10; i++) {
-		int i = gsm->m_activePath;
-		log::info("{}: {}", i - 24, gsm->isItemUnlocked(UnlockType::GJItem, i - 24));
-		log::warn("{}/1000", gsm->getStat(std::to_string(i).c_str()));
-		// }
+		int activePath = gsm->m_activePath;
+		int pathProgress = gsm->getStat(std::to_string(activePath).c_str());
+		if (pathProgress > 1000) pathProgress = 1000;
 
-		mainMenu->addChild(RDButton::create(this, "Create", "You have\n[n] Levels", "RD_create.png"_spr, menu_selector(CreatorLayer::onMyLevels)));
-		mainMenu->addChild(RDButton::create(this, "Saved", "You have\n[n] Saved\nLevels", "RD_saved.png"_spr, menu_selector(CreatorLayer::onSavedLevels)));
-		mainMenu->addChild(RDButton::create(this, "Lists", "[n] new\nLists", "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists)));
-		mainMenu->addChild(RDButton::create(this, "Scores", "Global\n[n]", "RD_leaderboards.png"_spr, menu_selector(CreatorLayer::onLeaderboards)));
-		mainMenu->addChild(RDButton::create(this, "Gauntlets", "[s]\nGauntlet\nAdded", "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets)));
-		mainMenu->addChild(RDButton::create(this, "Featured", "[n] new\nLevels", "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels)));
-		mainMenu->addChild(RDButton::create(this, "Paths", "<<<<Place<<<<\n>>>holder!>>>>", "RD_paths_02.png"_spr,  menu_selector(CreatorLayer::onPaths)));
+		mainMenu->addChild(RDButton::create(this, "Create", fmt::format("You have\n{} Levels", LocalLevelManager::get()->m_localLevels->count()), "RD_create.png"_spr, menu_selector(CreatorLayer::onMyLevels)));
+		mainMenu->addChild(RDButton::create(this, "Saved", fmt::format("You have\n{} Saved\nLevels", glm->getSavedLevels(false, 0)->count()), "RD_saved.png"_spr, menu_selector(CreatorLayer::onSavedLevels)));
+		mainMenu->addChild(RDButton::create(this, "Lists", "Nuh\nuh.", "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists)));
+		mainMenu->addChild(RDButton::create(this, "Scores", "Global\n#[n]", "RD_leaderboards.png"_spr, menu_selector(CreatorLayer::onLeaderboards)));
+		mainMenu->addChild(RDButton::create(this, "Gauntlets", "Split\nGauntlet\nAdded", "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets)));
+		mainMenu->addChild(RDButton::create(this, "Featured", "No.", "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels)));
+		mainMenu->addChild(RDButton::create(this, "Paths", fmt::format("{}\n{}/1000", getPathString(activePath - 29), pathProgress), "RD_paths_02.png"_spr,  menu_selector(CreatorLayer::onPaths)));
 		mainMenu->addChild(RDButton::create(this, "Search", "Search\nFor levels\nOnline!", "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels)));
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);

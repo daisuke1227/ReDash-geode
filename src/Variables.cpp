@@ -1,4 +1,6 @@
 #include "Variables.hpp"
 
-int TimelyLeft::Daily = 0;
-int TimelyLeft::Weekly = 0;
+int Variables::DailyLeft = 0;
+int Variables::WeeklyLeft = 0;
+int Variables::GlobalRank = 0;
+int Variables::OldStarsCount = 0;

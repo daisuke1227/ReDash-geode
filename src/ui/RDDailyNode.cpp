@@ -116,7 +116,7 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     bonusMenu->updateLayout();
 
     
-    auto time = (m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily);
+    auto time = (m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft);
     if (time < 0) time = 0;
     auto timeLabel = CCLabelBMFont::create(GameToolbox::getTimeString(time, true).c_str(), Mod::get()->getSettingValue<bool>("use-pusab") ? "bigFont.fnt" : "gjFont16.fnt");
     timeLabel->setScale(0.55f);
@@ -147,14 +147,14 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     this->addChild(timerLoadingCircle, 2);
     m_timerLoadingCircle = timerLoadingCircle;
 
-    if ((m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily) == 0) {
+    if ((m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft) == 0) {
         timeLabel->setVisible(false);
         timeLeftLabel->setVisible(false);
         timerLoadingCircle->setVisible(true);
     }
 
 
-    if ((isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily) > 0) {
+    if ((isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft) > 0) {
         this->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
     }
 
@@ -193,7 +193,7 @@ void RDDailyNode::onReload(CCObject* sender) {
     m_loadingCircle->setVisible(true);
     m_menu->removeAllChildren();
 
-    if (m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily == 0) GameLevelManager::get()->getGJDailyLevelState(m_isWeekly ? GJTimedLevelType::Weekly : GJTimedLevelType::Daily);
+    if (m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft == 0) GameLevelManager::get()->getGJDailyLevelState(m_isWeekly ? GJTimedLevelType::Weekly : GJTimedLevelType::Daily);
     GameLevelManager::get()->downloadLevel(m_isWeekly ? -2 : -1, false);
 }
 
@@ -342,7 +342,7 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
 }
 
 void RDDailyNode::updateTimeLabel(float dt) {
-    m_timeLabel->setString(GameToolbox::getTimeString((m_isWeekly ? TimelyLeft::Weekly : TimelyLeft::Daily), true).c_str());
+    m_timeLabel->setString(GameToolbox::getTimeString((m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft), true).c_str());
     m_timeLabel->setVisible(true);
     m_timeLeftLabel->setVisible(true);
     m_timerLoadingCircle->setVisible(false);
