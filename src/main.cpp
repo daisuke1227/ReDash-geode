@@ -1,4 +1,4 @@
-#include "ui/RDButton.hpp"
+// #include "ui/RDButton.hpp"
 // #include "RDDailyNode.hpp"
 #include "ui/RDStatsNode.hpp"
 #include "ui/RDMainButton.hpp"
@@ -73,11 +73,14 @@ class $modify(CrazyLayer, MenuLayer) {
 		if (Variables::DailyLeft < 1) {
 			glm->getGJDailyLevelState(GJTimedLevelType::Daily);
 		}
-		if (Variables::OldStarsCount != gsm->getStat("6")) {
-			glm->getLeaderboardScores("leaderboard_global");
-			Variables::OldStarsCount = gsm->getStat("6");
+		if (GJAccountManager::get()->m_accountID == 0) {
+			Variables::GlobalRank = -1;
+		} else if (Variables::OldStarsCount != gsm->getStat("6")) {
 			Variables::GlobalRank = 0;
+			glm->getLeaderboardScores("leaderboard_global");
 		}
+
+		
 
 		if (auto closeMenu = this->getChildByID("close-menu")) {
 			if (!closeMenu->getChildByID("close-button")) {
@@ -177,14 +180,14 @@ class $modify(CrazyLayer, MenuLayer) {
 		int pathProgress = gsm->getStat(std::to_string(activePath).c_str());
 		if (pathProgress > 1000) pathProgress = 1000;
 
-		mainMenu->addChild(RDButton::create(this, "Create", fmt::format("You have\n{} Levels", LocalLevelManager::get()->m_localLevels->count()), "RD_create.png"_spr, menu_selector(CreatorLayer::onMyLevels)));
-		mainMenu->addChild(RDButton::create(this, "Saved", fmt::format("You have\n{} Saved\nLevels", glm->getSavedLevels(false, 0)->count()), "RD_saved.png"_spr, menu_selector(CreatorLayer::onSavedLevels)));
-		mainMenu->addChild(RDButton::create(this, "Lists", "Nuh\nuh.", "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists)));
-		mainMenu->addChild(RDButton::create(this, "Scores", "Global\n#[n]", "RD_leaderboards.png"_spr, menu_selector(CreatorLayer::onLeaderboards)));
-		mainMenu->addChild(RDButton::create(this, "Gauntlets", "Split\nGauntlet\nAdded", "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets)));
-		mainMenu->addChild(RDButton::create(this, "Featured", "No.", "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels)));
-		mainMenu->addChild(RDButton::create(this, "Paths", fmt::format("{}\n{}/1000", getPathString(activePath - 29), pathProgress), "RD_paths_02.png"_spr,  menu_selector(CreatorLayer::onPaths)));
-		mainMenu->addChild(RDButton::create(this, "Search", "Search\nFor levels\nOnline!", "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels)));
+		mainMenu->addChild(RDButton::create(this, "Create", fmt::format("You have\n{} Levels", LocalLevelManager::get()->m_localLevels->count()), "RD_create.png"_spr, menu_selector(CreatorLayer::onMyLevels), "create-button"));
+		mainMenu->addChild(RDButton::create(this, "Saved", fmt::format("You have\n{} Saved\nLevels", glm->getSavedLevels(false, 0)->count()), "RD_saved.png"_spr, menu_selector(CreatorLayer::onSavedLevels), "saved-button"));
+		mainMenu->addChild(RDButton::create(this, "Lists", "Nuh\nuh.", "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists), "lists-button"));
+		mainMenu->addChild(RDButton::create(this, "Scores", fmt::format("Global\n#{}", Variables::GlobalRank), "RD_leaderboards.png"_spr, menu_selector(CreatorLayer::onLeaderboards), "leaderboards-button"));
+		mainMenu->addChild(RDButton::create(this, "Gauntlets", "Split\nGauntlet\nAdded", "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
+		mainMenu->addChild(RDButton::create(this, "Featured", "No.", "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
+		mainMenu->addChild(RDButton::create(this, "Paths", fmt::format("{}\n{}/1000", getPathString(activePath - 29), pathProgress), "RD_paths_02.png"_spr,  menu_selector(CreatorLayer::onPaths), "paths-button"));
+		mainMenu->addChild(RDButton::create(this, "Search", "Search\nFor levels\nOnline!", "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);
 

@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameLevelManager.hpp>
 #include "../ui/RDDailyNode.hpp"
+#include "../ui/RDButton.hpp"
 using namespace geode::prelude;
 
 class $modify(MyGLM, GameLevelManager) {
@@ -19,8 +20,21 @@ class $modify(MyGLM, GameLevelManager) {
     void onGetLeaderboardScoresCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetLeaderboardScoresCompleted(response, tag);
 
-        log::info("{}: {}", tag, response);
-        GameLevelManager::responseToDict(response, false);
+        if (response != "-1") {
+            if (Variables::GlobalRank != -1) {
+                auto pos = response.find(fmt::format("1:{}", GJAccountManager::get()->m_username));
+                auto pos2 = response.find("|", pos);
+                auto dict = GameLevelManager::responseToDict(response.substr(pos, pos2 - pos), false);
+                Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
+                Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
+
+                if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+                    if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                        button->updateLeaderboardLabel();
+                    }
+                }
+            }
+        }
     }
 
     // /* 0x158 0x4 int */ int	m_dailyTimeLeft;
