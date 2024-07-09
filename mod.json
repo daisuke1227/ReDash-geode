@@ -47,6 +47,11 @@
             "name": "Hide Main levels stats",
             "type": "bool",
             "default": false
+        },
+        "hide-bottom-buttons-texts": {
+            "name": "Hide Bottom Buttons Texts",
+            "type": "bool",
+            "default": false
         }
     }
 }

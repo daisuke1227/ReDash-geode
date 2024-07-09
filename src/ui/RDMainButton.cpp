@@ -42,7 +42,7 @@ bool RDMainButton::init(CCPoint position, CCSize size, cocos2d::SEL_MenuHandler 
     menu->setID("level-menu");
     spriteNode->addChild(menu, 2);
 
-    auto level = GLM->getMainLevel(Mod::get()->getSavedValue<int64_t>("last-main-level", 22), true);
+    auto level = GLM->getMainLevel(Mod::get()->getSavedValue<int64_t>("last-main-level", 1), true);
 
     auto innerMenu = CCMenu::create();
     innerMenu->setPosition({ size.width/2, size.height/2 });

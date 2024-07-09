@@ -1,7 +1,7 @@
 #include "RDButton.hpp"
 #include "../Variables.hpp"
 
-bool RDButton::init(CCObject* target, std::string title, std::string description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id) {
+bool RDButton::init(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id) {
     auto spriteNode = CCNode::create();
 
 	auto buttonSpr1 = CCScale9Sprite::create("longButtonHalf-1.png"_spr);
@@ -24,25 +24,59 @@ bool RDButton::init(CCObject* target, std::string title, std::string description
     icon->setScale(1.55f);
     spriteNode->addChild(icon);
 	
-	auto titleLabel = CCLabelBMFont::create(title.c_str(), "bigFont.fnt");
-	titleLabel->setScale(0.5f);
-	titleLabel->setAnchorPoint(ccp(0, 0));
-	titleLabel->setPosition(ccp(5, 50));
-	spriteNode->addChild(titleLabel);
 
-	auto descLabel = CCLabelBMFont::create(description.c_str(), "NewPusab.fnt"_spr, 225, CCTextAlignment::kCCTextAlignmentRight);
-	descLabel->setPosition(ccp(icon->getPositionX() - icon->getScaledContentWidth()/2 - 3.f, 25));
-	descLabel->setAnchorPoint(ccp(1,0));
-	descLabel->setScale(0.4f);
-	descLabel->setOpacity(150.f);
-	descLabel->setColor(ccc3(0, 0, 0));
-	spriteNode->addChild(descLabel);
-	m_descLabel = descLabel;
+	// auto descLabel = CCLabelBMFont::create(description.c_str(), "NewPusab.fnt"_spr, 225, CCTextAlignment::kCCTextAlignmentRight);
+	// descLabel->setOpacity(150.f);
+	// descLabel->setColor(ccc3(0, 0, 0));
+	// spriteNode->addChild(descLabel);
+	// m_descLabel = descLabel;
+
+	auto labelMenu = CCMenu::create();
+	labelMenu->setAnchorPoint({ 1, 0.5f });
+	labelMenu->setPosition( { icon->getPositionX() - icon->getScaledContentWidth()/2 - 2.5f, 35.f });
+	labelMenu->setContentSize({ 80.f, 60.f });
+	labelMenu->setLayout(
+		ColumnLayout::create()
+			->setAxisReverse(true)
+			->setCrossAxisAlignment(AxisAlignment::End)
+			->setCrossAxisLineAlignment(AxisAlignment::End)
+			->setAutoScale(false)
+			->setGap(3.f)
+	);
+	spriteNode->addChild(labelMenu);
+	m_labelMenu = labelMenu;
+
+	// auto titleLabel = CCLabelBMFont::create(title.c_str(), "bigFont.fnt", -1, CCTextAlignment::kCCTextAlignmentRight);
+	// titleLabel->setScale(0.6f);
+	// if (titleLabel->getScaledContentWidth() > 80.f) titleLabel->setScale(0.6f * (80.f / titleLabel->getScaledContentWidth()));
+	// titleLabel->setID("title-label");
+	// labelMenu->addChild(titleLabel);
+
+	auto titleSprite = CCSprite::createWithSpriteFrameName(title.c_str());
+	titleSprite->setScale(0.8f);
+	if (titleSprite->getScaledContentWidth() > 80.f) titleSprite->setScale(0.8f * (80.f / titleSprite->getScaledContentWidth()));
+	titleSprite->setID("title-sprite");
+	labelMenu->addChild(titleSprite);
+
+	int i = 0;
+	for (auto desc : description) {
+		auto descLabel = CCLabelBMFont::create(desc.c_str(), "NewPusab.fnt"_spr, -1, CCTextAlignment::kCCTextAlignmentRight);
+		descLabel->setScale(0.4f);
+		descLabel->setOpacity(140.f);
+		descLabel->setColor(ccc3(0, 0, 0));
+		descLabel->setID(fmt::format("desc-label-{}", ++i));
+		labelMenu->addChild(descLabel, i);
+	}
+	labelMenu->updateLayout();
+	for (i = 1; i <= description.size(); i++) {
+		auto label = labelMenu->getChildByID(fmt::format("desc-label-{}", i));
+		label->setPositionY(label->getPositionY() + label->getScaledContentHeight()/2);
+	}
 
 	auto loadingCircle = LoadingCircle::create();
     loadingCircle->setScale(0.65f);
     loadingCircle->setContentSize({ 0 , 0 });
-    loadingCircle->setPosition(descLabel->getPosition() - ccp(descLabel->getScaledContentWidth(), -2));
+    loadingCircle->setPosition(labelMenu->getPosition() - ccp(labelMenu->getContentWidth()/2, 0));
     loadingCircle->setVisible(false);
     loadingCircle->m_sprite->setPosition({ 0 , 0 });
     loadingCircle->m_sprite->runAction(CCRepeatForever::create(CCRotateBy::create(1, 360)));
@@ -53,14 +87,12 @@ bool RDButton::init(CCObject* target, std::string title, std::string description
 	if (id == "leaderboards-button") {
 		if (Variables::GlobalRank == 0) {
 			loadingCircle->setVisible(true);
-			descLabel->setVisible(false);
+			labelMenu->setVisible(false);
 		} else if (Variables::GlobalRank == -1) {
-			descLabel->setString("Global\n#None");
+			as<CCLabelBMFont*>(labelMenu->getChildByID("desc-label-2"))->setString("None");
+			labelMenu->updateLayout();
 		}
 	}
-
-	auto labelMenu = CCMenu::create();
-	spriteNode->addChild(labelMenu);
 
     if (!CCMenuItemSpriteExtra::init(spriteNode, nullptr, target, callback)) return false;
 
@@ -73,11 +105,12 @@ bool RDButton::init(CCObject* target, std::string title, std::string description
 
 void RDButton::updateLeaderboardLabel() {
 	m_loadingCircle->setVisible(false);
-	m_descLabel->setVisible(true);
-	m_descLabel->setString(fmt::format("Global\n#{}", Variables::GlobalRank).c_str());
+	m_labelMenu->setVisible(true);
+	as<CCLabelBMFont*>(m_labelMenu->getChildByID("desc-label-2"))->setString(fmt::format("#{}", Variables::GlobalRank).c_str());
+	m_labelMenu->updateLayout();
 }
 
-RDButton* RDButton::create(CCObject* target, std::string title, std::string description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id) {
+RDButton* RDButton::create(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id) {
     auto ret = new RDButton();
     if (ret && ret->init(target, title, description, sprite, callback, id)) {
         ret->autorelease();
