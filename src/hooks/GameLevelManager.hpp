@@ -22,9 +22,10 @@ class $modify(MyGLM, GameLevelManager) {
 
         if (response != "-1") {
             if (Variables::GlobalRank != -1) {
-                auto pos = response.find(fmt::format("1:{}", GJAccountManager::get()->m_username));
-                auto pos2 = response.find("|", pos);
-                auto dict = GameLevelManager::responseToDict(response.substr(pos, pos2 - pos), false);
+                std::string responseStd = std::string(response.c_str());
+                auto pos = responseStd.find(fmt::format("1:{}", GJAccountManager::get()->m_username));
+                auto pos2 = responseStd.find("|", pos);
+                auto dict = GameLevelManager::responseToDict(responseStd.substr(pos, pos2 - pos), false);
                 Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
                 Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
 
