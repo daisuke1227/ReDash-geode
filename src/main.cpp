@@ -102,8 +102,11 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		// MAIN MENU CHANGES (MIGHT BE BREAKING SOME STUFF) - ninXout
 		// no it isn't - Weebify
-
-		this->getChildByID("main-title")->setVisible(false);
+		if (loader->isModLoaded("sofabeddd.geometry_dash")) {
+			this->getChildByID("sofabeddd.geometry_dash/main-title-menu")->setVisible(false);
+		} else {
+			this->getChildByID("main-title")->setVisible(false);
+		}
 
 		this->getChildByID("more-games-menu")->setVisible(false);
 		this->getChildByID("social-media-menu")->setVisible(false); // might make RobTop logo visible later // no
