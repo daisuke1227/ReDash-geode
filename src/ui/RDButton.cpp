@@ -62,8 +62,9 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	for (auto desc : description) {
 		auto descLabel = CCLabelBMFont::create(desc.c_str(), "NewPusab.fnt"_spr, -1, CCTextAlignment::kCCTextAlignmentRight);
 		descLabel->setScale(0.4f);
-		descLabel->setOpacity(140.f);
-		descLabel->setColor(ccc3(0, 0, 0));
+		auto color = Mod::get()->getSettingValue<ccColor4B>("desc-label-color");
+		descLabel->setColor({ color.r, color.g, color.b });
+		descLabel->setOpacity(color.a);
 		descLabel->setID(fmt::format("desc-label-{}", ++i));
 		labelMenu->addChild(descLabel, i);
 	}

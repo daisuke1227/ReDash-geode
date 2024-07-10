@@ -78,7 +78,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		} else if (Variables::OldStarsCount != gsm->getStat("6")) {
 			Variables::GlobalRank = 0;
 			glm->getLeaderboardScores("leaderboard_global");
-		}		
+		}
 
 		if (auto closeMenu = this->getChildByID("close-menu")) {
 			if (!closeMenu->getChildByID("close-button")) {

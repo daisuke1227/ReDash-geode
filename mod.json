@@ -28,6 +28,11 @@
         ]
     },
     "settings": {
+        "desc-label-color" :{
+            "name": "Bottom Buttons Description Color",
+            "type": "rgba",
+            "default": "#0000008c"
+        },
         "disable-creator-button": {
             "name": "Disable Creator Layer Button",
             "type": "bool",

@@ -22,17 +22,27 @@ class $modify(MyGLM, GameLevelManager) {
 
         if (response != "-1") {
             if (Variables::GlobalRank != -1) {
-                std::string responseStd = std::string(response.c_str());
-                auto pos = responseStd.find(fmt::format("1:{}", GJAccountManager::get()->m_username));
+                std::string responseStd = response;
+                std::string name = GJAccountManager::get()->m_username;
+                std::transform(responseStd.begin(), responseStd.end(), responseStd.begin(), [](unsigned char c) { return std::tolower(c); });
+                std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+                auto pos = responseStd.find(fmt::format("1:{}", name));
                 auto pos2 = responseStd.find("|", pos);
-                auto dict = GameLevelManager::responseToDict(responseStd.substr(pos, pos2 - pos), false);
-                Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
-                Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
+                if (pos < responseStd.size() && pos2 < responseStd.size()) {
+                    auto dict = GameLevelManager::responseToDict(responseStd.substr(pos, pos2 - pos), false);
+                    Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
+                    Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
 
-                if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
-                    if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
-                        button->updateLeaderboardLabel();
+                    if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+                        if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                            button->updateLeaderboardLabel();
+                        }
                     }
+                } else {
+                    log::error("Failed to find player in leaderboard response");
+                    log::error("response: {}", responseStd);
+                    log::error("name: {}", name);
+                    log::error("pos: {}; pos2: {}", pos, pos2);
                 }
             }
         }
