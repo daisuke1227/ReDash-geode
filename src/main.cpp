@@ -213,11 +213,11 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->setScale(0.75f);
 
 		if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
-			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, menu_selector(MenuLayer::onPlay)));
+			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button"));
 			dailiesMenu->addChild(RDDailyNode::create(false, { 185.f , 0.f }, { 230.f , 135.f }, "daily-node"));
 		} else {
 			dailiesMenu->addChild(RDDailyNode::create(false, { 25.f , 0.f }, { 230.f , 135.f }, "daily-node"));
-			dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, menu_selector(MenuLayer::onPlay)));
+			dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button"));
 		}
 		dailiesMenu->addChild(RDDailyNode::create(true, { 425.f , 0.f }, { 230.f , 135.f }, "weekly-node"));
 		menu->addChild(dailiesMenu);

@@ -166,7 +166,7 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
 }
 
 void RDDailyNode::onView(CCObject* sender) {
-    auto sc = LevelInfoLayer::scene(m_currentLevel, m_isWeekly);
+    auto sc = LevelInfoLayer::scene(m_currentLevel, false);
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 }
 

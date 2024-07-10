@@ -1,11 +1,18 @@
 #include "RDMainButton.hpp"
 
-bool RDMainButton::init(CCPoint position, CCSize size, cocos2d::SEL_MenuHandler callback) {
+void RDMainButton::onPlay(CCObject* sender) {
+    int page = Mod::get()->getSavedValue<int64_t>("last-main-level", 1);
+    if (page >= 5000 && page < 6000) page = 23;
+    auto sc = LevelSelectLayer::scene(page-1);
+    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
+}
+
+bool RDMainButton::init(CCPoint position, CCSize size, std::string id) {
     auto GSM = GameStatsManager::sharedState();
     auto GLM = GameLevelManager::get();
     auto spriteNode = CCNode::create();
 
-    if (!CCMenuItemSpriteExtra::init(spriteNode, nullptr, this, callback)) return false;
+    if (!CCMenuItemSpriteExtra::init(spriteNode, nullptr, this, menu_selector(RDMainButton::onPlay))) return false;
 
     auto background = CCScale9Sprite::create("GJ_square02.png");
     background->setContentSize(size);
@@ -233,14 +240,14 @@ bool RDMainButton::init(CCPoint position, CCSize size, cocos2d::SEL_MenuHandler 
     this->setContentSize(size);
     this->setPosition(position + size/2);
 	this->m_scaleMultiplier = 1.1f;
-    this->setID("main-levels-button");
+    this->setID(id);
 
     return true;
 }
 
-RDMainButton* RDMainButton::create(CCPoint position, CCSize size, cocos2d::SEL_MenuHandler callback) {
+RDMainButton* RDMainButton::create(CCPoint position, CCSize size, std::string id) {
     auto ret = new RDMainButton();
-    if (ret && ret->init(position, size, callback)) {
+    if (ret && ret->init(position, size, id)) {
         ret->autorelease();
         return ret;
     }
