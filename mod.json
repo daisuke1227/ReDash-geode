@@ -33,6 +33,11 @@
             "type": "rgba",
             "default": "#0000008c"
         },
+        "goto-last-played-main": {
+            "name": "Go to Last Played Main Level",
+            "type": "bool",
+            "default": false
+        },
         "disable-creator-button": {
             "name": "Disable Creator Layer Button",
             "type": "bool",

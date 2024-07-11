@@ -1,9 +1,13 @@
 #include <Geode/Geode.hpp>
+#include <Geode/utils/web.hpp>
 #include "../Variables.hpp"
 using namespace geode::prelude;
 
 class RDDailyNode : public CCNode {
 public:
+    EventListener<web::WebTask> m_listener;
+    ByteVector m_thumbnailData;
+
     GJGameLevel* m_currentLevel;
     bool m_isWeekly;
 
@@ -25,6 +29,9 @@ public:
     void downloadLevelFailed();
     void setupLevelMenu(GJGameLevel* level);
     void updateTimeLabel(float time);
+
+    void onDownloadThumbnailFinished();
+    void onDownloadThumbnailFail();
 
     static RDDailyNode* create(bool isWeekly, CCPoint position, CCSize size, std::string id);
     bool init(bool isWeekly, CCPoint position, CCSize size, std::string id);

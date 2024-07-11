@@ -197,7 +197,7 @@ class $modify(CrazyLayer, MenuLayer) {
 			mainMenu->addChild(RDButton::create(this, "RD_listsLabel.png"_spr, {}, "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists), "lists-button"));
 			mainMenu->addChild(RDButton::create(this, "RD_searchLabel.png"_spr, {}, "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));
 		} else {
-			mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {"Split", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {"Mystery", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
 			mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
 			mainMenu->addChild(RDButton::create(this, "RD_listsLabel.png"_spr, {"Play rated", "Lists"}, "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists), "lists-button"));
 			mainMenu->addChild(RDButton::create(this, "RD_searchLabel.png"_spr, {"Search" , "For levels", "online"}, "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));

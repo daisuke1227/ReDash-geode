@@ -25,8 +25,7 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
 
     auto innerBG = CCScale9Sprite::create("square02b_001.png");
     innerBG->setScale(0.5f);
-    innerBG->setContentSize({ size.width - 15.f, size.height / 2.32f });
-    innerBG->setContentSize(innerBG->getContentSize() * 2);
+    innerBG->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
     innerBG->setPosition({ size.width/2, size.height/2 });
     innerBG->setColor({ 0, 0, 0 });
     innerBG->setOpacity(50);
@@ -152,7 +151,6 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
         timeLeftLabel->setVisible(false);
         timerLoadingCircle->setVisible(true);
     }
-
 
     if ((isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft) > 0) {
         this->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
@@ -339,6 +337,70 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     starSprite->setPositionY(baseY + menuSize.height/6);
     starSprite->setID("star-sprite");
     m_menu->addChild(starSprite, 8);
+
+    // pretty much copied from the level thumbnails mod code lmao
+    if (auto fakeTexture = CCTextureCache::get()->textureForKey(fmt::format("thumbnail-{}", level->m_levelID.value()).c_str())) {
+        onDownloadThumbnailFinished();
+    } else {
+        m_listener.bind([this] (web::WebTask::Event* e) {
+            if (web::WebResponse* res = e->getValue()) {
+                if (!res->ok()) {
+                    onDownloadThumbnailFail();
+                } else {
+                    auto data = res->data();
+                    m_thumbnailData = data;
+                    onDownloadThumbnailFinished();
+                }
+            }
+        });
+
+        auto req = web::WebRequest();
+        m_listener.setFilter(req.get(fmt::format("https://raw.githubusercontent.com/cdc-sys/level-thumbnails/main/thumbs/{}.png", level->m_levelID.value())));
+    }
+}
+
+void RDDailyNode::onDownloadThumbnailFinished() {
+    auto thread = std::thread([this]() {
+        auto image = Ref(new CCImage());
+        image->initWithImageData(const_cast<uint8_t*>(m_thumbnailData.data()), m_thumbnailData.size());
+        geode::Loader::get()->queueInMainThread([this, image](){
+            auto size = this->getContentSize();
+            auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
+            auto texture = CCTextureCache::get()->addUIImage(image, key.c_str());
+
+            auto clippingNode = CCClippingNode::create();
+            clippingNode->setAnchorPoint({ 0.5f, 0.5f });
+            clippingNode->setPosition(m_innerBG->getPosition());
+            clippingNode->setContentSize(m_innerBG->getScaledContentSize());
+            clippingNode->setAlphaThreshold(0.5);
+            clippingNode->setID("thumbnail-node");
+
+            auto stencil = CCScale9Sprite::create("square02b_001.png");
+            stencil->setScale(0.5f);
+            stencil->setPosition(clippingNode->getContentSize()/2);
+            stencil->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
+
+            auto sprite = CCSprite::createWithTexture(texture);
+            sprite->setPosition(stencil->getPosition());
+            sprite->setScale(stencil->getScaledContentWidth() / sprite->getContentWidth());
+            sprite->setOpacity(0);
+
+            clippingNode->setStencil(stencil);
+            clippingNode->addChild(sprite);
+            m_menu->addChild(clippingNode, 0);
+            sprite->runAction(CCFadeIn::create(0.25f));
+
+            image->release();
+        });
+    });
+    thread.detach();
+}
+
+void RDDailyNode::onDownloadThumbnailFail() {
+    auto failSprite = CCSprite::createWithSpriteFrameName("GJ_deleteIcon_001.png");
+    failSprite->setScale(0.35f);
+    failSprite->setPosition(m_innerBG->getPosition() + m_innerBG->getScaledContentSize()/2 - failSprite->getScaledContentSize()/2 - ccp(2.f, 2.f));
+    m_menu->addChild(failSprite);
 }
 
 void RDDailyNode::updateTimeLabel(float dt) {
