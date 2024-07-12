@@ -70,26 +70,29 @@ class $modify(MyGLM, GameLevelManager) {
         }
 
         if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
-            if (auto dailyNode = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("daily-node"))) {
-                if (response != "-1") {
-                    if (auto level = this->getSavedDailyLevel(this->m_dailyIDUnk)) {
-                        dailyNode->setupLevelMenu(level);
+            if (tag == "-1_0") {
+                if (auto dailyNode = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("daily-node"))) {
+                    if (response != "-1") {
+                        if (auto level = this->getSavedDailyLevel(this->m_dailyIDUnk)) {
+                            dailyNode->setupLevelMenu(level);
+                        } else {
+                            log::error("where did my level go??");
+                        }
                     } else {
-                        log::error("where did my level go??");
+                        dailyNode->downloadLevelFailed();
                     }
-                } else {
-                    dailyNode->downloadLevelFailed();
                 }
-            }
-            if (auto weeklyNode = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("weekly-node"))) {
-                if (response != "-1") {
-                    if (auto level = this->getSavedDailyLevel(this->m_weeklyIDUnk)) {
-                        weeklyNode->setupLevelMenu(level);
+            } else if (tag == "-2_0") {
+                if (auto weeklyNode = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("weekly-node"))) {
+                    if (response != "-1") {
+                        if (auto level = this->getSavedDailyLevel(this->m_weeklyIDUnk)) {
+                            weeklyNode->setupLevelMenu(level);
+                        } else {
+                            log::error("where did my level go??");
+                        };
                     } else {
-                        log::error("where did my level go??");
-                    };
-                } else {
-                    weeklyNode->downloadLevelFailed();
+                        weeklyNode->downloadLevelFailed();
+                    }
                 }
             }
         }

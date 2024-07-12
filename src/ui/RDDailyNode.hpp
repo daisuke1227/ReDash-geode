@@ -25,13 +25,14 @@ public:
     void onCreatorLabel(CCObject* sender);
     void onReload(CCObject* sender);
     void onTheSafe(CCObject* sender);
+    void onClaimReward(CCObject* sender);
 
     void downloadLevelFailed();
-    void setupLevelMenu(GJGameLevel* level);
     void updateTimeLabel(float time);
+    void setupLevelMenu(GJGameLevel* level);
 
-    void onDownloadThumbnailFinished();
-    void onDownloadThumbnailFail();
+    void downloadThumbnailFinished();
+    void downloadThumbnailFail();
 
     static RDDailyNode* create(bool isWeekly, CCPoint position, CCSize size, std::string id);
     bool init(bool isWeekly, CCPoint position, CCSize size, std::string id);

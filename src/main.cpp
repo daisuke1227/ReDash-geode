@@ -43,18 +43,18 @@ class $modify(CrazyLayer, MenuLayer) {
 			// this->getChildByID("bottom-menu")->setVisible(false);
 			// this->getChildByID("bottom-menu-bg"_spr)->setVisible(false);
 			// this->getChildByID("right-side-menu")->setVisible(false);
-			// this->getChildByID("profile-menu")->setVisible(false);
+			// profileMenu->setVisible(false);
 			// this->getChildByID("close-menu")->setVisible(false);
-			// this->getChildByID("player-username")->setVisible(false);
+			// playerUsername->setVisible(false);
 		} else {
 			this->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->setVisible(true);
 			this->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->setVisible(true);
 			// this->getChildByID("bottom-menu")->setVisible(true);
 			// this->getChildByID("bottom-menu-bg"_spr)->setVisible(true);
 			// this->getChildByID("right-side-menu")->setVisible(true);
-			// this->getChildByID("profile-menu")->setVisible(true);
+			// profileMenu->setVisible(true);
 			// this->getChildByID("close-menu")->setVisible(true);
-			// this->getChildByID("player-username")->setVisible(true);
+			// playerUsername->setVisible(true);
 		}
 	}
 
@@ -66,6 +66,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto gsm = GameStatsManager::sharedState();
 		auto glm = GameLevelManager::sharedState();
 		auto gm = GameManager::sharedState();
+		auto winSize = CCDirector::sharedDirector()->getWinSize();
 		
 		if (Variables::WeeklyLeft < 1) {
 			glm->getGJDailyLevelState(GJTimedLevelType::Weekly);
@@ -118,12 +119,12 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		bottomMenu->setScale(0.75f);
 		bottomMenu->setLayout(ColumnLayout::create()->setAxisReverse(true)->setAutoScale(true)->setGap(0.f)->setCrossAxisOverflow(true));
-		bottomMenu->setPositionX(540.f);
+		bottomMenu->setPositionX(winSize.width - 29.f);
 		if (GJAccountManager::get()->m_accountID == 0) {
-			bottomMenu->setPositionY(160.f);
+			bottomMenu->setPositionY(winSize.height/2);
 			bottomMenu->setContentHeight(385.f);
 		} else {
-			bottomMenu->setPositionY(190.f);
+			bottomMenu->setPositionY(winSize.height/2 + 30.f);
 			bottomMenu->setContentHeight(305.f);
 		}
 		bottomMenu->updateLayout();
@@ -143,12 +144,15 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto mapPacksBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_mappacks.png"_spr), this, menu_selector(CreatorLayer::onMapPacks));
 		rightMenu->addChild(mapPacksBtn, 1);
 
-		this->getChildByID("player-username")->setPositionY(this->getChildByID("player-username")->getPositionY() - 75.f);
-		this->getChildByID("player-username")->setPositionX(540.f);
-		this->getChildByID("player-username")->setScale(this->getChildByID("player-username")->getScale() - 0.1f);
-		this->getChildByID("profile-menu")->setPosition(ccp(575.5f, 35.f));
-		this->getChildByID("profile-menu")->setScale(0.75f);
-		this->getChildByID("profile-menu")->setZOrder(1);		
+		auto playerUsername = this->getChildByID("player-username");
+		playerUsername->setScale(playerUsername->getScale() - 0.1f);
+		playerUsername->setPositionX(bottomMenu->getPositionX());
+		playerUsername->setPositionY(bottomMenu->getPositionY() - bottomMenu->getScaledContentHeight()/2 - playerUsername->getScaledContentHeight()/2 + 2.9f);
+		auto profileMenu = this->getChildByID("profile-menu");
+		profileMenu->setScale(0.75f);
+		profileMenu->setPositionX(winSize.width + 6.5f);
+		profileMenu->setPositionY(playerUsername->getPositionY() - playerUsername->getScaledContentHeight()/2 - profileMenu->getScaledContentHeight()/2 - 1.f);
+		profileMenu->setZOrder(1);
 
 		// NEW STUFF YAYY :D - ninXout
 		// yay - Weebify
@@ -173,9 +177,9 @@ class $modify(CrazyLayer, MenuLayer) {
 		mainMenu->setID("main-menu"_spr);
 		mainMenu->setContentSize({675.f, 100.f});
 		mainMenu->ignoreAnchorPointForPosition(false);
-		mainMenu->setPositionX(256.5f);
 		mainMenu->setScale(0.75f);
-		mainMenu->setPositionY(105.f);
+		mainMenu->setPositionX((winSize.width - 56.f - mainMenu->getScaledContentWidth())/2 + mainMenu->getScaledContentWidth()/2);
+		mainMenu->setPositionY(winSize.height/2 - 55.f);
 		mainMenu->setLayout(
 			RowLayout::create()
 				->setGap(10.f)
@@ -209,7 +213,8 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->setID("dailies-menu"_spr);
 		dailiesMenu->setContentSize({ 675.f , 100.f });
 		dailiesMenu->ignoreAnchorPointForPosition(false);
-		dailiesMenu->setPosition({ 255.f , 206.25f });
+		dailiesMenu->setPositionX(mainMenu->getPositionX());
+		dailiesMenu->setPositionY(winSize.height/2 + 46.25f);
 		dailiesMenu->setScale(0.75f);
 
 		if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
@@ -222,11 +227,20 @@ class $modify(CrazyLayer, MenuLayer) {
 		dailiesMenu->addChild(RDDailyNode::create(true, { 425.f , 0.f }, { 230.f , 135.f }, "weekly-node"));
 		menu->addChild(dailiesMenu);
 
+		if (winSize.width < 562.25f) {
+			auto newWidth = winSize.width - 56;
+			dailiesMenu->setScale(0.75f * newWidth / 506.25f);
+			dailiesMenu->setPositionX(newWidth / 2);
+			mainMenu->setScale(dailiesMenu->getScale());
+			mainMenu->setPositionX(dailiesMenu->getPositionX());
+			mainMenu->setPositionY(dailiesMenu->getPositionY() - dailiesMenu->getScaledContentHeight()/2 - 7.5f - mainMenu->getScaledContentHeight()/2);
+		}
+
 		auto statsMenu = CCMenu::create();
 		statsMenu->setID("stats-menu"_spr);
 		statsMenu->setContentSize({ 460.f , 25.f });
 		statsMenu->ignoreAnchorPointForPosition(false);
-		statsMenu->setPosition({ 190.f , 313.75f });
+		statsMenu->setPosition({ 190.f , winSize.height - 6.25f });
 		statsMenu->setScale(0.6f);
 		statsMenu->setLayout(
 			RowLayout::create()
@@ -248,7 +262,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		menuButUnder->setID("bottom-menu"_spr);
 		menuButUnder->setAnchorPoint({ 1.f, 0.5f });
 		menuButUnder->setContentSize({ 150.f, 48.25f });
-		menuButUnder->setPosition({ 445.f, 25.f }); // ...
+		menuButUnder->setPosition({ winSize.width - 124.f, 25.f }); // ...
 		menuButUnder->setScale(0.75f);
 		menuButUnder->setLayout(
 			RowLayout::create()
@@ -274,7 +288,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		topMenu->setID("top-menu"_spr);
 		topMenu->setAnchorPoint({ 1.f, 0.5f});
 		topMenu->setContentSize({ 150.f, 48.25f });
-		topMenu->setPosition({ 490.f, 300.f });
+		topMenu->setPosition({ winSize.width - 79.f, winSize.height - 20.f });
 		topMenu->setScale(0.75f);
 		topMenu->setLayout(
 			RowLayout::create()
@@ -314,7 +328,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		hideBtnMenu->setID("hide-button-menu"_spr);
 		hideBtnMenu->setAnchorPoint({ 1.f, 0.5f });
 		hideBtnMenu->setContentSize({ 48.25f, 48.25f });
-		hideBtnMenu->setPosition({ 440.f, 0.f });
+		hideBtnMenu->setPosition({ winSize.width - 129.f, 0.f });
 		hideBtnMenu->setScale(0.75f);
 		this->addChild(hideBtnMenu, 100);
 

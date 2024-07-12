@@ -223,7 +223,7 @@ bool RDMainButton::init(CCPoint position, CCSize size, std::string id) {
 	stencil->setAnchorPoint({ 0, 0.5f });
 	stencil->setContentWidth(progressBar->getContentWidth());
     stencil->setContentHeight(100);
-	stencil->setScaleX(mainLevelsCompleted / (float)mainLevels.size());
+    stencil->setScaleX(0);
     clippingNode->setStencil(stencil);
     clippingNode->setAnchorPoint({ 0, 0 });
 	clippingNode->setPosition({ 0, 0 });
@@ -231,6 +231,7 @@ bool RDMainButton::init(CCPoint position, CCSize size, std::string id) {
     clippingNode->setID("progress-bar-clipping-node");
 	clippingNode->addChild(progressBar);
     progressBG->addChild(clippingNode);
+    stencil->runAction(CCEaseSineInOut::create(CCScaleTo::create(1.f, mainLevelsCompleted / (float)mainLevels.size(), 1)));
 
     auto progressLabel = CCLabelBMFont::create(fmt::format("{}/{}", mainLevelsCompleted, mainLevels.size()).c_str(), "bigFont.fnt");
     progressLabel->setScale(0.5f);

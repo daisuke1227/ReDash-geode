@@ -69,7 +69,7 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
         this,
         menu_selector(RDDailyNode::onTheSafe)
     );
-    safeButton->setScale(0.4f);
+    safeButton->setScale(0.45f);
     safeButton->setPosition(size);
     safeButton->m_scaleMultiplier = 1.15f;
     safeButton->m_baseScale = 0.5f;
@@ -168,6 +168,25 @@ void RDDailyNode::onView(CCObject* sender) {
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 }
 
+void RDDailyNode::onClaimReward(CCObject* sender) {
+    GameStatsManager::sharedState()->completedDailyLevel(m_currentLevel);
+    Mod::get()->setSavedValue(m_isWeekly ? "claimed-weekly" : "claimed-daily", true);
+
+    if (m_isWeekly) {
+
+    } else {
+        // auto rewardLayer = CurrencyRewardLayer::create(0, 0, 0, 4, CurrencySpriteType::Diamond, 0, CurrencySpriteType::Diamond, 0, ccp(200, 200), CurrencyRewardType::)
+    }
+
+    FMODAudioEngine::sharedEngine()->playEffect("gold02.ogg");
+    auto viewButton = as<CCMenuItemSpriteExtra*>(m_menu->getChildByID("view-button"));
+    viewButton->setScale(0.6f);
+    viewButton->m_baseScale = 0.6f;
+    viewButton->m_scaleMultiplier = 1.15f;
+    viewButton->setPosition({ m_menu->getContentWidth()*5.5f/6.5f, m_menu->getContentHeight()/2.f });
+    m_menu->getChildByID("claim-button")->removeFromParent();
+}
+
 void RDDailyNode::onSkiplevel(CCObject* sender) {
     geode::createQuickPopup(
         "Skip level",
@@ -178,6 +197,7 @@ void RDDailyNode::onSkiplevel(CCObject* sender) {
                 m_loadingCircle->setVisible(true);
                 m_menu->removeAllChildren();
                 GameLevelManager::get()->downloadLevel(m_isWeekly ? -2 : -1, false);
+                Mod::get()->setSavedValue(m_isWeekly ? "claimed-weekly" : "claimed-daily", false);
             }
         }
     );
@@ -254,6 +274,24 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     viewButton->setID("view-button");
     m_menu->addChild(viewButton, 10);
 
+    if (level->m_normalPercent.value() == 100 && !Mod::get()->getSavedValue<bool>(m_isWeekly ? "claimed-weekly" : "claimed-daily", false)) {
+        auto claimButton = CCMenuItemSpriteExtra::create(
+            CCSprite::createWithSpriteFrameName("GJ_rewardBtn_001.png"),
+            this,
+            menu_selector(RDDailyNode::onClaimReward)
+        );
+        claimButton->setScale(0.6f);
+        claimButton->m_baseScale = 0.6f;
+        claimButton->m_scaleMultiplier = 1.15f;
+        claimButton->setPosition(viewButton->getPosition() + ccp(10.f, 0));
+        claimButton->setID("claim-button");
+        m_menu->addChild(claimButton, 10);
+        
+        viewButton->setScale(0.2f);
+        viewButton->m_baseScale = 0.2f;
+        viewButton->setPosition(claimButton->getPosition() - ccp(claimButton->getScaledContentWidth()/2 + viewButton->getScaledContentWidth()/2 + 2.5f, 0));
+    }
+
     auto skipButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"),
         this,
@@ -312,7 +350,11 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     creatorButton->setID("creator-button");
     m_menu->addChild(creatorButton, 1);
 
-    auto songLabel = CCLabelBMFont::create(MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)->m_songName.c_str(), "bigFont.fnt");
+    auto songName = "[Failed to load song name]";
+    if (auto song = MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)) {
+        songName = song->m_songName.c_str();
+    }
+    auto songLabel = CCLabelBMFont::create(songName, "bigFont.fnt");
     songLabel->setScale(0.35f);
     if (songLabel->getScaledContentWidth() > maxX) {
         songLabel->setScale(maxX / songLabel->getContentWidth());
@@ -340,16 +382,16 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
 
     // pretty much copied from the level thumbnails mod code lmao
     if (auto fakeTexture = CCTextureCache::get()->textureForKey(fmt::format("thumbnail-{}", level->m_levelID.value()).c_str())) {
-        onDownloadThumbnailFinished();
+        downloadThumbnailFinished();
     } else {
         m_listener.bind([this] (web::WebTask::Event* e) {
             if (web::WebResponse* res = e->getValue()) {
                 if (!res->ok()) {
-                    onDownloadThumbnailFail();
+                    downloadThumbnailFail();
                 } else {
                     auto data = res->data();
                     m_thumbnailData = data;
-                    onDownloadThumbnailFinished();
+                    downloadThumbnailFinished();
                 }
             }
         });
@@ -359,44 +401,46 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     }
 }
 
-void RDDailyNode::onDownloadThumbnailFinished() {
-    auto thread = std::thread([this]() {
-        auto image = Ref(new CCImage());
-        image->initWithImageData(const_cast<uint8_t*>(m_thumbnailData.data()), m_thumbnailData.size());
-        geode::Loader::get()->queueInMainThread([this, image](){
-            auto size = this->getContentSize();
-            auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
-            auto texture = CCTextureCache::get()->addUIImage(image, key.c_str());
+void RDDailyNode::downloadThumbnailFinished() {
+    if (m_menu) {
+        auto thread = std::thread([this]() {
+            auto image = Ref(new CCImage());
+            image->initWithImageData(const_cast<uint8_t*>(m_thumbnailData.data()), m_thumbnailData.size());
+            geode::Loader::get()->queueInMainThread([this, image](){
+                auto size = this->getContentSize();
+                auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
+                auto texture = CCTextureCache::get()->addUIImage(image, key.c_str());
 
-            auto clippingNode = CCClippingNode::create();
-            clippingNode->setAnchorPoint({ 0.5f, 0.5f });
-            clippingNode->setPosition(m_innerBG->getPosition());
-            clippingNode->setContentSize(m_innerBG->getScaledContentSize());
-            clippingNode->setAlphaThreshold(0.5);
-            clippingNode->setID("thumbnail-node");
+                auto clippingNode = CCClippingNode::create();
+                clippingNode->setAnchorPoint({ 0.5f, 0.5f });
+                clippingNode->setPosition(m_innerBG->getPosition());
+                clippingNode->setContentSize(m_innerBG->getScaledContentSize());
+                clippingNode->setAlphaThreshold(0.5);
+                clippingNode->setID("thumbnail-node");
 
-            auto stencil = CCScale9Sprite::create("square02b_001.png");
-            stencil->setScale(0.5f);
-            stencil->setPosition(clippingNode->getContentSize()/2);
-            stencil->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
+                auto stencil = CCScale9Sprite::create("square02b_001.png");
+                stencil->setScale(0.5f);
+                stencil->setPosition(clippingNode->getContentSize()/2);
+                stencil->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
 
-            auto sprite = CCSprite::createWithTexture(texture);
-            sprite->setPosition(stencil->getPosition());
-            sprite->setScale(stencil->getScaledContentWidth() / sprite->getContentWidth());
-            sprite->setOpacity(0);
+                auto sprite = CCSprite::createWithTexture(texture);
+                sprite->setPosition(stencil->getPosition());
+                sprite->setScale(stencil->getScaledContentWidth() / sprite->getContentWidth());
+                sprite->setOpacity(0);
 
-            clippingNode->setStencil(stencil);
-            clippingNode->addChild(sprite);
-            m_menu->addChild(clippingNode, 0);
-            sprite->runAction(CCFadeIn::create(0.25f));
+                clippingNode->setStencil(stencil);
+                clippingNode->addChild(sprite);
+                m_menu->addChild(clippingNode, 0);
+                sprite->runAction(CCFadeIn::create(0.25f));
 
-            image->release();
+                image->release();
+            });
         });
-    });
-    thread.detach();
+        thread.detach();
+    }
 }
 
-void RDDailyNode::onDownloadThumbnailFail() {
+void RDDailyNode::downloadThumbnailFail() {
     auto failSprite = CCSprite::createWithSpriteFrameName("GJ_deleteIcon_001.png");
     failSprite->setScale(0.35f);
     failSprite->setPosition(m_innerBG->getPosition() + m_innerBG->getScaledContentSize()/2 - failSprite->getScaledContentSize()/2 - ccp(2.f, 2.f));
