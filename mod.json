@@ -55,6 +55,11 @@
             "type": "bool",
             "default": false
         },
+        "alt-gddp-texture": {
+            "name": "ALternative GDDP Button Texture",
+            "type": "bool",
+            "default": false
+        },
         "main-levels-leftmost": {
             "name": "Leftmost Main levels button",
             "type": "bool",

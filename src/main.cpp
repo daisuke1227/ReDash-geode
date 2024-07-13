@@ -113,7 +113,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		}
 		if (loader->isModLoaded("minemaker0430.gddp_integration") && Variables::GDDPSelector != nullptr) {
 			auto btn = CCMenuItemSpriteExtra::create(
-				CCSprite::createWithSpriteFrameName("RD_gddp_02.png"_spr),
+				CCSprite::createWithSpriteFrameName(Mod::get()->getSettingValue<bool>("alt-gddp-texture") ? "RD_gddp_02.png"_spr : "RD_gddp.png"_spr),
 				this,
 				Variables::GDDPSelector
 			);
@@ -398,7 +398,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		// bottomMenu->setUserObject("disable-pages", CCBool::create(true));
 		bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
 		bottomMenu->setScale(0.975);
-		bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 75.f);
+		bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
 
 		rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
 		rightMenu->setUserObject("element-count", CCInteger::create(7));
