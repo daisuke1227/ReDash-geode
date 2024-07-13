@@ -5,7 +5,7 @@
 		"android": "2.206",
 		"mac": "2.206"
 	},
-	"version": "v1.0.0-beta.4",
+	"version": "v1.0.0-beta.69",
 	"id": "ninxout.redash",
 	"name": "Overcharged Main Menu",
 	"developers": [
@@ -13,6 +13,13 @@
         "ninXout"
     ],
 	"description": "",
+    "dependencies": [
+        {
+            "id": "alphalaneous.pages_api",
+            "version": ">=1.1.8",
+            "importance": "required"
+        }
+    ],
 	"resources": {
 		"spritesheets": {
             "redashsheet1": [

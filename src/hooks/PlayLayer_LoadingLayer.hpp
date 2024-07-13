@@ -1,0 +1,61 @@
+#include <Geode/Geode.hpp>
+#include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/LoadingLayer.hpp>
+#include "../Variables.hpp"
+using namespace geode::prelude;
+
+std::vector<int> mainLevels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 5001, 5002, 5003, 5004 };
+bool thing = false;
+
+class $modify(PlayLayer) {
+    bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
+        if (!this->PlayLayer::init(level, useReplay, dontCreateObjects)) {
+            return false;
+        }
+        
+        auto id = level->m_levelID.value();
+        if (std::find(mainLevels.begin(), mainLevels.end(), id) != mainLevels.end()) {
+            Mod::get()->setSavedValue<int64_t>("last-main-level", id);
+        }
+
+        return true;
+    }
+};
+
+class $modify(LoadingLayer) {
+    void loadAssets() {
+        LoadingLayer::loadAssets();
+		auto loader = Loader::get();
+        
+        if (!thing) {
+            thing = true;
+            auto creatorLayer = CreatorLayer::create(); // phantom layer rip
+			
+			if (loader->isModLoaded("cvolton.betterinfo")) {
+				if (auto menu = creatorLayer->getChildByID("cvolton.betterinfo/center-right-menu")) {
+					if (auto button = menu->getChildByID("cvolton.betterinfo/main-button")) {
+						Variables::BISelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+					}
+				}
+			}
+
+			if (auto pageMenu = creatorLayer->getChildByID("paged-creator-buttons-menu")) {
+				if (auto node = pageMenu->getChildByID("pages")) {
+					CCArrayExt<CCMenu*> pages = node->getChildren();
+					for (auto& page : pages) {
+						CCArrayExt<CCNode*> buttons = page->getChildren();
+						for (auto& button : buttons) {
+							if (button->getID() == "super-expert-button" && loader->isModLoaded("xanii.super_expert")) {
+								Variables::SupExSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+							} else if (button->getID() == "demon-progression-button" && loader->isModLoaded("minemaker0430.gddp_integration")) {
+								Variables::GDDPSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+							}
+						}
+					}
+				}
+			}
+
+			creatorLayer->release();
+        }
+    }
+};

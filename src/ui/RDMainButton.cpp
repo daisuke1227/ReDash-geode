@@ -109,29 +109,29 @@ bool RDMainButton::init(CCPoint position, CCSize size, std::string id) {
     starsLabel->setID("stars-label");
     menu->addChild(starsLabel, 2);
 
-    auto coin1Sprite = CCSprite::createWithSpriteFrameName(GSM->hasSecretCoin(level->getCoinKey(1)) ? "GJ_coinsIcon_001.png" : "GJ_coinsIcon_gray_001.png");
-    coin1Sprite->setScale(0.5f);
-    coin1Sprite->setAnchorPoint({ 1, 0 });
-    coin1Sprite->setPositionX(innerBG->getPositionX() + menuSize.width/2 - 3.f);
-    coin1Sprite->setPositionY(innerBG->getPositionY() - menuSize.height/2 + 3.f);
-    coin1Sprite->setID("coin-1-sprite");
-    menu->addChild(coin1Sprite, 3);
+    auto coin3Sprite = CCSprite::createWithSpriteFrameName(GSM->hasSecretCoin(level->getCoinKey(3)) ? "GJ_coinsIcon_001.png" : "GJ_coinsIcon_gray_001.png");
+    coin3Sprite->setScale(0.5f);
+    coin3Sprite->setAnchorPoint({ 1, 0 });
+    coin3Sprite->setPositionX(innerBG->getPositionX() + menuSize.width/2 - 3.f);
+    coin3Sprite->setPositionY(innerBG->getPositionY() - menuSize.height/2 + 3.f);
+    coin3Sprite->setID("coin-3-sprite");
+    menu->addChild(coin3Sprite, 3);
     
     auto coin2Sprite = CCSprite::createWithSpriteFrameName(GSM->hasSecretCoin(level->getCoinKey(2)) ? "GJ_coinsIcon_001.png" : "GJ_coinsIcon_gray_001.png");
     coin2Sprite->setScale(0.5f);
     coin2Sprite->setAnchorPoint({ 1, 0 });
-    coin2Sprite->setPositionX(coin1Sprite->getPositionX() - coin1Sprite->getScaledContentWidth() - 1.f);
-    coin2Sprite->setPositionY(coin1Sprite->getPositionY());
+    coin2Sprite->setPositionX(coin3Sprite->getPositionX() - coin3Sprite->getScaledContentWidth() - 1.f);
+    coin2Sprite->setPositionY(coin3Sprite->getPositionY());
     coin2Sprite->setID("coin-2-sprite");
     menu->addChild(coin2Sprite, 3);
     
-    auto coin3Sprite = CCSprite::createWithSpriteFrameName(GSM->hasSecretCoin(level->getCoinKey(3)) ? "GJ_coinsIcon_001.png" : "GJ_coinsIcon_gray_001.png");
-    coin3Sprite->setScale(0.5f);
-    coin3Sprite->setAnchorPoint({ 1, 0 });
-    coin3Sprite->setPositionX(coin2Sprite->getPositionX() - coin2Sprite->getScaledContentWidth() - 1.f);
-    coin3Sprite->setPositionY(coin2Sprite->getPositionY());
-    coin3Sprite->setID("coin-3-sprite");
-    menu->addChild(coin3Sprite, 3);
+    auto coin1Sprite = CCSprite::createWithSpriteFrameName(GSM->hasSecretCoin(level->getCoinKey(1)) ? "GJ_coinsIcon_001.png" : "GJ_coinsIcon_gray_001.png");
+    coin1Sprite->setScale(0.5f);
+    coin1Sprite->setAnchorPoint({ 1, 0 });
+    coin1Sprite->setPositionX(coin2Sprite->getPositionX() - coin2Sprite->getScaledContentWidth() - 1.f);
+    coin1Sprite->setPositionY(coin2Sprite->getPositionY());
+    coin1Sprite->setID("coin-1-sprite");
+    menu->addChild(coin1Sprite, 3);
     
     auto baseCurrency = (level->m_stars.value() + 1) * 25;
     if (level->m_difficulty == GJDifficulty::Demon) baseCurrency = 500;

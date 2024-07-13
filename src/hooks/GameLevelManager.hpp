@@ -20,7 +20,7 @@ class $modify(MyGLM, GameLevelManager) {
     void onGetLeaderboardScoresCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetLeaderboardScoresCompleted(response, tag);
 
-        if (response != "-1") {
+        if (response != "-1" && tag == "leaderboard_global") {
             if (Variables::GlobalRank != -1) {
                 std::string responseStd = response;
                 std::string name = GJAccountManager::get()->m_username;

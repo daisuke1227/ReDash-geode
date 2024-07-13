@@ -7,4 +7,8 @@ namespace Variables {
 
     extern int GlobalRank;
     extern int OldStarsCount;
+
+    extern cocos2d::SEL_MenuHandler BISelector;
+    extern cocos2d::SEL_MenuHandler SupExSelector;
+    extern cocos2d::SEL_MenuHandler GDDPSelector;
 }

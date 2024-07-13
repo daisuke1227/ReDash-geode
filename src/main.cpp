@@ -5,11 +5,12 @@
 
 #include "hooks/onBackHooks.hpp"
 #include "hooks/GameLevelManager.hpp"
-#include "hooks/PlayLayer.hpp"
+#include "hooks/PlayLayer_LoadingLayer.hpp" // same hook index bruh
 
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
+#include <Geode/utils/cocos.hpp>
 
 #include <fmt/core.h>
 #define MAX_SECRET_COINS 164
@@ -30,11 +31,96 @@ std::string getPathString(int n) {
 	}
 }
 
-
 class $modify(CrazyLayer, MenuLayer) {
 	static void onModify(auto& self) {
-        self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api
+        self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api but after index developer points
     }
+
+	void setupButtons() {
+		auto loader = Loader::get();
+		auto bottomMenu = this->getChildByID("bottom-menu");
+		auto rightMenu = this->getChildByID("right-side-menu");
+
+		if (auto closeMenu = this->getChildByID("close-menu")) {
+			if (!closeMenu->getChildByID("close-button")) {
+				auto cls_spr = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
+				cls_spr->setScale(0.7);
+				auto cls_btn = CCMenuItemSpriteExtra::create(
+					cls_spr, 
+					this, 
+					menu_selector(MenuLayer::onQuit));
+				cls_btn->setID("close-button");
+				closeMenu->addChild(cls_btn);
+			}
+
+			if (loader->isModLoaded("weebify.restartbtn")) {
+				if (auto restartBtn = typeinfo_cast<CCMenuItemSpriteExtra*>(closeMenu->getChildByID("restart-button"))) {
+					closeMenu->removeChild(restartBtn);
+					bottomMenu->addChild(restartBtn);
+					if (auto sprite = getChildOfType<CCSprite>(restartBtn, 0)) {
+						restartBtn->setContentSize(restartBtn->getContentSize() * 1.5f);
+						sprite->setScale(sprite->getScale() * 1.5f);
+						sprite->setPosition(restartBtn->getContentSize() / 2);
+					}
+				}
+				if (auto reloadBtn = typeinfo_cast<CCMenuItemSpriteExtra*>(closeMenu->getChildByID("reload-button"))) {
+					closeMenu->removeChild(reloadBtn);
+					bottomMenu->addChild(reloadBtn);
+					if (auto sprite = getChildOfType<CCSprite>(reloadBtn, 0)) {
+						reloadBtn->setContentSize(reloadBtn->getContentSize() * 1.5f);
+						sprite->setScale(sprite->getScale() * 1.5f);
+						sprite->setPosition(reloadBtn->getContentSize() / 2);
+					}
+				}
+			}
+			if (loader->isModLoaded("smjs.gdintercept")) {
+				CCArrayExt<CCMenuItemSpriteExtra*> buttons = closeMenu->getChildren();
+				for (auto& button : buttons) {
+					if (button->getID() == ""
+					&& button->getZOrder() == 0
+					&& button->getScale() == 1.f) { // ...
+						closeMenu->removeChild(button);
+						bottomMenu->addChild(button);
+						if (auto sprite = getChildOfType<CCSprite>(button, 0)) {
+							button->setContentSize(button->getContentSize() * 1.5f);
+							sprite->setScale(sprite->getScale() * 1.5f);
+							sprite->setPosition(button->getContentSize() / 2);
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		if (loader->isModLoaded("cvolton.betterinfo") && Variables::BISelector != nullptr) {
+			auto btn = CCMenuItemSpriteExtra::create(
+				CCSprite::createWithSpriteFrameName("RD_betterinfo.png"_spr),
+				this,
+				Variables::BISelector
+			);
+			btn->setID("cvolton.betterinfo/main-button");
+			rightMenu->addChild(btn);
+		}
+
+		if (loader->isModLoaded("xanii.super_expert") && Variables::SupExSelector != nullptr) {
+			auto btn = CCMenuItemSpriteExtra::create(
+				CCSprite::createWithSpriteFrameName("RD_superexpert.png"_spr),
+				this,
+				Variables::SupExSelector
+			);
+			btn->setID("super-expert-button");
+			rightMenu->addChild(btn);
+		}
+		if (loader->isModLoaded("minemaker0430.gddp_integration") && Variables::GDDPSelector != nullptr) {
+			auto btn = CCMenuItemSpriteExtra::create(
+				CCSprite::createWithSpriteFrameName("RD_gddp_02.png"_spr),
+				this,
+				Variables::GDDPSelector
+			);
+			btn->setID("demon-progression-button");
+			rightMenu->addChild(btn);
+		}
+	}
 
 	void onHideMenu(CCObject* sender) {
 		if (!as<CCMenuItemToggler*>(sender)->isOn()) {
@@ -81,30 +167,14 @@ class $modify(CrazyLayer, MenuLayer) {
 			glm->getLeaderboardScores("leaderboard_global");
 		}
 
-		if (auto closeMenu = this->getChildByID("close-menu")) {
-			if (!closeMenu->getChildByID("close-button")) {
-				auto cls_spr = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
-				cls_spr->setScale(0.7);
-				auto cls_btn = CCMenuItemSpriteExtra::create(
-					cls_spr, 
-					this, 
-					menu_selector(MenuLayer::onQuit));
-				cls_btn->setID("close-button");
-				closeMenu->addChild(cls_btn);
-			}
-
-			CCArrayExt<CCNode*> children = closeMenu->getChildren();
-			for (auto& child : children) {
-				if (child->getID() != "close-button") {
-					child->setVisible(false);
-				}
-			}
-		}
+		CrazyLayer::setupButtons();
 
 		// MAIN MENU CHANGES (MIGHT BE BREAKING SOME STUFF) - ninXout
 		// no it isn't - Weebify
 		if (loader->isModLoaded("sofabeddd.geometry_dash")) {
-			this->getChildByID("sofabeddd.geometry_dash/main-title-menu")->setVisible(false);
+			if (this->getChildByID("sofabeddd.geometry_dash/main-title-menu")) {
+				this->getChildByID("sofabeddd.geometry_dash/main-title-menu")->setVisible(false);
+			}
 		} else {
 			this->getChildByID("main-title")->setVisible(false);
 		}
@@ -115,6 +185,18 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		if (this->getChildByID("level-editor-hint")) this->getChildByID("level-editor-hint")->setVisible(false);
 		if (this->getChildByID("character-select-hint")) this->getChildByID("character-select-hint")->setVisible(false);
+
+		// controller glyphs
+		if (this->getChildByID("play-gamepad-icon")) this->getChildByID("play-gamepad-icon")->setVisible(false);
+		if (this->getChildByID("editor-gamepad-icon")) this->getChildByID("editor-gamepad-icon")->setVisible(false);
+		if (this->getChildByID("icon-kit-gamepad-icon")) this->getChildByID("icon-kit-gamepad-icon")->setVisible(false);
+		if (this->getChildByID("settings-gamepad-icon")) this->getChildByID("settings-gamepad-icon")->setVisible(false);
+		if (this->getChildByID("mouse-gamepad-icon")) this->getChildByID("mouse-gamepad-icon")->setVisible(false);
+		if (this->getChildByID("mouse-gamepad-label")) this->getChildByID("mouse-gamepad-label")->setVisible(false);
+		if (this->getChildByID("click-gamepad-icon")) this->getChildByID("click-gamepad-icon")->setVisible(false);
+		if (this->getChildByID("click-gamepad-label")) this->getChildByID("click-gamepad-label")->setVisible(false);
+
+
 
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		bottomMenu->setScale(0.75f);
@@ -311,15 +393,20 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		menu->addChild(topMenu);
 
-		if (loader->isModLoaded("alphalaneous.pages_api")) {
-			bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
-			bottomMenu->setUserObject("disable-pages", CCBool::create(true)); 
-			bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
+		bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
+		bottomMenu->setUserObject("element-count", CCInteger::create(6));
+		// bottomMenu->setUserObject("disable-pages", CCBool::create(true));
+		bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
+		bottomMenu->setScale(0.975);
+		bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 75.f);
 
-			rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
-    		rightMenu->setUserObject("disable-pages", CCBool::create(true)); 
-			rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false));
-		}
+		rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
+		rightMenu->setUserObject("element-count", CCInteger::create(7));
+		// rightMenu->setUserObject("disable-pages", CCBool::create(true));
+		rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false));
+		rightMenu->setScale(0.95);
+		rightMenu->setContentWidth(rightMenu->getContentWidth() - 75.f);
+		// rightMenu->set
 
 		bottomMenu->updateLayout();
 		rightMenu->updateLayout();
@@ -340,9 +427,15 @@ class $modify(CrazyLayer, MenuLayer) {
 		hideToggler->setPosition({ hideBtnMenu->getContentWidth() / 2.f, hideBtnMenu->getContentHeight() / 2.f });
 		hideBtnMenu->addChild(hideToggler);
 
-
-
-
 		return true;
 	}
+
+	// static CCScene* scene(bool p0) {
+	// 	auto sc = MenuLayer::scene(p0);
+	// 	auto layer = getChildOfType<MenuLayer>(sc, 0);
+
+	// 	handleTouchPriority(layer, true);
+
+	// 	return sc;
+	// }
 };
