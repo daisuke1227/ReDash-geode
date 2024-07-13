@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 
 std::vector<int> mainLevels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 5001, 5002, 5003, 5004 };
-bool thing = false;
+int thing = 1;
 
 class $modify(PlayLayer) {
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
@@ -26,9 +26,8 @@ class $modify(LoadingLayer) {
     void loadAssets() {
         LoadingLayer::loadAssets();
 		auto loader = Loader::get();
-        
-        if (!thing) {
-            thing = true;
+        thing++;
+        if (thing == 15) {
             auto creatorLayer = CreatorLayer::create(); // phantom layer rip
 			
 			if (loader->isModLoaded("cvolton.betterinfo")) {
