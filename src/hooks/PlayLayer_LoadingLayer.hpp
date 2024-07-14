@@ -38,17 +38,34 @@ class $modify(LoadingLayer) {
 				}
 			}
 
-			if (auto pageMenu = creatorLayer->getChildByID("paged-creator-buttons-menu")) {
-				if (auto node = pageMenu->getChildByID("pages")) {
-					CCArrayExt<CCMenu*> pages = node->getChildren();
-					for (auto& page : pages) {
-						CCArrayExt<CCNode*> buttons = page->getChildren();
-						for (auto& button : buttons) {
-							if (button->getID() == "super-expert-button" && loader->isModLoaded("xanii.super_expert")) {
-								Variables::SupExSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
-							} else if (button->getID() == "demon-progression-button" && loader->isModLoaded("minemaker0430.gddp_integration")) {
-								Variables::GDDPSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+
+			auto pagesMod = loader->getLoadedMod("alphalaneous.pages_api");
+			if (pagesMod->getSettingValue<bool>("creator-layer-menu")) {
+				if (auto pageMenu = creatorLayer->getChildByID("paged-creator-buttons-menu")) {
+					if (auto node = pageMenu->getChildByID("pages")) {
+						CCArrayExt<CCMenu*> pages = node->getChildren();
+						for (auto& page : pages) {
+							CCArrayExt<CCNode*> buttons = page->getChildren();
+							for (auto& button : buttons) {
+								if (button->getID() == "super-expert-button" && loader->isModLoaded("xanii.super_expert")) {
+									Variables::SupExSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+								} else if (button->getID() == "demon-progression-button" && loader->isModLoaded("minemaker0430.gddp_integration")) {
+									Variables::GDDPSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+								}
 							}
+						}
+					}
+				}
+			} else {
+				if (auto menu = creatorLayer->getChildByID("creator-buttons-menu")) {
+					if (loader->isModLoaded("xanii.super_expert")) {
+						if (auto button = menu->getChildByID("super-expert-button")) {
+							Variables::SupExSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+						}
+					}
+					if (loader->isModLoaded("minemaker0430.gddp_integration")) {
+						if (auto button = menu->getChildByID("demon-progression-button")) {
+							Variables::GDDPSelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
 						}
 					}
 				}

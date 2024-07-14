@@ -1,5 +1,11 @@
 #include "RDDailyNode.hpp"
 
+int getBonusDiamonds(GJGameLevel* level) {
+    if (level->m_demon.value()) return 20;
+    if (level->m_stars.value() == 1) return 0;
+    return level->getAverageDifficulty();
+}
+
 bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string id) {
     if (!CCNode::init()) return false;
 
@@ -51,13 +57,6 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     this->addChild(loadingCircle, 2);
     m_loadingCircle = loadingCircle;
 
-    if (auto level = GLM->getSavedDailyLevel(m_isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk)) {
-        RDDailyNode::setupLevelMenu(level);
-    } else {
-        GLM->downloadLevel(m_isWeekly ? -2 : -1, false);
-        m_loadingCircle->setVisible(true);
-    }
-
     auto safeMenu = CCMenu::create();
     safeMenu->setPosition({ 0.f, 0.f });
     safeMenu->setContentSize(size);
@@ -90,7 +89,7 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     auto bonusMenu = CCMenu::create();
     bonusMenu->setContentSize(bonusBG->getScaledContentSize());
     bonusMenu->setPosition(bonusBG->getPosition());
-    bonusMenu->setPositionX(bonusMenu->getPositionX() + (isWeekly ? 5.f : 2.f));
+    bonusMenu->setPositionX(bonusMenu->getPositionX() + (m_isWeekly ? 5.f : 2.f));
     bonusMenu->setID("bonus-menu");
     bonusMenu->setLayout(
         RowLayout::create()
@@ -99,21 +98,15 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
         ->setAutoScale(false)
     );
     this->addChild(bonusMenu, 2);
+    m_bonusMenu = bonusMenu;
 
-    auto bonusSprite = isWeekly ? 
-        CCSprite::createWithSpriteFrameName("chest_03_02_001.png") :
-        CCSprite::createWithSpriteFrameName("GJ_bigDiamond_001.png");
-    bonusSprite->setScale(isWeekly ? 0.16f : 0.4f);
-    bonusSprite->setID("bonus-sprite");
-    bonusMenu->addChild(bonusSprite);
-
-    auto bonusLabel = CCLabelBMFont::create((isWeekly ? " / Bonus" : "x4 Bonus"), "bigFont.fnt");
-    bonusLabel->setScale(0.4f);
-    bonusLabel->setID("bonus-label");
-    bonusMenu->addChild(bonusLabel);
-
-    bonusMenu->updateLayout();
-
+    if (auto level = GLM->getSavedDailyLevel(m_isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk)) {
+        RDDailyNode::setupLevelMenu(level);
+    } else {
+        GLM->downloadLevel(m_isWeekly ? -2 : -1, false);
+        m_loadingCircle->setVisible(true);
+        m_bonusMenu->setVisible(false);
+    }
     
     auto time = (m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft);
     if (time < 0) time = 0;
@@ -169,22 +162,109 @@ void RDDailyNode::onView(CCObject* sender) {
 }
 
 void RDDailyNode::onClaimReward(CCObject* sender) {
-    GameStatsManager::sharedState()->completedDailyLevel(m_currentLevel);
+    auto reward = GameStatsManager::sharedState()->completedDailyLevel(m_currentLevel);
+    auto viewButton = as<CCMenuItemSpriteExtra*>(m_menu->getChildByID("view-button"));
+    auto skipButton = as<CCMenuItemSpriteExtra*>(m_menu->getChildByID("skip-button"));
+    auto winSize = CCDirector::sharedDirector()->getWinSize();
+    auto GLM = GameLevelManager::get();
     Mod::get()->setSavedValue(m_isWeekly ? "claimed-weekly" : "claimed-daily", true);
 
-    if (m_isWeekly) {
+    if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+        auto point = ccp(232.49, 200);
+        if (auto menu = layer->getChildByID("redash-menu"_spr)) {
+            if (auto dailiesMenu = menu->getChildByID("dailies-menu"_spr)) {
+                if (auto button = typeinfo_cast<CCMenuItemSpriteExtra*>(sender)) {
+                    point.x = dailiesMenu->getPositionX() - dailiesMenu->getScaledContentSize().width/2 + this->getPositionX()*dailiesMenu->getScaleX() + button->getPositionX() - button->getScaledContentSize().width*1.5f;
+                    point.y = dailiesMenu->getPositionY() - dailiesMenu->getScaledContentSize().height/2 + this->getPositionY()*dailiesMenu->getScaleY() + button->getPositionY() - button->getScaledContentSize().height/2;
+                    
+                }
+            }
+        }
 
-    } else {
-        // auto rewardLayer = CurrencyRewardLayer::create(0, 0, 0, 4, CurrencySpriteType::Diamond, 0, CurrencySpriteType::Diamond, 0, ccp(200, 200), CurrencyRewardType::)
+        if (m_isWeekly) {
+            int diamonds = 0;
+            int orbs = 0;
+            int keySprite = 0;
+            int key = 0;
+            int shardsType = 0;
+            int shards = 0;
+            for (auto t : CCArrayExt<GJRewardObject*>(reward->m_rewardObjects)) {
+                switch (as<int>(t->m_specialRewardItem)) {
+                    case 7:
+                        orbs = t->m_total;
+                        break;
+                    case 8:
+                        diamonds = t->m_total;
+                        break;
+                    case 6:
+                        keySprite = 9;
+                        key = t->m_total;
+                    // shards
+                    case 1:
+                        shardsType = 4;
+                        shards = t->m_total;
+                        break;
+                    case 2:
+                        shardsType = 5;
+                        shards = t->m_total;
+                        break;
+                    case 3:
+                        shardsType = 6;
+                        shards = t->m_total;
+                        break;
+                    case 4:
+                        shardsType = 7;
+                        shards = t->m_total;
+                        break;
+                    case 5:
+                        shardsType = 8;
+                        shards = t->m_total;
+                        break;
+                    case 10:
+                        shardsType = 10;
+                        shards = t->m_total;
+                        break;
+                    case 11:
+                        shardsType = 11;
+                        shards = t->m_total;
+                        break;
+                    case 12:
+                        shardsType = 12;
+                        shards = t->m_total;
+                        break;
+                    case 13:
+                        shardsType = 13;
+                        shards = t->m_total;
+                        break;
+                    case 14:
+                        shardsType = 14;
+                        shards = t->m_total;
+                        break;
+                }
+            }
+
+            auto rewardLayer = CurrencyRewardLayer::create(orbs, 0, 0, diamonds, as<CurrencySpriteType>(keySprite), key, as<CurrencySpriteType>(shardsType), shards, point, as<CurrencyRewardType>(1), 0, 1);
+            layer->addChild(rewardLayer, 1000);
+            FMODAudioEngine::sharedEngine()->playEffect("gold01.ogg");
+            FMODAudioEngine::sharedEngine()->playEffect("secretKey.ogg");
+        } else {
+            auto rewardLayer = CurrencyRewardLayer::create(0, 0, 0, getBonusDiamonds(m_currentLevel), as<CurrencySpriteType>(0), 0, as<CurrencySpriteType>(0), 0, point, as<CurrencyRewardType>(0), 0, 1);
+            layer->addChild(rewardLayer, 1000);
+            FMODAudioEngine::sharedEngine()->playEffect("gold02.ogg");
+        }
     }
 
-    FMODAudioEngine::sharedEngine()->playEffect("gold02.ogg");
-    auto viewButton = as<CCMenuItemSpriteExtra*>(m_menu->getChildByID("view-button"));
     viewButton->setScale(0.6f);
     viewButton->m_baseScale = 0.6f;
     viewButton->m_scaleMultiplier = 1.15f;
     viewButton->setPosition({ m_menu->getContentWidth()*5.5f/6.5f, m_menu->getContentHeight()/2.f });
     m_menu->getChildByID("claim-button")->removeFromParent();
+
+    if (m_isWeekly ? GLM->m_weeklyIDUnk < GLM->m_weeklyID : GLM->m_dailyIDUnk < GLM->m_dailyID) {
+        skipButton->setVisible(true);
+    } else {
+        skipButton->setVisible(false);
+    }
 }
 
 void RDDailyNode::onSkiplevel(CCObject* sender) {
@@ -196,6 +276,7 @@ void RDDailyNode::onSkiplevel(CCObject* sender) {
             if (btn2) {
                 m_loadingCircle->setVisible(true);
                 m_menu->removeAllChildren();
+                m_bonusMenu->setVisible(false);
                 GameLevelManager::get()->downloadLevel(m_isWeekly ? -2 : -1, false);
                 Mod::get()->setSavedValue(m_isWeekly ? "claimed-weekly" : "claimed-daily", false);
             }
@@ -243,11 +324,31 @@ void RDDailyNode::downloadLevelFailed() {
     m_menu->addChild(label);
 }
 
+void RDDailyNode::setupBonusMenu(GJGameLevel* level) {
+    m_bonusMenu->removeAllChildren();
+
+    auto bonusSprite = m_isWeekly ? 
+        CCSprite::createWithSpriteFrameName("chest_03_02_001.png") :
+        CCSprite::createWithSpriteFrameName("GJ_bigDiamond_001.png");
+    bonusSprite->setScale(m_isWeekly ? 0.16f : 0.4f);
+    bonusSprite->setID("bonus-sprite");
+    m_bonusMenu->addChild(bonusSprite);
+
+    auto bonusLabel = CCLabelBMFont::create((m_isWeekly ? " / Bonus" : fmt::format("x{} Bonus", getBonusDiamonds(level)).c_str()), "bigFont.fnt");
+    bonusLabel->setScale(0.4f);
+    bonusLabel->setID("bonus-label");
+    m_bonusMenu->addChild(bonusLabel);
+
+    m_bonusMenu->updateLayout();
+    m_bonusMenu->setVisible(true);
+}
+
 void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     auto GLM = GameLevelManager::get();
 
     m_menu->removeAllChildren();
     m_loadingCircle->setVisible(false);
+    setupBonusMenu(level);
 
     m_currentLevel = level;
     int difficultyRating = 0;
@@ -274,24 +375,6 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     viewButton->setID("view-button");
     m_menu->addChild(viewButton, 10);
 
-    if (level->m_normalPercent.value() == 100 && !Mod::get()->getSavedValue<bool>(m_isWeekly ? "claimed-weekly" : "claimed-daily", false)) {
-        auto claimButton = CCMenuItemSpriteExtra::create(
-            CCSprite::createWithSpriteFrameName("GJ_rewardBtn_001.png"),
-            this,
-            menu_selector(RDDailyNode::onClaimReward)
-        );
-        claimButton->setScale(0.6f);
-        claimButton->m_baseScale = 0.6f;
-        claimButton->m_scaleMultiplier = 1.15f;
-        claimButton->setPosition(viewButton->getPosition() + ccp(10.f, 0));
-        claimButton->setID("claim-button");
-        m_menu->addChild(claimButton, 10);
-        
-        viewButton->setScale(0.2f);
-        viewButton->m_baseScale = 0.2f;
-        viewButton->setPosition(claimButton->getPosition() - ccp(claimButton->getScaledContentWidth()/2 + viewButton->getScaledContentWidth()/2 + 2.5f, 0));
-    }
-
     auto skipButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"),
         this,
@@ -310,6 +393,27 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     skipButton->setID("skip-button");
     m_menu->addChild(skipButton, 10);
     m_skipButton = skipButton;
+
+    if (level->m_normalPercent.value() == 100 && !Mod::get()->getSavedValue<bool>(m_isWeekly ? "claimed-weekly" : "claimed-daily", false)) {
+        auto claimButton = CCMenuItemSpriteExtra::create(
+            CCSprite::createWithSpriteFrameName("GJ_rewardBtn_001.png"),
+            this,
+            menu_selector(RDDailyNode::onClaimReward)
+        );
+        claimButton->setScale(0.6f);
+        claimButton->m_baseScale = 0.6f;
+        claimButton->m_scaleMultiplier = 1.15f;
+        claimButton->setPosition(viewButton->getPosition() + ccp(10.f, 0));
+        claimButton->setID("claim-button");
+        m_menu->addChild(claimButton, 10);
+        
+        viewButton->setScale(0.2f);
+        viewButton->m_baseScale = 0.2f;
+        viewButton->setPosition(claimButton->getPosition() - ccp(claimButton->getScaledContentWidth()/2 + viewButton->getScaledContentWidth()/2 + 2.5f, 0));
+
+        skipButton->setVisible(false);
+    }
+
 
     auto difficultySprite = GJDifficultySprite::create(difficultyRating, GJDifficultyName::Short);
     difficultySprite->updateFeatureState(as<GJFeatureState>(featureRating));

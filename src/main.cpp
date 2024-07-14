@@ -8,7 +8,6 @@
 #include "hooks/PlayLayer_LoadingLayer.hpp" // same hook index bruh
 
 #include <Geode/modify/MenuLayer.hpp>
-#include <Geode/modify/CCKeyboardDispatcher.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
 #include <Geode/utils/cocos.hpp>
 
@@ -200,8 +199,15 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		bottomMenu->setScale(0.75f);
-		bottomMenu->setLayout(ColumnLayout::create()->setAxisReverse(true)->setAutoScale(true)->setGap(0.f)->setCrossAxisOverflow(true));
+		bottomMenu->setLayout(
+			ColumnLayout::create()
+				->setAxisReverse(true)
+				->setAutoScale(true)
+				->setGap(0.f)
+				->setCrossAxisOverflow(false)
+		);
 		bottomMenu->setPositionX(winSize.width - 29.f);
+		bottomMenu->setContentWidth(60.f);
 		if (GJAccountManager::get()->m_accountID == 0) {
 			bottomMenu->setPositionY(winSize.height/2);
 			bottomMenu->setContentHeight(385.f);
@@ -215,8 +221,15 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto rightMenu = this->getChildByID("right-side-menu");
 		rightMenu->setPosition(ccp(177.5f, 25.f));
 		rightMenu->setScale(0.75f);
-		rightMenu->setLayout(RowLayout::create()->setAxisAlignment(AxisAlignment::Start)->setAxisReverse(true));
+		rightMenu->setLayout(
+			RowLayout::create()
+				->setAxisAlignment(AxisAlignment::Start)
+				->setAxisReverse(true)
+				->setAutoScale(true)
+				->setCrossAxisOverflow(false)
+		);
 		rightMenu->setContentWidth(425.f);
+		rightMenu->setContentHeight(60.f);
 		rightMenu->updateLayout();
 		rightMenu->getChildByID("daily-chest-button")->setZOrder(4);
 
@@ -393,24 +406,6 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		menu->addChild(topMenu);
 
-		bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
-		bottomMenu->setUserObject("element-count", CCInteger::create(6));
-		// bottomMenu->setUserObject("disable-pages", CCBool::create(true));
-		bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
-		bottomMenu->setScale(0.975);
-		bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
-
-		rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
-		rightMenu->setUserObject("element-count", CCInteger::create(7));
-		// rightMenu->setUserObject("disable-pages", CCBool::create(true));
-		rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false));
-		rightMenu->setScale(0.95);
-		rightMenu->setContentWidth(rightMenu->getContentWidth() - 75.f);
-		// rightMenu->set
-
-		bottomMenu->updateLayout();
-		rightMenu->updateLayout();
-
 		auto hideBtnMenu = CCMenu::create();
 		hideBtnMenu->setID("hide-button-menu"_spr);
 		hideBtnMenu->setAnchorPoint({ 1.f, 0.5f });
@@ -426,6 +421,31 @@ class $modify(CrazyLayer, MenuLayer) {
 		hideToggler->setID("hide-button");
 		hideToggler->setPosition({ hideBtnMenu->getContentWidth() / 2.f, hideBtnMenu->getContentHeight() / 2.f });
 		hideBtnMenu->addChild(hideToggler);
+
+		auto pagesMod = loader->getLoadedMod("alphalaneous.pages_api");
+		if (pagesMod->getSettingValue<bool>("menulayer-bottom-menu")) {
+			bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
+			bottomMenu->setUserObject("element-count", CCInteger::create(6));
+			// bottomMenu->setUserObject("disable-pages", CCBool::create(true));
+			// bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
+			// if (bottomMenu->getChildrenCount() > 6) {
+				bottomMenu->setScale(0.975);
+				bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
+			// }
+		}
+
+		if (pagesMod->getSettingValue<bool>("menulayer-right-menu")) {
+			rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
+			rightMenu->setUserObject("element-count", CCInteger::create(7));
+			// rightMenu->setUserObject("disable-pages", CCBool::create(true));
+			rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false));
+			rightMenu->setScale(0.95);
+			rightMenu->setContentWidth(rightMenu->getContentWidth() - 75.f);
+		}
+
+		bottomMenu->updateLayout();
+		rightMenu->updateLayout();
+
 
 		return true;
 	}

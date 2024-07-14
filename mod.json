@@ -5,14 +5,14 @@
 		"android": "2.206",
 		"mac": "2.206"
 	},
-	"version": "v1.0.0-beta.69",
+	"version": "v1.0.0",
 	"id": "ninxout.redash",
 	"name": "Overcharged Main Menu",
 	"developers": [
         "Weebify",
         "ninXout"
     ],
-	"description": "",
+	"description": "Geometry Dash if it was a flashy mobile game.",
     "dependencies": [
         {
             "id": "alphalaneous.pages_api",
@@ -28,7 +28,8 @@
         },
         "files": [
             "resources/fonts/*.png",
-            "resources/fonts/*.fnt"
+            "resources/fonts/*.fnt",
+            "resources/images/*.png"
         ],
         "sprites": [
             "resources/*.png"

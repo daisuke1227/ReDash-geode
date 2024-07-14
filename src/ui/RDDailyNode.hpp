@@ -12,6 +12,7 @@ public:
     bool m_isWeekly;
 
     CCMenu* m_menu;
+    CCMenu* m_bonusMenu;
     CCScale9Sprite* m_innerBG;
     CCLabelBMFont* m_timeLabel;
     CCLabelBMFont* m_timeLeftLabel;
@@ -30,6 +31,7 @@ public:
     void downloadLevelFailed();
     void updateTimeLabel(float time);
     void setupLevelMenu(GJGameLevel* level);
+    void setupBonusMenu(GJGameLevel* level);
 
     void downloadThumbnailFinished();
     void downloadThumbnailFail();
