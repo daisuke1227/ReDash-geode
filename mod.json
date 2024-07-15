@@ -62,7 +62,7 @@
             "default": false
         },
         "alt-gddp-texture": {
-            "name": "ALternative GDDP Button Texture",
+            "name": "Alternative GDDP Button Texture",
             "type": "bool",
             "description": "Use the alternative GDDP button texture if you have GDDP Integration installed.",
             "default": false

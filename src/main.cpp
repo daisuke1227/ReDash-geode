@@ -73,6 +73,9 @@ class $modify(CrazyLayer, MenuLayer) {
 				}
 			}
 			if (loader->isModLoaded("smjs.gdintercept")) {
+				#ifdef GEODE_IS_ANDROID
+				closeMenu = this->getChildByID("top-right-menu");
+				#endif
 				CCArrayExt<CCMenuItemSpriteExtra*> buttons = closeMenu->getChildren();
 				for (auto& button : buttons) {
 					if (button->getID() == ""
@@ -119,6 +122,18 @@ class $modify(CrazyLayer, MenuLayer) {
 			btn->setID("demon-progression-button");
 			rightMenu->addChild(btn);
 		}
+
+		#ifdef GEODE_IS_ANDROID
+		if (loader->isModLoaded("geode.devtools")) {
+			auto btn = CCMenuItemSpriteExtra::create(
+				CircleButtonSprite::createWithSprite("RD_devtools.png"_spr, 1.f, CircleBaseColor::Green, CircleBaseSize::MediumAlt),
+				this,
+				menu_selector(MenuLayer::onMoreGames)
+			);
+			btn->setID("devtools-button");
+			bottomMenu->addChild(btn);
+		}
+		#endif
 	}
 
 	void onHideMenu(CCObject* sender) {
@@ -458,8 +473,7 @@ class $modify(CrazyLayer, MenuLayer) {
 			bottomMenu->setScale(0.975);
 			bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
 			bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
-			bottomMenu->setUserObject("element-count", CCInteger::create(6));
-			
+			bottomMenu->setUserObject("element-count", CCInteger::create(5));	
 		}
 
 		if (pagesMod->getSettingValue<bool>("menulayer-right-menu")) {

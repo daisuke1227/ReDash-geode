@@ -118,7 +118,7 @@ class $modify(MyGLM, GameLevelManager) {
                         dailyNode->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
 
                         if (dailyNode->m_skipButton) {
-                            if (this->m_dailyIDUnk < this->m_dailyID && (dailyNode->m_currentLevel->m_normalPercent < 100 || Mod::get()->getSavedValue<bool>("claimed-daily", false))) {
+                            if (this->m_dailyIDUnk < this->m_dailyID && (dailyNode->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(this->m_dailyIDUnk))) {
                                 dailyNode->m_skipButton->setVisible(true);
                             } else {
                                 dailyNode->m_skipButton->setVisible(false);
@@ -137,7 +137,7 @@ class $modify(MyGLM, GameLevelManager) {
                         weeklyNode->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
 
                         if (weeklyNode->m_skipButton) {
-                            if (this->m_weeklyIDUnk < this->m_weeklyID  && (weeklyNode->m_currentLevel->m_normalPercent < 100 || Mod::get()->getSavedValue<bool>("claimed-weekly", false))) {
+                            if (this->m_weeklyIDUnk < this->m_weeklyID  && (weeklyNode->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(this->m_weeklyIDUnk))) {
                                 weeklyNode->m_skipButton->setVisible(true);
                             } else {
                                 weeklyNode->m_skipButton->setVisible(false);

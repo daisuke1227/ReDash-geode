@@ -396,7 +396,7 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     m_menu->addChild(skipButton, 10);
     m_skipButton = skipButton;
 
-    if (level->m_normalPercent.value() == 100 && !Mod::get()->getSavedValue<bool>(m_isWeekly ? "claimed-weekly" : "claimed-daily", false)) {
+    if (level->m_normalPercent.value() == 100 && !GameStatsManager::sharedState()->hasCompletedDailyLevel(m_isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk)) {
         auto claimButton = CCMenuItemSpriteExtra::create(
             CCSprite::createWithSpriteFrameName("GJ_rewardBtn_001.png"),
             this,
