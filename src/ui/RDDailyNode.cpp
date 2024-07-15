@@ -521,7 +521,7 @@ void RDDailyNode::downloadThumbnailFinished() {
                 clippingNode->setAnchorPoint({ 0.5f, 0.5f });
                 clippingNode->setPosition(m_innerBG->getPosition());
                 clippingNode->setContentSize(m_innerBG->getScaledContentSize());
-                clippingNode->setAlphaThreshold(0.5);
+                clippingNode->setAlphaThreshold(0.03f);
                 clippingNode->setID("thumbnail-node");
 
                 auto stencil = CCScale9Sprite::create("square02b_001.png");
