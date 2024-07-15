@@ -112,7 +112,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		}
 		if (loader->isModLoaded("minemaker0430.gddp_integration") && Variables::GDDPSelector != nullptr) {
 			auto btn = CCMenuItemSpriteExtra::create(
-				CCSprite::createWithSpriteFrameName(Mod::get()->getSettingValue<bool>("alt-gddp-texture") ? "RD_gddp_02.png"_spr : "RD_gddp.png"_spr),
+				CCSprite::createWithSpriteFrameName(Mod::get()->getSettingValue<bool>("alt-gddp-texture") ? "RD_gddp2.png"_spr : "RD_gddp.png"_spr),
 				this,
 				Variables::GDDPSelector
 			);
@@ -194,8 +194,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		if (this->getChildByID("mouse-gamepad-label")) this->getChildByID("mouse-gamepad-label")->setVisible(false);
 		if (this->getChildByID("click-gamepad-icon")) this->getChildByID("click-gamepad-icon")->setVisible(false);
 		if (this->getChildByID("click-gamepad-label")) this->getChildByID("click-gamepad-label")->setVisible(false);
-
-
 
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		bottomMenu->setScale(0.75f);
@@ -286,20 +284,20 @@ class $modify(CrazyLayer, MenuLayer) {
 		int pathProgress = gsm->getStat(std::to_string(activePath).c_str());
 		if (pathProgress > 1000) pathProgress = 1000;
 
-		mainMenu->addChild(RDButton::create(this, "RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", LocalLevelManager::get()->m_localLevels->count())}, "RD_create.png"_spr, menu_selector(CreatorLayer::onMyLevels), "create-button"));
-		mainMenu->addChild(RDButton::create(this, "RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", glm->getSavedLevels(false, 0)->count()), "Levels"}, "RD_saved.png"_spr, menu_selector(CreatorLayer::onSavedLevels), "saved-button"));
-		mainMenu->addChild(RDButton::create(this, "RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/1000", pathProgress)}, "RD_paths_02.png"_spr,  menu_selector(CreatorLayer::onPaths), "paths-button"));
-		mainMenu->addChild(RDButton::create(this, "RD_leaderboardsLabel.png"_spr, {"Global", fmt::format("#{}", Variables::GlobalRank)}, "RD_leaderboards.png"_spr, menu_selector(CreatorLayer::onLeaderboards), "leaderboards-button"));
+		mainMenu->addChild(RDButton::create(this, "RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", LocalLevelManager::get()->m_localLevels->count())}, "RD_create.png"_spr, 0.95f, menu_selector(CreatorLayer::onMyLevels), "create-button"));
+		mainMenu->addChild(RDButton::create(this, "RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", glm->getSavedLevels(false, 0)->count()), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels), "saved-button"));
+		mainMenu->addChild(RDButton::create(this, "RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/1000", pathProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths), "paths-button"));
+		mainMenu->addChild(RDButton::create(this, "RD_leaderboardsLabel.png"_spr, {"Global", fmt::format("#{}", Variables::GlobalRank)}, "RD_leaderboards.png"_spr, 0.85f, menu_selector(CreatorLayer::onLeaderboards), "leaderboards-button"));
 		if (Mod::get()->getSettingValue<bool>("hide-bottom-buttons-texts")) {
-			mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {}, "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
-			mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {}, "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
-			mainMenu->addChild(RDButton::create(this, "RD_listsLabel.png"_spr, {}, "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists), "lists-button"));
-			mainMenu->addChild(RDButton::create(this, "RD_searchLabel.png"_spr, {}, "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_listsLabel.png"_spr, {}, "RD_lists.png"_spr, 1.f, menu_selector(CreatorLayer::onTopLists), "lists-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_searchLabel.png"_spr, {}, "RD_search.png"_spr, 0.9f, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));
 		} else {
-			mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {"Mystery", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
-			mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
-			mainMenu->addChild(RDButton::create(this, "RD_listsLabel.png"_spr, {"Play rated", "Lists"}, "RD_lists.png"_spr, menu_selector(CreatorLayer::onTopLists), "lists-button"));
-			mainMenu->addChild(RDButton::create(this, "RD_searchLabel.png"_spr, {"Search" , "For levels", "online"}, "RD_search.png"_spr, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {"Mystery", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_listsLabel.png"_spr, {"Play rated", "Lists"}, "RD_lists.png"_spr, 1.f, menu_selector(CreatorLayer::onTopLists), "lists-button"));
+			mainMenu->addChild(RDButton::create(this, "RD_searchLabel.png"_spr, {"Search" , "For levels", "online"}, "RD_search.png"_spr, 0.9f, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));
 		}
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);
@@ -333,9 +331,10 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		auto statsMenu = CCMenu::create();
 		statsMenu->setID("stats-menu"_spr);
-		statsMenu->setContentSize({ 460.f , 25.f });
+		statsMenu->setContentSize({ winSize.width/0.6f , 25.f });
 		statsMenu->ignoreAnchorPointForPosition(false);
-		statsMenu->setPosition({ 190.f , winSize.height - 6.25f });
+		statsMenu->setAnchorPoint({ 0.f, 0.5f });
+		statsMenu->setPosition({ 52.f , winSize.height - 6.25f });
 		statsMenu->setScale(0.6f);
 		statsMenu->setLayout(
 			RowLayout::create()
@@ -349,6 +348,10 @@ class $modify(CrazyLayer, MenuLayer) {
 		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon_001.png", fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS), "sectet-coins-stats"));
 		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon2_001.png", fmt::format("{}", gsm->getStat("12")), "user-coins-stats"));
 		statsMenu->addChild(RDStatsNode::create("GJ_demonIcon_001.png", fmt::format("{}", gsm->getStat("5")), "demons-stats"));
+		if (!mod->getSettingValue<bool>("hide-diamonds-orbs")) {
+			statsMenu->addChild(RDStatsNode::create("GJ_diamondsIcon_001.png", fmt::format("{}", gsm->getStat("13")), "diamonds-stats"));
+			statsMenu->addChild(RDStatsNode::create("currencyOrbIcon_001.png", fmt::format("{}", gsm->getStat("14")), "orbs-stats"));
+		}
 		statsMenu->updateLayout();
 
 		menu->addChild(statsMenu);
@@ -358,6 +361,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		menuButUnder->setAnchorPoint({ 1.f, 0.5f });
 		menuButUnder->setContentSize({ 150.f, 48.25f });
 		menuButUnder->setPosition({ winSize.width - 124.f, 25.f }); // ...
+		auto bottomX = winSize.width - 124.f;
 		menuButUnder->setScale(0.75f);
 		menuButUnder->setLayout(
 			RowLayout::create()
@@ -370,20 +374,30 @@ class $modify(CrazyLayer, MenuLayer) {
 		if (!Mod::get()->getSettingValue<bool>("disable-creator-button")) {
 			auto creatorSpr = CCSprite::createWithSpriteFrameName("GJ_creatorBtn_001.png");
 			creatorSpr->setScale(0.9f);
-			menuButUnder->addChild(CCMenuItemSpriteExtra::create(creatorSpr, this, menu_selector(MenuLayer::onCreator)));
+			auto creatorBtn = CCMenuItemSpriteExtra::create(creatorSpr, this, menu_selector(MenuLayer::onCreator));
+			creatorBtn->setID("creator-layer-button");
+			menuButUnder->addChild(creatorBtn);
+			bottomX -= creatorBtn->getScaledContentWidth()*menuButUnder->getScale();
 		}
 		auto treasureSpr = CCSprite::createWithSpriteFrameName("secretDoorBtn_open_001.png");
 		treasureSpr->setScale(1.25f);
-		menuButUnder->addChild(CCMenuItemSpriteExtra::create(treasureSpr, this, menu_selector(CreatorLayer::onTreasureRoom)));
+		auto treasureBtn = CCMenuItemSpriteExtra::create(treasureSpr, this, menu_selector(CreatorLayer::onTreasureRoom));
+		treasureBtn->setID("treasure-room-button");
+		menuButUnder->addChild(treasureBtn);
+		bottomX -= treasureBtn->getScaledContentWidth()*menuButUnder->getScale();
+
+		menuButUnder->updateLayout();
+		rightMenu->setContentWidth((bottomX - rightMenu->getPositionX() + rightMenu->getScaledContentWidth()/2) / rightMenu->getScale());
+		rightMenu->setPositionX(bottomX - rightMenu->getScaledContentWidth()/2);
 
 		menu->addChild(menuButUnder);
-		menuButUnder->updateLayout();
 
 		auto topMenu = CCMenu::create();
 		topMenu->setID("top-menu"_spr);
 		topMenu->setAnchorPoint({ 1.f, 0.5f});
-		topMenu->setContentSize({ 150.f, 48.25f });
+		topMenu->setContentSize({ 100.f, 48.25f });
 		topMenu->setPosition({ winSize.width - 79.f, winSize.height - 20.f });
+		auto topX = winSize.width - 79.f;
 		topMenu->setScale(0.75f);
 		topMenu->setLayout(
 			RowLayout::create()
@@ -395,10 +409,27 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		auto garageSpr = CCSprite::createWithSpriteFrameName("garageRope_001.png");
 		auto garageButton = CCMenuItemSpriteExtra::create(garageSpr, this, menu_selector(MenuLayer::onGarage));
+		garageButton->setID("garage-rope");
 		garageButton->setScale(4/3);
 		topMenu->addChild(garageButton);
-		topMenu->addChild(CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName(gsm->getStat("13") > 49 ? "GJ_lock_open_001.png" : "GJ_lockGray_001.png"), this, menu_selector(CreatorLayer::onSecretVault)));
+		topX -= 7.5;
+		topX -= garageButton->getScaledContentWidth()*topMenu->getScale();
+
+		auto vaultBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName(gsm->getStat("13") > 49 ? "GJ_lock_open_001.png" : "GJ_lockGray_001.png"), this, menu_selector(CreatorLayer::onSecretVault));
+		vaultBtn->setID("secret-vault-button");
+		topMenu->addChild(vaultBtn);
+		topX -= 7.5;
+		topX -= vaultBtn->getScaledContentWidth()*topMenu->getScale();
+
 		topMenu->updateLayout();
+		auto statsX = statsMenu->getPositionX();
+		for (auto& statNode : CCArrayExt<RDStatsNode*>(statsMenu->getChildren())) {
+			statsX += (statNode->getScaledContentWidth() + 25.f)*statsMenu->getScale();
+		}
+		statsX -= 25.f*statsMenu->getScale();
+		if (statsX > topX) {
+			statsMenu->setScale(0.6f * (topX - statsMenu->getPositionX()) / (statsX - statsMenu->getPositionX()));
+		}
 
 		garageButton->m_animationType = MenuAnimationType::Move;
 		garageButton->m_startPosition = garageSpr->getPosition();
@@ -424,27 +455,25 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		auto pagesMod = loader->getLoadedMod("alphalaneous.pages_api");
 		if (pagesMod->getSettingValue<bool>("menulayer-bottom-menu")) {
+			bottomMenu->setScale(0.975);
+			bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
 			bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
 			bottomMenu->setUserObject("element-count", CCInteger::create(6));
-			// bottomMenu->setUserObject("disable-pages", CCBool::create(true));
-			// bottomMenu->setLayout(as<ColumnLayout*>(bottomMenu->getLayout())->setAutoScale(false));
-			// if (bottomMenu->getChildrenCount() > 6) {
-				bottomMenu->setScale(0.975);
-				bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
-			// }
+			
 		}
 
 		if (pagesMod->getSettingValue<bool>("menulayer-right-menu")) {
-			rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
-			rightMenu->setUserObject("element-count", CCInteger::create(7));
-			// rightMenu->setUserObject("disable-pages", CCBool::create(true));
 			rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false));
 			rightMenu->setScale(0.95);
 			rightMenu->setContentWidth(rightMenu->getContentWidth() - 75.f);
+			rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
+			rightMenu->setUserObject("element-count", CCInteger::create((int)((rightMenu->getContentWidth() + 75.f) / 60.f)));
 		}
 
 		bottomMenu->updateLayout();
 		rightMenu->updateLayout();
+
+
 
 
 		return true;

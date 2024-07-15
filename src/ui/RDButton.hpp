@@ -8,6 +8,6 @@ public:
 
     void updateLeaderboardLabel();
 
-    static RDButton* create(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id);
-    bool init(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id);
+    static RDButton* create(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id);
+    bool init(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id);
 };

@@ -6,12 +6,14 @@ bool RDStatsNode::init(std::string sprite, std::string string, std::string id) {
     auto icon = CCSprite::createWithSpriteFrameName(sprite.c_str());
     icon->setPosition({ 0, 2.f });
     icon->setScale(1.5f);
+    icon->setID("icon-sprite");
     this->addChild(icon, 2);
 
     auto label = CCLabelBMFont::create(string.c_str(), "NewPusab.fnt"_spr);
     label->setScale(0.5f);
     label->setAnchorPoint({ 0, 0.5f });
     label->setPosition({ icon->getPositionX() + icon->getScaledContentWidth()/2 + 5.f, 7.5f });
+    label->setID("stat-label");
     this->addChild(label, 1);
 
     auto bg0 = CCSprite::create("statsNodeHalf-2.png"_spr);
@@ -23,7 +25,7 @@ bool RDStatsNode::init(std::string sprite, std::string string, std::string id) {
     bg0->setPosition({ icon->getPositionX() + icon->getScaledContentWidth()/4, icon->getPositionY() });
     this->addChild(bg0, 0);
 
-    if (sprite == "GJ_moonsIcon_001.png") {
+    if (sprite == "GJ_moonsIcon_001.png" || sprite == "GJ_diamondsIcon_001.png") {
         auto bg0b = CCSprite::create("statsNodeHalf-2.png"_spr);
         bg0b->setAnchorPoint({ 0, 0.5f });
         bg0b->setScale(0.6f);
@@ -54,9 +56,13 @@ bool RDStatsNode::init(std::string sprite, std::string string, std::string id) {
     this->setContentSize({ bg0->getScaledContentWidth() + bg1->getScaledContentWidth() + bg2->getScaledContentWidth(), 30.f});
     this->setPositionY(15.f);
     this->setID(id);
+    this->setScale(0.9f);
 
     if (sprite == "GJ_moonsIcon_001.png") {
         icon->setScale(1.75f);
+    }
+    if (sprite == "GJ_demonIcon_001.png") {
+        icon->setScale(1.4f);
     }
 
     return true;

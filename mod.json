@@ -13,6 +13,7 @@
         "ninXout"
     ],
 	"description": "Geometry Dash if it was a flashy mobile game.",
+    "tags": ["interface", "offline"],
     "dependencies": [
         {
             "id": "alphalaneous.pages_api",
@@ -39,41 +40,55 @@
         "desc-label-color" :{
             "name": "Bottom Buttons Description Color",
             "type": "rgba",
+            "description": "Change the color of the description text on the bottom buttons.",
             "default": "#0000008c"
         },
         "goto-last-played-main": {
             "name": "Go to Last Played Main Level",
             "type": "bool",
+            "description": "Go to the last played main level when pressing the main levels button.",
             "default": false
         },
         "disable-creator-button": {
             "name": "Disable Creator Layer Button",
             "type": "bool",
+            "description": "Do not add the button for accessing CreatorLayer.",
             "default": true
         },
         "use-pusab": {
             "name": "Use Pusab for Timer",
             "type": "bool",
+            "description": "Use the default Pusab font for the Daily and Weekly levels' timers.",
             "default": false
         },
         "alt-gddp-texture": {
             "name": "ALternative GDDP Button Texture",
             "type": "bool",
+            "description": "Use the alternative GDDP button texture if you have GDDP Integration installed.",
             "default": false
         },
         "main-levels-leftmost": {
             "name": "Leftmost Main levels button",
             "type": "bool",
+            "description": "Move the main levels button to the leftmost position.",
             "default": false
         },
         "hide-main-levels-stats": {
             "name": "Hide Main levels stats",
             "type": "bool",
+            "description": "Hide the stats of the level on the main levels button.",
+            "default": false
+        },
+        "hide-diamonds-orbs": {
+            "name": "Hide Diamonds & Orbs stats",
+            "type": "bool",
+            "description": "Hide the diamonds and orbs stats.",
             "default": false
         },
         "hide-bottom-buttons-texts": {
             "name": "Hide Bottom Buttons Texts",
             "type": "bool",
+            "description": "Hide the static description texts of the bottom buttons.",
             "default": false
         }
     }

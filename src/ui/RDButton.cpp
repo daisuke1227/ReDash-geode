@@ -1,17 +1,19 @@
 #include "RDButton.hpp"
 #include "../Variables.hpp"
 
-bool RDButton::init(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id) {
+bool RDButton::init(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
     auto spriteNode = CCNode::create();
 
 	auto buttonSpr1 = CCScale9Sprite::create("longButtonHalf-1.png"_spr);
 	buttonSpr1->setContentSize({150.f, 35.f});
 	buttonSpr1->setPosition(ccp(75.f, 52.f));
+	buttonSpr1->setID("bg-sprite-1");
 	spriteNode->addChild(buttonSpr1);
 
 	auto buttonSpr2 = CCScale9Sprite::create("longButtonHalf-2.png"_spr);
 	buttonSpr2->setContentSize({150.f, 35.f});
 	buttonSpr2->setPosition(ccp(75.f, 17.f));
+	buttonSpr2->setID("bg-sprite-2");
 	spriteNode->addChild(buttonSpr2);
 
 	// auto buttonSpr = CCScale9Sprite::create("RD_longButton.png"_spr);
@@ -20,8 +22,11 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	// spriteNode->addChild(buttonSpr, -1);
 
     auto icon = CCSprite::createWithSpriteFrameName(sprite.c_str());
-    icon->setPosition(ccp(122, 34));
-    icon->setScale(1.55f);
+    icon->setScale(spriteScale);
+	icon->setAnchorPoint({ 1, 0.5f});
+    icon->setPosition(ccp(148, 35));
+	if (id == "saved-button") icon->setPositionX(153);
+	icon->setID("icon-sprite");
     spriteNode->addChild(icon);
 	
 
@@ -33,7 +38,7 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 
 	auto labelMenu = CCMenu::create();
 	labelMenu->setAnchorPoint({ 1, 0.5f });
-	labelMenu->setPosition( { icon->getPositionX() - icon->getScaledContentWidth()/2 - 2.5f, 35.f });
+	labelMenu->setPosition( { icon->getPositionX() - icon->getScaledContentWidth() - 2.5f, 35.f });
 	labelMenu->setContentSize({ 80.f, 60.f });
 	labelMenu->setLayout(
 		ColumnLayout::create()
@@ -43,6 +48,7 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 			->setAutoScale(false)
 			->setGap(3.f)
 	);
+	labelMenu->setID("label-menu");
 	spriteNode->addChild(labelMenu);
 	m_labelMenu = labelMenu;
 
@@ -111,9 +117,9 @@ void RDButton::updateLeaderboardLabel() {
 	m_labelMenu->updateLayout();
 }
 
-RDButton* RDButton::create(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, cocos2d::SEL_MenuHandler callback, std::string id) {
+RDButton* RDButton::create(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
     auto ret = new RDButton();
-    if (ret && ret->init(target, title, description, sprite, callback, id)) {
+    if (ret && ret->init(target, title, description, sprite, spriteScale, callback, id)) {
         ret->autorelease();
         return ret;
     }

@@ -57,24 +57,6 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     this->addChild(loadingCircle, 2);
     m_loadingCircle = loadingCircle;
 
-    auto safeMenu = CCMenu::create();
-    safeMenu->setPosition({ 0.f, 0.f });
-    safeMenu->setContentSize(size);
-    safeMenu->setID("safe-button-menu");
-    this->addChild(safeMenu, 2);
-
-    auto safeButton = CCMenuItemSpriteExtra::create(
-        CCSprite::createWithSpriteFrameName("GJ_safeBtn_001.png"),
-        this,
-        menu_selector(RDDailyNode::onTheSafe)
-    );
-    safeButton->setScale(0.45f);
-    safeButton->setPosition(size);
-    safeButton->m_scaleMultiplier = 1.15f;
-    safeButton->m_baseScale = 0.5f;
-    safeButton->setID("safe-button");
-    this->addChild(safeButton);
-    safeMenu->addChild(safeButton);
 
     auto bonusBG = CCScale9Sprite::create("GJ_square02.png");
     bonusBG->setScale(0.5f);
@@ -100,6 +82,26 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     this->addChild(bonusMenu, 2);
     m_bonusMenu = bonusMenu;
 
+    auto safeMenu = CCMenu::create();
+    safeMenu->setPosition({ 0.f, 0.f });
+    safeMenu->setContentSize(size);
+    safeMenu->setID("safe-button-menu");
+    this->addChild(safeMenu, 2);
+
+    auto safeButton = CCMenuItemSpriteExtra::create(
+        CCSprite::createWithSpriteFrameName("GJ_safeBtn_001.png"),
+        this,
+        menu_selector(RDDailyNode::onTheSafe)
+    );
+    safeButton->setScale(0.5f);
+    // safeButton->setPosition(size - ccp(2, 2));
+    safeButton->setPosition({ size.width/2.f, bonusBG->getPositionY() });
+    safeButton->m_scaleMultiplier = 1.15f;
+    safeButton->m_baseScale = 0.5f;
+    safeButton->setID("safe-button");
+    this->addChild(safeButton);
+    safeMenu->addChild(safeButton);
+    
     if (auto level = GLM->getSavedDailyLevel(m_isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk)) {
         RDDailyNode::setupLevelMenu(level);
     } else {
