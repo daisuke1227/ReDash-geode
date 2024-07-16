@@ -5,7 +5,7 @@
 using namespace geode::prelude;
 
 std::vector<int> mainLevels = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 5001, 5002, 5003, 5004 };
-int thing = 1;
+int thing = 0;
 
 class $modify(PlayLayer) {
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
@@ -25,19 +25,34 @@ class $modify(PlayLayer) {
 class $modify(LoadingLayer) {
     void loadAssets() {
         LoadingLayer::loadAssets();
+		thing++;
 		auto loader = Loader::get();
-        thing++;
-        if (thing == 15) {
+        if (thing == 8) {
             auto creatorLayer = CreatorLayer::create(); // phantom layer rip
 			
 			if (loader->isModLoaded("cvolton.betterinfo")) {
-				if (auto menu = creatorLayer->getChildByID("cvolton.betterinfo/center-right-menu")) {
-					if (auto button = menu->getChildByID("cvolton.betterinfo/main-button")) {
-						Variables::BISelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+				if (loader->isModLoaded("undefined0.gdtweaks")) {
+					if (loader->getLoadedMod("undefined0.gdtweaks")->getSettingValue<bool>("replace-more-games-w-texture")) {
+						if (auto menu = creatorLayer->getChildByID("bottom-left-menu")) {
+							if (auto button = menu->getChildByID("cvolton.betterinfo/main-button")) {
+								Variables::BISelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+							}
+						}
+					} else {
+						if (auto menu = creatorLayer->getChildByID("cvolton.betterinfo/center-right-menu")) {
+							if (auto button = menu->getChildByID("cvolton.betterinfo/main-button")) {
+								Variables::BISelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+							}
+						}
+					}
+				} else {
+					if (auto menu = creatorLayer->getChildByID("cvolton.betterinfo/center-right-menu")) {
+						if (auto button = menu->getChildByID("cvolton.betterinfo/main-button")) {
+							Variables::BISelector = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+						}
 					}
 				}
 			}
-
 
 			auto pagesMod = loader->getLoadedMod("alphalaneous.pages_api");
 			if (pagesMod->getSettingValue<bool>("creator-layer-menu")) {
@@ -71,7 +86,12 @@ class $modify(LoadingLayer) {
 				}
 			}
 
-			creatorLayer->release();
+			// i hate gdutils
+			if (loader->isModLoaded("gdutilsdevs.gdutils")) {
+				if (loader->getLoadedMod("gdutilsdevs.gdutils")->getSettingValue<bool>("activate-background")) {
+					creatorLayer->retain();
+				}
+			}
         }
     }
 };

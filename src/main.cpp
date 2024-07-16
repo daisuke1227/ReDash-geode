@@ -40,6 +40,16 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		auto rightMenu = this->getChildByID("right-side-menu");
 
+		if (loader->isModLoaded("geode.texture-loader") && loader->isModLoaded("undefined0.gdtweaks")) {
+			if (loader->getLoadedMod("undefined0.gdtweaks")->getSettingValue<bool>("replace-more-games-w-texture")) {
+				if (auto menu = this->getChildByID("more-games-menu")) {
+					if (auto button = menu->getChildByID("geode.texture-loader/texture-loader-button")) {
+						rightMenu->addChild(button);
+					}
+				}
+			}
+		}
+
 		if (auto closeMenu = this->getChildByID("close-menu")) {
 			if (!closeMenu->getChildByID("close-button")) {
 				auto cls_spr = CCSprite::createWithSpriteFrameName("GJ_closeBtn_001.png");
@@ -486,9 +496,6 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		bottomMenu->updateLayout();
 		rightMenu->updateLayout();
-
-
-
 
 		return true;
 	}
