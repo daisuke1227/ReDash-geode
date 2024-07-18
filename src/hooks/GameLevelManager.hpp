@@ -20,29 +20,42 @@ class $modify(MyGLM, GameLevelManager) {
     void onGetLeaderboardScoresCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetLeaderboardScoresCompleted(response, tag);
 
-        if (response != "-1" && tag == "leaderboard_global") {
-            if (Variables::GlobalRank != -1) {
-                std::string responseStd = response;
-                std::string name = GJAccountManager::get()->m_username;
-                std::transform(responseStd.begin(), responseStd.end(), responseStd.begin(), [](unsigned char c) { return std::tolower(c); });
-                std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
-                auto pos = responseStd.find(fmt::format("1:{}", name));
-                auto pos2 = responseStd.find("|", pos);
-                if (pos < responseStd.size() && pos2 < responseStd.size()) {
-                    auto dict = GameLevelManager::responseToDict(responseStd.substr(pos, pos2 - pos), false);
-                    Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
-                    Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
+        if (tag == "leaderboard_global") {
+            if (response != "-1") {
+                if (Variables::GlobalRank != -1) {
+                    std::string responseStd = response;
+                    std::string name = GJAccountManager::get()->m_username;
+                    std::transform(responseStd.begin(), responseStd.end(), responseStd.begin(), [](unsigned char c) { return std::tolower(c); });
+                    std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+                    auto pos = responseStd.find(fmt::format("1:{}", name));
+                    auto pos2 = responseStd.find("|", pos);
+                    if (pos < responseStd.size()) {
+                        if (pos2 >= responseStd.size()) {
+                            pos2 = responseStd.size() - 1;
+                        }
+                        auto dict = GameLevelManager::responseToDict(responseStd.substr(pos, pos2 - pos), false);
+                        Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
+                        Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
 
+                        if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+                            if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                                button->updateLeaderboardLabel();
+                            }
+                        }
+                    } else {
+                        log::error("Failed to find player in leaderboard response");
+                        log::error("response: {}", responseStd);
+                        log::error("name: {}", name);
+                        log::error("pos: {}; pos2: {}", pos, pos2);
+                    }
+                }
+            } else {
+                if (Variables::GlobalRank != -1) {
                     if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
                         if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
-                            button->updateLeaderboardLabel();
+                            button->getLeaderboardRankFailed();
                         }
                     }
-                } else {
-                    log::error("Failed to find player in leaderboard response");
-                    log::error("response: {}", responseStd);
-                    log::error("name: {}", name);
-                    log::error("pos: {}; pos2: {}", pos, pos2);
                 }
             }
         }
@@ -101,10 +114,12 @@ class $modify(MyGLM, GameLevelManager) {
     void onGetGJDailyLevelStateCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetGJDailyLevelStateCompleted(response, tag);
 
-        auto responseStd = std::string(response.c_str());
-        auto timeLeft = std::stoi(responseStd.substr(responseStd.find('|') + 1));
-
         if (response != "-1") {
+            auto responseStd = std::string(response.c_str());
+            auto pos = responseStd.find('|') + 1;
+            if (pos >= responseStd.size()) return;
+            auto timeLeft = std::stoi(responseStd.substr());
+
             if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
                 if (tag == "daily_state") {
                     if (this->m_dailyIDUnk == 0) {

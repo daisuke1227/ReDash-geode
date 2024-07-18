@@ -43,6 +43,12 @@
             "description": "Change the color of the description text on the bottom buttons.",
             "default": "#0000008c"
         },
+        "hide-bottom-buttons-texts": {
+            "name": "Hide Buttons Description Texts",
+            "type": "bool",
+            "description": "Hide the static description texts of the 8 bottom buttons.",
+            "default": false
+        },
         "goto-last-played-main": {
             "name": "Go to Last Played Main Level",
             "type": "bool",
@@ -83,12 +89,6 @@
             "name": "Hide Diamonds & Orbs stats",
             "type": "bool",
             "description": "Hide the diamonds and orbs stats.",
-            "default": false
-        },
-        "hide-bottom-buttons-texts": {
-            "name": "Hide Bottom Buttons Texts",
-            "type": "bool",
-            "description": "Hide the static description texts of the bottom buttons.",
             "default": false
         }
     }

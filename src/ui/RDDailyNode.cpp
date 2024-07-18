@@ -438,7 +438,7 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     nameLabel->setPositionX(difficultySprite->getPositionX() + difficultySprite->getScaledContentWidth()/2 + 5.f);
     nameLabel->setPositionY(baseY + menuSize.height*3/4);
     nameLabel->setID("name-label");
-    m_menu->addChild(nameLabel, 1);
+    m_menu->addChild(nameLabel, 8);
 
     auto creatorLabel = CCLabelBMFont::create(fmt::format("by {}", level->m_creatorName).c_str(), "goldFont.fnt");
     creatorLabel->setScale(0.5f);
@@ -454,7 +454,7 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     creatorButton->setPositionY(baseY + menuSize.height/2);
     creatorButton->m_scaleMultiplier = 1.1f;
     creatorButton->setID("creator-button");
-    m_menu->addChild(creatorButton, 1);
+    m_menu->addChild(creatorButton, 8);
 
     auto songName = "[Failed to load song name]";
     if (auto song = MusicDownloadManager::sharedState()->getSongInfoObject(level->m_songID)) {
@@ -470,7 +470,7 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     songLabel->setPositionX(nameLabel->getPositionX());
     songLabel->setPositionY(baseY + menuSize.height/4);
     songLabel->setID("song-label");
-    m_menu->addChild(songLabel, 1);
+    m_menu->addChild(songLabel, 8);
 
     auto starsLabel = CCLabelBMFont::create(std::to_string(level->m_stars).c_str(), "bigFont.fnt");
     starsLabel->setScale(0.32f);
@@ -538,6 +538,12 @@ void RDDailyNode::downloadThumbnailFinished() {
                 clippingNode->addChild(sprite);
                 m_menu->addChild(clippingNode, 0);
                 sprite->runAction(CCFadeIn::create(0.25f));
+
+                auto overlay = CCScale9Sprite::create("innerBG_overlay.png"_spr);
+                overlay->setPosition(m_innerBG->getPosition());
+                overlay->setScale(m_innerBG->getScale());
+                overlay->setContentSize(m_innerBG->getContentSize());
+                m_menu->addChild(overlay, 1);
 
                 image->release();
             });

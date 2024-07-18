@@ -63,6 +63,7 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	if (titleSprite->getScaledContentWidth() > 80.f) titleSprite->setScale(0.8f * (80.f / titleSprite->getScaledContentWidth()));
 	titleSprite->setID("title-sprite");
 	labelMenu->addChild(titleSprite);
+	m_titleSprite = titleSprite;
 
 	int i = 0;
 	for (auto desc : description) {
@@ -108,6 +109,15 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	this->setID(id);
 
 	return true;
+}
+
+void RDButton::getLeaderboardRankFailed() {
+	m_loadingCircle->setVisible(false);
+	for (int i = 1; i < m_labelMenu->getChildrenCount(); i++) {
+		m_labelMenu->getChildByID(fmt::format("desc-label-{}", i))->removeFromParent();
+	}
+	m_labelMenu->setVisible(true);
+	m_labelMenu->updateLayout();
 }
 
 void RDButton::updateLeaderboardLabel() {
