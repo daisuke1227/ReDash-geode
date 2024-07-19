@@ -65,18 +65,20 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	labelMenu->addChild(titleSprite);
 	m_titleSprite = titleSprite;
 
-	int i = 0;
-	for (auto desc : description) {
-		auto descLabel = CCLabelBMFont::create(desc.c_str(), "NewPusab.fnt"_spr, -1, CCTextAlignment::kCCTextAlignmentRight);
-		descLabel->setScale(0.4f);
-		auto color = Mod::get()->getSettingValue<ccColor4B>("desc-label-color");
-		descLabel->setColor({ color.r, color.g, color.b });
-		descLabel->setOpacity(color.a);
-		descLabel->setID(fmt::format("desc-label-{}", ++i));
-		labelMenu->addChild(descLabel, i);
+	if (!Mod::get()->getSettingValue<bool>("hide-bottom-buttons-texts")) {
+		int i = 0;
+		for (auto desc : description) {
+			auto descLabel = CCLabelBMFont::create(desc.c_str(), "NewPusab.fnt"_spr, -1, CCTextAlignment::kCCTextAlignmentRight);
+			descLabel->setScale(0.4f);
+			auto color = Mod::get()->getSettingValue<ccColor4B>("desc-label-color");
+			descLabel->setColor({ color.r, color.g, color.b });
+			descLabel->setOpacity(color.a);
+			descLabel->setID(fmt::format("desc-label-{}", ++i));
+			labelMenu->addChild(descLabel, i);
+		}
 	}
 	labelMenu->updateLayout();
-	for (i = 1; i <= description.size(); i++) {
+	for (int i = 1; i < labelMenu->getChildrenCount(); i++) {
 		auto label = labelMenu->getChildByID(fmt::format("desc-label-{}", i));
 		label->setPositionY(label->getPositionY() + label->getScaledContentHeight()/2);
 	}
@@ -92,13 +94,15 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
     spriteNode->addChild(loadingCircle, 2);
     m_loadingCircle = loadingCircle;
 
-	if (id == "leaderboards-button") {
-		if (Variables::GlobalRank == 0) {
-			loadingCircle->setVisible(true);
-			labelMenu->setVisible(false);
-		} else if (Variables::GlobalRank == -1) {
-			as<CCLabelBMFont*>(labelMenu->getChildByID("desc-label-2"))->setString("None");
-			labelMenu->updateLayout();
+	if (!Mod::get()->getSettingValue<bool>("hide-bottom-buttons-texts")) {
+		if (id == "leaderboards-button") {
+			if (Variables::GlobalRank == 0) {
+				loadingCircle->setVisible(true);
+				labelMenu->setVisible(false);
+			} else if (Variables::GlobalRank == -1) {
+				as<CCLabelBMFont*>(labelMenu->getChildByID("desc-label-2"))->setString("None");
+				labelMenu->updateLayout();
+			}
 		}
 	}
 

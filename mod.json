@@ -29,11 +29,11 @@
         },
         "files": [
             "resources/fonts/*.png",
-            "resources/fonts/*.fnt",
-            "resources/images/*.png"
+            "resources/fonts/*.fnt"
         ],
         "sprites": [
-            "resources/*.png"
+            "resources/*.png",
+            "resources/images/*.png"
         ]
     },
     "settings": {
