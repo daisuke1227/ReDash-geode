@@ -513,39 +513,41 @@ void RDDailyNode::downloadThumbnailFinished() {
             auto image = Ref(new CCImage());
             image->initWithImageData(const_cast<uint8_t*>(m_thumbnailData.data()), m_thumbnailData.size());
             geode::Loader::get()->queueInMainThread([this, image](){
-                auto size = this->getContentSize();
-                auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
-                auto texture = CCTextureCache::get()->addUIImage(image, key.c_str());
+                if (this) {
+                    auto size = this->getContentSize();
+                    auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
+                    auto texture = CCTextureCache::get()->addUIImage(image, key.c_str());
 
-                auto clippingNode = CCClippingNode::create();
-                clippingNode->setAnchorPoint({ 0.5f, 0.5f });
-                clippingNode->setPosition(m_innerBG->getPosition());
-                clippingNode->setContentSize(m_innerBG->getScaledContentSize());
-                clippingNode->setAlphaThreshold(0.03f);
-                clippingNode->setID("thumbnail-node");
+                    auto clippingNode = CCClippingNode::create();
+                    clippingNode->setAnchorPoint({ 0.5f, 0.5f });
+                    clippingNode->setPosition(m_innerBG->getPosition());
+                    clippingNode->setContentSize(m_innerBG->getScaledContentSize());
+                    clippingNode->setAlphaThreshold(0.03f);
+                    clippingNode->setID("thumbnail-node");
 
-                auto stencil = CCScale9Sprite::create("square02b_001.png");
-                stencil->setScale(0.5f);
-                stencil->setPosition(clippingNode->getContentSize()/2);
-                stencil->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
+                    auto stencil = CCScale9Sprite::create("square02b_001.png");
+                    stencil->setScale(0.5f);
+                    stencil->setPosition(clippingNode->getContentSize()/2);
+                    stencil->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
 
-                auto sprite = CCSprite::createWithTexture(texture);
-                sprite->setPosition(stencil->getPosition());
-                sprite->setScale(stencil->getScaledContentWidth() / sprite->getContentWidth());
-                sprite->setOpacity(0);
+                    auto sprite = CCSprite::createWithTexture(texture);
+                    sprite->setPosition(stencil->getPosition());
+                    sprite->setScale(stencil->getScaledContentWidth() / sprite->getContentWidth());
+                    sprite->setOpacity(0);
 
-                clippingNode->setStencil(stencil);
-                clippingNode->addChild(sprite);
-                m_menu->addChild(clippingNode, 0);
-                sprite->runAction(CCFadeIn::create(0.25f));
+                    clippingNode->setStencil(stencil);
+                    clippingNode->addChild(sprite);
+                    m_menu->addChild(clippingNode, 0);
+                    sprite->runAction(CCFadeIn::create(0.25f));
 
-                auto overlay = CCScale9Sprite::create("innerBG_overlay.png"_spr);
-                overlay->setPosition(m_innerBG->getPosition());
-                overlay->setScale(m_innerBG->getScale());
-                overlay->setContentSize(m_innerBG->getContentSize());
-                m_menu->addChild(overlay, 1);
+                    auto overlay = CCScale9Sprite::create("innerBG_overlay.png"_spr);
+                    overlay->setPosition(m_innerBG->getPosition());
+                    overlay->setScale(m_innerBG->getScale());
+                    overlay->setContentSize(m_innerBG->getContentSize());
+                    m_menu->addChild(overlay, 1);
 
-                image->release();
+                    image->release();
+                }
             });
         });
         thread.detach();
