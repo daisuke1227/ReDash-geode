@@ -5,7 +5,7 @@
 
 #include "hooks/onBackHooks.hpp"
 #include "hooks/GameLevelManager.hpp"
-#include "hooks/PlayLayer_LoadingLayer.hpp" // same hook index bruh
+#include "hooks/LayersHooks.hpp" // same hook index bruh
 
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
