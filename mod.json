@@ -13,7 +13,7 @@
         "ninXout"
     ],
 	"description": "Geometry Dash if it was a flashy mobile game.",
-    "tags": ["interface", "offline"],
+    "tags": ["interface"],
     "dependencies": [
         {
             "id": "alphalaneous.pages_api",
