@@ -95,8 +95,7 @@ class $modify(CrazyLayer, MenuLayer) {
 					CCArrayExt<CCMenuItemSpriteExtra*> buttons = closeMenu->getChildren();
 					for (auto& button : buttons) {
 						if (button->getID() == ""
-						&& button->getZOrder() == 0
-						&& button->getScale() == 1.f) {
+						&& button->getNormalImage()->getID() == "smjs.gdintercept/blame-overcharged-menu") {
 							foundBtn = true;
 							closeMenu->removeChild(button);
 							bottomMenu->addChild(button);

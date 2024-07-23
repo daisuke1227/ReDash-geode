@@ -5,16 +5,6 @@
 using namespace geode::prelude;
 
 class $modify(MyGLM, GameLevelManager) {
-    void getGJDailyLevelState(GJTimedLevelType p0) {
-        GameLevelManager::getGJDailyLevelState(p0);
-        log::error("GLM::getGJDailyLevelState({})", as<int>(p0));
-    }
-
-    void ProcessHttpRequest(gd::string endpoint, gd::string params, gd::string tag, GJHttpType type) {
-        GameLevelManager::ProcessHttpRequest(endpoint, params, tag, type);
-        if (endpoint == "https://www.boomlings.com/database/getGJDailyLevel.php") log::error("GLM::ProcessHttpRequest({}, {}, {}, {})", endpoint, params, tag, as<int>(type));
-    }
-
     void updateTimers() {
         Variables::DailyLeft--;
         Variables::WeeklyLeft--;
@@ -123,7 +113,6 @@ class $modify(MyGLM, GameLevelManager) {
 
     void onGetGJDailyLevelStateCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetGJDailyLevelStateCompleted(response, tag);
-        log::warn("GLM::onGetGJDailyLevelStateCompleted({}, {})", response, tag);
 
         if (response != "-1") {
             auto responseStd = std::string(response.c_str());
