@@ -5,7 +5,7 @@
 		"android": "2.206",
 		"mac": "2.206"
 	},
-	"version": "v1.0.1",
+	"version": "v1.0.2-beta.2",
 	"id": "ninxout.redash",
 	"name": "Overcharged Main Menu",
 	"developers": [
@@ -14,6 +14,7 @@
     ],
 	"description": "Geometry Dash if it was a flashy mobile game.",
     "tags": ["interface"],
+    "repository": "https://github.com/Weebifying/ReDash-geode",
     "dependencies": [
         {
             "id": "alphalaneous.pages_api",
@@ -37,11 +38,29 @@
         ]
     },
     "settings": {
+        "modify-menulayer" :{
+            "name": "Modify MenuLayer",
+            "type": "bool",
+            "description": "Overcharging the main menu.",
+            "default": true
+        },
+        "modify-creatorlayer" :{
+            "name": "Modify CreatorLayer",
+            "type": "bool",
+            "description": "Overcharging the creator layer.",
+            "default": false
+        },
         "desc-label-color" :{
             "name": "Bottom Buttons Description Color",
             "type": "rgba",
             "description": "Change the color of the description text on the bottom buttons.",
             "default": "#0000008c"
+        },
+        "ltr-texts": {
+            "name": "Left-to-Right Button Texts",
+            "type": "bool",
+            "description": "Change the direction of the bottom buttons' title and description labels to left-to-right.",
+            "default": true
         },
         "hide-bottom-buttons-texts": {
             "name": "Hide Buttons Description Texts",
@@ -56,7 +75,7 @@
             "default": false
         },
         "disable-creator-button": {
-            "name": "Disable Creator Layer Button",
+            "name": "Disable CreatorLayer Button",
             "type": "bool",
             "description": "Do not add the button for accessing CreatorLayer.",
             "default": true

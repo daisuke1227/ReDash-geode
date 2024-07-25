@@ -26,6 +26,7 @@ std::string getPathString(int n) {
 		case 8: return "Metal";
 		case 9: return "Light";
 		case 10: return "Souls";
+		case 100: return "All";
 		default: return "None";
 	}
 }
@@ -38,6 +39,10 @@ std::string abbreviateNumber(int n) {
 }
 
 class $modify(CrazyLayer, MenuLayer) {
+	struct Fields {
+		CCMenuItemSpriteExtra* m_questBtn;
+	};
+
 	static void onModify(auto& self) {
         self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api but after index developer points
     }
@@ -270,6 +275,22 @@ class $modify(CrazyLayer, MenuLayer) {
 		rightMenu->getChildByID("daily-chest-button")->setZOrder(4);
 
 		auto questBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_quests.png"_spr), this, menu_selector(CreatorLayer::onChallenge));
+		questBtn->setID("quest-button"_spr);
+		auto piVar2 = CCSprite::createWithSpriteFrameName("exMark_001.png");
+		piVar2->setScale(0.55f);
+		piVar2->setVisible(false);
+		piVar2->setPosition(questBtn->getContentSize() - ccp(4,8));
+		piVar2->setID("quest-notif"_spr);
+		questBtn->addChild(piVar2, 1);
+		m_fields->m_questBtn = questBtn;
+		for (int i = 1; i <= 3; i++) {
+			if (auto challenge = gsm->getChallenge(i)) {
+				if (challenge->m_canClaim) {
+					piVar2->setVisible(true);
+					break;
+				}
+			}
+		}
 		rightMenu->addChild(questBtn, 3);
 
 		auto mapPacksBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_mappacks.png"_spr), this, menu_selector(CreatorLayer::onMapPacks));
@@ -279,11 +300,15 @@ class $modify(CrazyLayer, MenuLayer) {
 		playerUsername->setScale(playerUsername->getScale() - 0.1f);
 		playerUsername->setPositionX(bottomMenu->getPositionX());
 		playerUsername->setPositionY(bottomMenu->getPositionY() - bottomMenu->getScaledContentHeight()/2 - playerUsername->getScaledContentHeight()/2 + 2.9f);
+		if (playerUsername->getScaledContentWidth() > 54.f) {
+			playerUsername->setScale(54.f / playerUsername->getContentWidth());
+		}
 		auto profileMenu = this->getChildByID("profile-menu");
 		profileMenu->setScale(0.75f);
-		profileMenu->setPositionX(winSize.width + 6.5f);
+		profileMenu->setPositionX(playerUsername->getPositionX() + profileMenu->getScaledContentWidth()/2 - 20.625f);
 		profileMenu->setPositionY(playerUsername->getPositionY() - playerUsername->getScaledContentHeight()/2 - profileMenu->getScaledContentHeight()/2 - 1.f);
 		profileMenu->setZOrder(1);
+		profileMenu->updateLayout();
 
 		// NEW STUFF YAYY :D - ninXout
 		// yay - Weebify
@@ -320,11 +345,27 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		int activePath = gsm->m_activePath;
 		int pathProgress = gsm->getStat(std::to_string(activePath).c_str());
+		int maxProgress = 1000;
+
 		if (pathProgress > 1000) pathProgress = 1000;
+		if (activePath == 0) {
+			bool completedAll = true;
+			for (int i = 1; i < 11; i++) {
+				if (gsm->getStat(std::to_string(29 + i).c_str()) < 1000) {
+					completedAll = false;
+					break;
+				}
+			}
+			if (completedAll) {
+				activePath = 100;
+				pathProgress = 10000;
+				maxProgress = 10000;
+			}
+		}
 
 		mainMenu->addChild(RDButton::create(this, "RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", abbreviateNumber(LocalLevelManager::get()->m_localLevels->count()))}, "RD_create.png"_spr, 0.95f, menu_selector(CreatorLayer::onMyLevels), "create-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", abbreviateNumber(glm->getSavedLevels(false, 0)->count())), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels), "saved-button"));
-		mainMenu->addChild(RDButton::create(this, "RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/1000", pathProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths), "paths-button"));
+		mainMenu->addChild(RDButton::create(this, "RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/{}", pathProgress, maxProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths), "paths-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_leaderboardsLabel.png"_spr, {"Global", fmt::format("#{}", Variables::GlobalRank)}, "RD_leaderboards.png"_spr, 0.85f, menu_selector(CreatorLayer::onLeaderboards), "leaderboards-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {"Forest", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
@@ -506,13 +547,25 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		return true;
 	}
+};
 
-	// static CCScene* scene(bool p0) {
-	// 	auto sc = MenuLayer::scene(p0);
-	// 	auto layer = getChildOfType<MenuLayer>(sc, 0);
+#include <Geode/modify/ChallengesPage.hpp>
+class $modify(ChallengesPage) {
+	void claimItem(ChallengeNode* node, GJChallengeItem* item, cocos2d::CCPoint point) {
+		ChallengesPage::claimItem(node, item, point);
 
-	// 	handleTouchPriority(layer, true);
-
-	// 	return sc;
-	// }
+		if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+			auto piVar2 = as<CrazyLayer*>(layer)->m_fields->m_questBtn->getChildByID("quest-notif"_spr);
+			bool claimable = false;
+			for (int i = 1; i <= 3; i++) {
+				if (auto challenge = GameStatsManager::sharedState()->getChallenge(i)) {
+					if (challenge->m_canClaim) {
+						claimable = true;
+						break;
+					}
+				}
+			}
+			piVar2->setVisible(claimable);
+		}
+	}
 };

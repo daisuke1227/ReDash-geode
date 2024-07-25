@@ -28,35 +28,29 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	if (id == "saved-button") icon->setPositionX(153);
 	icon->setID("icon-sprite");
     spriteNode->addChild(icon);
-	
-
-	// auto descLabel = CCLabelBMFont::create(description.c_str(), "NewPusab.fnt"_spr, 225, CCTextAlignment::kCCTextAlignmentRight);
-	// descLabel->setOpacity(150.f);
-	// descLabel->setColor(ccc3(0, 0, 0));
-	// spriteNode->addChild(descLabel);
-	// m_descLabel = descLabel;
 
 	auto labelMenu = CCMenu::create();
-	labelMenu->setAnchorPoint({ 1, 0.5f });
-	labelMenu->setPosition( { icon->getPositionX() - icon->getScaledContentWidth() - 2.5f, 35.f });
+	if (!Mod::get()->getSettingValue<bool>("ltr-texts")) {
+		labelMenu->setAnchorPoint({ 1, 0.5f });
+		labelMenu->setPosition( { icon->getPositionX() - icon->getScaledContentWidth() - 2.5f, 35.f });
+	} else {
+		labelMenu->setAnchorPoint({ 0, 0.5f });
+		labelMenu->setPosition( { 7.5f, 35.f });
+	}
 	labelMenu->setContentSize({ 80.f, 60.f });
+	auto alignment = 0;
+	if (!Mod::get()->getSettingValue<bool>("ltr-texts")) alignment = 2;
 	labelMenu->setLayout(
 		ColumnLayout::create()
 			->setAxisReverse(true)
-			->setCrossAxisAlignment(AxisAlignment::End)
-			->setCrossAxisLineAlignment(AxisAlignment::End)
+			->setCrossAxisAlignment(as<AxisAlignment>(alignment))
+			->setCrossAxisLineAlignment(as<AxisAlignment>(alignment))
 			->setAutoScale(false)
 			->setGap(3.f)
 	);
 	labelMenu->setID("label-menu");
 	spriteNode->addChild(labelMenu);
 	m_labelMenu = labelMenu;
-
-	// auto titleLabel = CCLabelBMFont::create(title.c_str(), "bigFont.fnt", -1, CCTextAlignment::kCCTextAlignmentRight);
-	// titleLabel->setScale(0.6f);
-	// if (titleLabel->getScaledContentWidth() > 80.f) titleLabel->setScale(0.6f * (80.f / titleLabel->getScaledContentWidth()));
-	// titleLabel->setID("title-label");
-	// labelMenu->addChild(titleLabel);
 
 	auto titleSprite = CCSprite::createWithSpriteFrameName(title.c_str());
 	titleSprite->setScale(0.8f);
@@ -86,7 +80,11 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	auto loadingCircle = LoadingCircle::create();
     loadingCircle->setScale(0.65f);
     loadingCircle->setContentSize({ 0 , 0 });
-    loadingCircle->setPosition(labelMenu->getPosition() - ccp(labelMenu->getContentWidth()/2, 0));
+	if (Mod::get()->getSettingValue<bool>("ltr-texts")) {
+    	loadingCircle->setPosition(labelMenu->getPosition() + ccp(labelMenu->getContentWidth()/2, 0));
+	} else {
+    	loadingCircle->setPosition(labelMenu->getPosition() - ccp(labelMenu->getContentWidth()/2, 0));
+	}
     loadingCircle->setVisible(false);
     loadingCircle->m_sprite->setPosition({ 0 , 0 });
     loadingCircle->m_sprite->runAction(CCRepeatForever::create(CCRotateBy::create(1, 360)));
