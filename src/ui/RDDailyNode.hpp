@@ -9,7 +9,7 @@ public:
     ByteVector m_thumbnailData;
 
     GJGameLevel* m_currentLevel;
-    bool m_isWeekly;
+    int m_levelType;
 
     CCMenu* m_menu;
     CCMenu* m_bonusMenu;
@@ -36,6 +36,6 @@ public:
     void downloadThumbnailFinished();
     void downloadThumbnailFail();
 
-    static RDDailyNode* create(bool isWeekly, CCPoint position, CCSize size, std::string id);
-    bool init(bool isWeekly, CCPoint position, CCSize size, std::string id);
+    static RDDailyNode* create(int levelType, CCSize size, std::string id, float scale);
+    bool init(int levelType, CCSize size, std::string id, float scale);
 };

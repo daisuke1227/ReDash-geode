@@ -1,5 +1,9 @@
 # Overcharged Main Menu Changelog
 ## v1.0.2
+- beta.3
+    - Added compat with SpaghettDev's GD-Roulette mod
+    - Added compat with Shine's Minecraft Splash mod
+
 - beta.2
     - Added the quests button indicator (like in CreatorLayer)
     - Added an option to set the bottom buttons' labels' direction to right-to-left or not

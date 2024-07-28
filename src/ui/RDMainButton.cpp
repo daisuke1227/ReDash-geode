@@ -8,7 +8,7 @@ void RDMainButton::onPlay(CCObject* sender) {
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 }
 
-bool RDMainButton::init(CCPoint position, CCSize size, std::string id) {
+bool RDMainButton::init(CCPoint position, CCSize size, std::string id, float scale) {
     auto GSM = GameStatsManager::sharedState();
     auto GLM = GameLevelManager::get();
     auto spriteNode = CCNode::create();
@@ -241,15 +241,16 @@ bool RDMainButton::init(CCPoint position, CCSize size, std::string id) {
 
     this->setContentSize(size);
     this->setPosition(position + size/2);
+    this->setScale(scale);
 	this->m_scaleMultiplier = 1.1f;
     this->setID(id);
 
     return true;
 }
 
-RDMainButton* RDMainButton::create(CCPoint position, CCSize size, std::string id) {
+RDMainButton* RDMainButton::create(CCPoint position, CCSize size, std::string id, float scale) {
     auto ret = new RDMainButton();
-    if (ret && ret->init(position, size, id)) {
+    if (ret && ret->init(position, size, id, scale)) {
         ret->autorelease();
         return ret;
     }

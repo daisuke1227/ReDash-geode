@@ -52,7 +52,7 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 	spriteNode->addChild(labelMenu);
 	m_labelMenu = labelMenu;
 
-	auto titleSprite = CCSprite::createWithSpriteFrameName(title.c_str());
+	auto titleSprite = CCSprite::create(title.c_str());
 	titleSprite->setScale(0.8f);
 	if (titleSprite->getScaledContentWidth() > 80.f) titleSprite->setScale(0.8f * (80.f / titleSprite->getScaledContentWidth()));
 	titleSprite->setID("title-sprite");

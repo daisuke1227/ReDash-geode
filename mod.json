@@ -1,11 +1,11 @@
 {
-	"geode": "3.3.0",
+	"geode": "3.3.1",
 	"gd": {
 		"win": "2.206",
 		"android": "2.206",
 		"mac": "2.206"
 	},
-	"version": "v1.0.2-beta.2",
+	"version": "v1.0.2-beta.3",
 	"id": "ninxout.redash",
 	"name": "Overcharged Main Menu",
 	"developers": [
@@ -34,22 +34,11 @@
         ],
         "sprites": [
             "resources/*.png",
-            "resources/images/*.png"
+            "resources/images/*.png",
+            "resources/labels/*.png"
         ]
     },
     "settings": {
-        "modify-menulayer" :{
-            "name": "Modify MenuLayer",
-            "type": "bool",
-            "description": "Overcharging the main menu.",
-            "default": true
-        },
-        "modify-creatorlayer" :{
-            "name": "Modify CreatorLayer",
-            "type": "bool",
-            "description": "Overcharging the creator layer.",
-            "default": false
-        },
         "desc-label-color" :{
             "name": "Bottom Buttons Description Color",
             "type": "rgba",

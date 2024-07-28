@@ -6,24 +6,33 @@ int getBonusDiamonds(GJGameLevel* level) {
     return level->getAverageDifficulty();
 }
 
-bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string id) {
+bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) {
     if (!CCNode::init()) return false;
+    // 0: daily
+    // 1: weekly
+    // 2: event
 
     auto GLM = GameLevelManager::get();
 
-    auto background = CCScale9Sprite::create(isWeekly ? "GJ_square05.png" : "GJ_square01.png");
+    std::vector<const char*> bgVctr = {"GJ_square01.png", "GJ_square05.png", "GJ_square05.png"};
+    auto background = CCScale9Sprite::create(bgVctr[levelType]);
+    if (levelType == 2) {
+        background->setColor({ 200, 50, 255 });
+    }
     background->setContentSize(size);
     background->setPosition({ size.width/2, size.height/2 });
     background->setID("background");
     this->addChild(background, 0);
 
-    auto crownSprite = CCSprite::createWithSpriteFrameName(isWeekly ? "gj_weeklyCrown_001.png" : "gj_dailyCrown_001.png");
+    std::vector<const char*> crownVctr = {"gj_dailyCrown_001.png", "gj_weeklyCrown_001.png", "RD_eventCrown_001.png"_spr};
+    auto crownSprite = CCSprite::createWithSpriteFrameName(crownVctr[levelType]);
     crownSprite->setScale(0.75f);
     crownSprite->setPosition({ size.width/2, size.height + 8.f });
     crownSprite->setID("crown-sprite");
     this->addChild(crownSprite, 1);
 
-    auto titleSprite = CCSprite::createWithSpriteFrameName(isWeekly ? "weeklyLevelLabel_001.png" : "dailyLevelLabel_001.png");
+    std::vector<const char*> titleArr = {"dailyLevelLabel_001.png", "weeklyLevelLabel_001.png", "eventLevelLabel_001.png"};
+    auto titleSprite = CCSprite::createWithSpriteFrameName(titleArr[levelType]);
     titleSprite->setScale(0.7f);
     titleSprite->setPosition({ size.width/2, size.height - 22.5f });
     titleSprite->setID("title-sprite");
@@ -71,7 +80,8 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     auto bonusMenu = CCMenu::create();
     bonusMenu->setContentSize(bonusBG->getScaledContentSize());
     bonusMenu->setPosition(bonusBG->getPosition());
-    bonusMenu->setPositionX(bonusMenu->getPositionX() + (m_isWeekly ? 5.f : 2.f));
+    std::vector<float> bonusOffset = {2.f, 5.f, 2.f};
+    bonusMenu->setPositionX(bonusMenu->getPositionX() + bonusOffset[levelType]);
     bonusMenu->setID("bonus-menu");
     bonusMenu->setLayout(
         RowLayout::create()
@@ -101,16 +111,19 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     safeButton->setID("safe-button");
     this->addChild(safeButton);
     safeMenu->addChild(safeButton);
-    
-    if (auto level = GLM->getSavedDailyLevel(m_isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk)) {
+
+    std::vector<int> timelyUnk = {GLM->m_dailyIDUnk, GLM->m_weeklyIDUnk, GLM->m_eventIDUnk};
+    if (auto level = GLM->getSavedDailyLevel(timelyUnk[levelType])) {
         RDDailyNode::setupLevelMenu(level);
     } else {
-        GLM->downloadLevel(m_isWeekly ? -2 : -1, false);
+        std::vector<int> downloadType = {-1, -2, -3};
+        GLM->downloadLevel(downloadType[levelType], false);
         m_loadingCircle->setVisible(true);
         m_bonusMenu->setVisible(false);
     }
     
-    auto time = (m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft);
+    std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
+    auto time = timelyLeft[levelType];
     if (time < 0) time = 0;
     auto timeLabel = CCLabelBMFont::create(GameToolbox::getTimeString(time, true).c_str(), Mod::get()->getSettingValue<bool>("use-pusab") ? "bigFont.fnt" : "gjFont16.fnt");
     timeLabel->setScale(0.55f);
@@ -120,7 +133,8 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     this->addChild(timeLabel, 1);
     m_timeLabel = timeLabel;
 
-    auto timeLeftLabel = CCLabelBMFont::create(isWeekly ? "New Weekly in:" : "New Daily in:", "bigFont.fnt");
+    std::vector<const char*> timeLabelVctr = {"New Daily in:", "New Weekly in:", "New Event in:"};
+    auto timeLeftLabel = CCLabelBMFont::create(timeLabelVctr[levelType], "bigFont.fnt");
     timeLeftLabel->setScale(0.3f);
     timeLeftLabel->setAnchorPoint({ 1, 0.5f });
     timeLeftLabel->setPosition({ timeLabel->getPositionX(), timeLabel->getPositionY() + timeLabel->getScaledContentHeight()/2 + timeLeftLabel->getScaledContentHeight()/2});
@@ -141,18 +155,18 @@ bool RDDailyNode::init(bool isWeekly, CCPoint position, CCSize size, std::string
     this->addChild(timerLoadingCircle, 2);
     m_timerLoadingCircle = timerLoadingCircle;
 
-    if ((m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft) == 0) {
+    if (time == 0) {
         timeLabel->setVisible(false);
         timeLeftLabel->setVisible(false);
         timerLoadingCircle->setVisible(true);
     }
 
-    if ((isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft) > 0) {
+    if (time > 0) {
         this->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
     }
 
-    this->setPosition(position);
     this->setContentSize(size);
+    this->setScale(scale);
     this->setID(id);
 
     return true;
@@ -169,7 +183,8 @@ void RDDailyNode::onClaimReward(CCObject* sender) {
     auto skipButton = as<CCMenuItemSpriteExtra*>(m_menu->getChildByID("skip-button"));
     auto winSize = CCDirector::sharedDirector()->getWinSize();
     auto GLM = GameLevelManager::get();
-    Mod::get()->setSavedValue(m_isWeekly ? "claimed-weekly" : "claimed-daily", true);
+    std::vector<std::string> claimedTimely = {"claimed-daily", "claimed-weekly", "claimed-event"};
+    Mod::get()->setSavedValue(claimedTimely[m_levelType], true);
 
     if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
         auto point = ccp(232.49, 200);
@@ -183,7 +198,7 @@ void RDDailyNode::onClaimReward(CCObject* sender) {
             }
         }
 
-        if (m_isWeekly) {
+        if (m_levelType == 1) {
             int diamonds = 0;
             int orbs = 0;
             int keySprite = 0;
@@ -262,7 +277,10 @@ void RDDailyNode::onClaimReward(CCObject* sender) {
     viewButton->setPosition({ m_menu->getContentWidth()*5.5f/6.5f, m_menu->getContentHeight()/2.f });
     m_menu->getChildByID("claim-button")->removeFromParent();
 
-    if (m_isWeekly ? GLM->m_weeklyIDUnk < GLM->m_weeklyID : GLM->m_dailyIDUnk < GLM->m_dailyID) {
+
+    std::vector<int> timelyUnk = {GLM->m_dailyIDUnk, GLM->m_weeklyIDUnk, GLM->m_eventIDUnk};
+    std::vector<int> timelyID = {GLM->m_dailyID, GLM->m_weeklyID, GLM->m_eventID};
+    if (timelyUnk[m_levelType] < timelyID[m_levelType]) {
         skipButton->setVisible(true);
     } else {
         skipButton->setVisible(false);
@@ -270,17 +288,19 @@ void RDDailyNode::onClaimReward(CCObject* sender) {
 }
 
 void RDDailyNode::onSkiplevel(CCObject* sender) {
+    std::vector<const char*> timelyName = {"daily", "weekly", "event"};
     geode::createQuickPopup(
         "Skip level",
-        fmt::format("There is a <cy>new</c> {} level available.\nSkip the current level and load the next?", m_isWeekly ? "weekly" : "daily"),
+        fmt::format("There is a <cy>new</c> {} level available.\nSkip the current level and load the next?", timelyName[m_levelType]),
         "Cancel", "Skip",
         [this](auto, bool btn2) {
             if (btn2) {
                 m_loadingCircle->setVisible(true);
                 m_menu->removeAllChildren();
                 m_bonusMenu->setVisible(false);
-                GameLevelManager::get()->downloadLevel(m_isWeekly ? -2 : -1, false);
-                Mod::get()->setSavedValue(m_isWeekly ? "claimed-weekly" : "claimed-daily", false);
+                GameLevelManager::get()->downloadLevel(-m_levelType - 1, false);
+                std::vector<std::string> claimedTimely = {"claimed-daily", "claimed-weekly", "claimed-event"};
+                Mod::get()->setSavedValue(claimedTimely[m_levelType], false);
             }
         }
     );
@@ -294,12 +314,13 @@ void RDDailyNode::onReload(CCObject* sender) {
     m_loadingCircle->setVisible(true);
     m_menu->removeAllChildren();
 
-    if (m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft == 0) GameLevelManager::get()->getGJDailyLevelState(m_isWeekly ? GJTimedLevelType::Weekly : GJTimedLevelType::Daily);
-    GameLevelManager::get()->downloadLevel(m_isWeekly ? -2 : -1, false);
+    std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
+    if (timelyLeft[m_levelType] == 0) GameLevelManager::get()->getGJDailyLevelState(as<GJTimedLevelType>(m_levelType));
+    GameLevelManager::get()->downloadLevel(-m_levelType - 1, false);
 }
 
 void RDDailyNode::onTheSafe(CCObject* sender) {
-    auto search = GJSearchObject::create(m_isWeekly ? SearchType::WeeklySafe : SearchType::DailySafe);
+    auto search = GJSearchObject::create(as<SearchType>(m_levelType + 21));
     auto scene = LevelBrowserLayer::scene(search);
     CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, scene));
 }
@@ -329,14 +350,14 @@ void RDDailyNode::downloadLevelFailed() {
 void RDDailyNode::setupBonusMenu(GJGameLevel* level) {
     m_bonusMenu->removeAllChildren();
 
-    auto bonusSprite = m_isWeekly ? 
+    auto bonusSprite = m_levelType == 1 ? 
         CCSprite::createWithSpriteFrameName("chest_03_02_001.png") :
         CCSprite::createWithSpriteFrameName("GJ_bigDiamond_001.png");
-    bonusSprite->setScale(m_isWeekly ? 0.16f : 0.4f);
+    bonusSprite->setScale(m_levelType == 1 ? 0.16f : 0.4f);
     bonusSprite->setID("bonus-sprite");
     m_bonusMenu->addChild(bonusSprite);
 
-    auto bonusLabel = CCLabelBMFont::create((m_isWeekly ? " / Bonus" : fmt::format("x{} Bonus", getBonusDiamonds(level)).c_str()), "bigFont.fnt");
+    auto bonusLabel = CCLabelBMFont::create((m_levelType == 1 ? " / Bonus" : fmt::format("x{} Bonus", getBonusDiamonds(level)).c_str()), "bigFont.fnt");
     bonusLabel->setScale(0.4f);
     bonusLabel->setID("bonus-label");
     m_bonusMenu->addChild(bonusLabel);
@@ -383,7 +404,9 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
         menu_selector(RDDailyNode::onSkiplevel)
     );
 
-    if (m_isWeekly ? GLM->m_weeklyIDUnk < GLM->m_weeklyID : GLM->m_dailyIDUnk < GLM->m_dailyID) {
+    std::vector<int> timelyUnk = {GLM->m_dailyIDUnk, GLM->m_weeklyIDUnk, GLM->m_eventIDUnk};
+    std::vector<int> timelyID = {GLM->m_dailyID, GLM->m_weeklyID, GLM->m_eventID};
+    if (timelyUnk[m_levelType] < timelyID[m_levelType]) {
         skipButton->setVisible(true);
     } else {
         skipButton->setVisible(false);
@@ -396,7 +419,7 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     m_menu->addChild(skipButton, 10);
     m_skipButton = skipButton;
 
-    if (level->m_normalPercent.value() == 100 && !GameStatsManager::sharedState()->hasCompletedDailyLevel(m_isWeekly ? GLM->m_weeklyIDUnk : GLM->m_dailyIDUnk)) {
+    if (level->m_normalPercent.value() == 100 && !GameStatsManager::sharedState()->hasCompletedDailyLevel(timelyUnk[m_levelType])) {
         auto claimButton = CCMenuItemSpriteExtra::create(
             CCSprite::createWithSpriteFrameName("GJ_rewardBtn_001.png"),
             this,
@@ -562,16 +585,17 @@ void RDDailyNode::downloadThumbnailFail() {
 }
 
 void RDDailyNode::updateTimeLabel(float dt) {
-    m_timeLabel->setString(GameToolbox::getTimeString((m_isWeekly ? Variables::WeeklyLeft : Variables::DailyLeft), true).c_str());
+    std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
+    m_timeLabel->setString(GameToolbox::getTimeString(timelyLeft[m_levelType], true).c_str());
     m_timeLabel->setVisible(true);
     m_timeLeftLabel->setVisible(true);
     m_timerLoadingCircle->setVisible(false);
 }
 
-RDDailyNode* RDDailyNode::create(bool isWeekly, CCPoint position, CCSize size, std::string id) {
+RDDailyNode* RDDailyNode::create(int levelType, CCSize size, std::string id, float scale) {
     auto ret = new RDDailyNode();
-    ret->m_isWeekly = isWeekly;
-    if (ret && ret->init(isWeekly, position, size, id)) {
+    ret->m_levelType = levelType;
+    if (ret && ret->init(levelType, size, id, scale)) {
         ret->autorelease();
         return ret;
     }

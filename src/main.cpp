@@ -13,6 +13,16 @@
 
 #include <fmt/core.h>
 #define MAX_SECRET_COINS 164
+#define addCreatorButton(mod, id, selector, texture) \
+	if (loader->isModLoaded(mod) && selector != nullptr) {\
+		auto btn = CCMenuItemSpriteExtra::create(\
+			CCSprite::createWithSpriteFrameName(texture),\
+			this,\
+			selector\
+		);\
+		btn->setID(id);\
+		rightMenu->addChild(btn);\
+	}
 
 std::string getPathString(int n) {
 	switch (n) {
@@ -119,34 +129,10 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 		}
 
-		if (loader->isModLoaded("cvolton.betterinfo") && Variables::BISelector != nullptr) {
-			auto btn = CCMenuItemSpriteExtra::create(
-				CCSprite::createWithSpriteFrameName("RD_betterinfo.png"_spr),
-				this,
-				Variables::BISelector
-			);
-			btn->setID("cvolton.betterinfo/main-button");
-			rightMenu->addChild(btn);
-		}
-
-		if (loader->isModLoaded("xanii.super_expert") && Variables::SupExSelector != nullptr) {
-			auto btn = CCMenuItemSpriteExtra::create(
-				CCSprite::createWithSpriteFrameName("RD_superexpert.png"_spr),
-				this,
-				Variables::SupExSelector
-			);
-			btn->setID("super-expert-button");
-			rightMenu->addChild(btn);
-		}
-		if (loader->isModLoaded("minemaker0430.gddp_integration") && Variables::GDDPSelector != nullptr) {
-			auto btn = CCMenuItemSpriteExtra::create(
-				CCSprite::createWithSpriteFrameName(Mod::get()->getSettingValue<bool>("alt-gddp-texture") ? "RD_gddp2.png"_spr : "RD_gddp.png"_spr),
-				this,
-				Variables::GDDPSelector
-			);
-			btn->setID("demon-progression-button");
-			rightMenu->addChild(btn);
-		}
+		addCreatorButton("cvolton.betterinfo", "cvolton.betterinfo/main-button", Variables::BISelector, "RD_betterinfo.png"_spr);
+		addCreatorButton("xanii.super_expert", "super-expert-button", Variables::SupExSelector, "RD_superexpert.png"_spr);
+		addCreatorButton("minemaker0430.gddp_integration", "demon-progression-button", Variables::GDDPSelector, Mod::get()->getSettingValue<bool>("alt-gddp-texture") ? "RD_gddp2.png"_spr : "RD_gddp.png"_spr);
+		addCreatorButton("spaghettdev.gd-roulette", "spaghettdev.gd-roulette/roulette-button", Variables::RouletteSelector, "RD_roulette.png"_spr);
 
 		#ifdef GEODE_IS_ANDROID
 		if (loader->isModLoaded("geode.devtools")) {
@@ -199,6 +185,9 @@ class $modify(CrazyLayer, MenuLayer) {
 		if (Variables::DailyLeft < 1) {
 			glm->getGJDailyLevelState(GJTimedLevelType::Daily);
 		}
+		if (Variables::EventLeft < 1) {
+			glm->getGJDailyLevelState(GJTimedLevelType::Event);
+		}
 
 		if (!Mod::get()->getSettingValue<bool>("hide-bottom-buttons-texts")) {
 			if (GJAccountManager::get()->m_accountID == 0) {
@@ -219,6 +208,12 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 		} else {
 			this->getChildByID("main-title")->setVisible(false);
+		}
+
+		if (loader->isModLoaded("shineua.minecraft_splash")) {
+			if (auto button = this->getChildByID("minecraft-splash")) {
+				button->setVisible(false);
+			}
 		}
 
 		this->getChildByID("more-games-menu")->setVisible(false);
@@ -345,7 +340,6 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		int activePath = gsm->m_activePath;
 		int pathProgress = gsm->getStat(std::to_string(activePath).c_str());
-		int maxProgress = 1000;
 
 		if (pathProgress > 1000) pathProgress = 1000;
 		if (activePath == 0) {
@@ -357,15 +351,14 @@ class $modify(CrazyLayer, MenuLayer) {
 				}
 			}
 			if (completedAll) {
-				activePath = 100;
-				pathProgress = 10000;
-				maxProgress = 10000;
+				activePath = 129;
+				pathProgress = 1000;
 			}
 		}
 
 		mainMenu->addChild(RDButton::create(this, "RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", abbreviateNumber(LocalLevelManager::get()->m_localLevels->count()))}, "RD_create.png"_spr, 0.95f, menu_selector(CreatorLayer::onMyLevels), "create-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", abbreviateNumber(glm->getSavedLevels(false, 0)->count())), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels), "saved-button"));
-		mainMenu->addChild(RDButton::create(this, "RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/{}", pathProgress, maxProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths), "paths-button"));
+		mainMenu->addChild(RDButton::create(this, "RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/1000", pathProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths), "paths-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_leaderboardsLabel.png"_spr, {"Global", fmt::format("#{}", Variables::GlobalRank)}, "RD_leaderboards.png"_spr, 0.85f, menu_selector(CreatorLayer::onLeaderboards), "leaderboards-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {"Forest", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
@@ -377,20 +370,33 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		auto dailiesMenu = CCMenu::create();
 		dailiesMenu->setID("dailies-menu"_spr);
-		dailiesMenu->setContentSize({ 675.f , 100.f });
+		dailiesMenu->setContentSize({ 630.f , 135.f });
 		dailiesMenu->ignoreAnchorPointForPosition(false);
 		dailiesMenu->setPositionX(mainMenu->getPositionX());
-		dailiesMenu->setPositionY(winSize.height/2 + 46.25f);
+		dailiesMenu->setPositionY(winSize.height/2 + 59.375f);
 		dailiesMenu->setScale(0.75f);
+		dailiesMenu->setLayout(
+			RowLayout::create()
+				->setGap(10.f)
+				->setAutoScale(false)
+		);
 
 		if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
-			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button"));
-			dailiesMenu->addChild(RDDailyNode::create(false, { 185.f , 0.f }, { 230.f , 135.f }, "daily-node"));
+			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
+			dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
 		} else {
-			dailiesMenu->addChild(RDDailyNode::create(false, { 25.f , 0.f }, { 230.f , 135.f }, "daily-node"));
-			dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button"));
+			dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
+			dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
 		}
-		dailiesMenu->addChild(RDDailyNode::create(true, { 425.f , 0.f }, { 230.f , 135.f }, "weekly-node"));
+		dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
+
+		// dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
+		// dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
+		// dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
+		// dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
+		// mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
+
+		dailiesMenu->updateLayout();
 		menu->addChild(dailiesMenu);
 
 		if (winSize.width < 562.25f) {
