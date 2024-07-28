@@ -11,7 +11,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     // 0: daily
     // 1: weekly
     // 2: event
-
     auto GLM = GameLevelManager::get();
 
     std::vector<const char*> bgVctr = {"GJ_square01.png", "GJ_square05.png", "GJ_square05.png"};
@@ -19,24 +18,31 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     if (levelType == 2) {
         background->setColor({ 200, 50, 255 });
     }
-    background->setContentSize(size);
-    background->setPosition({ size.width/2, size.height/2 });
+    background->setContentSize(size * scale);
+    background->setPosition({ size.width/2*scale, size.height/2*scale });
     background->setID("background");
-    this->addChild(background, 0);
+    this->addChild(background, -1);
+
+    auto node = CCNode::create();
+    node->setContentSize(size);
+    node->setScale(scale);
+    node->setID("main-node");
+    this->addChild(node, 0);
+    m_mainNode = node;
 
     std::vector<const char*> crownVctr = {"gj_dailyCrown_001.png", "gj_weeklyCrown_001.png", "RD_eventCrown_001.png"_spr};
     auto crownSprite = CCSprite::createWithSpriteFrameName(crownVctr[levelType]);
     crownSprite->setScale(0.75f);
     crownSprite->setPosition({ size.width/2, size.height + 8.f });
     crownSprite->setID("crown-sprite");
-    this->addChild(crownSprite, 1);
+    node->addChild(crownSprite, 1);
 
     std::vector<const char*> titleArr = {"dailyLevelLabel_001.png", "weeklyLevelLabel_001.png", "eventLevelLabel_001.png"};
     auto titleSprite = CCSprite::createWithSpriteFrameName(titleArr[levelType]);
     titleSprite->setScale(0.7f);
     titleSprite->setPosition({ size.width/2, size.height - 22.5f });
     titleSprite->setID("title-sprite");
-    this->addChild(titleSprite, 1);
+    node->addChild(titleSprite, 1);
 
     auto innerBG = CCScale9Sprite::create("square02b_001.png");
     innerBG->setScale(0.5f);
@@ -45,14 +51,14 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     innerBG->setColor({ 0, 0, 0 });
     innerBG->setOpacity(50);
     innerBG->setID("inner-background");
-    this->addChild(innerBG, 1);
+    node->addChild(innerBG, 1);
     m_innerBG = innerBG;
 
     auto menu = CCMenu::create();
     menu->setPosition({ 0.f, 0.f });
     menu->setContentSize(size);
     menu->setID("level-menu");
-    this->addChild(menu, 2);
+    node->addChild(menu, 2);
     m_menu = menu;
 
     auto loadingCircle = LoadingCircle::create();
@@ -63,7 +69,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     loadingCircle->m_sprite->setPosition({ 0 , 0 });
     loadingCircle->m_sprite->runAction(CCRepeatForever::create(CCRotateBy::create(1, 360)));
     loadingCircle->setID("loading-circle");
-    this->addChild(loadingCircle, 2);
+    node->addChild(loadingCircle, 2);
     m_loadingCircle = loadingCircle;
 
 
@@ -75,7 +81,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     bonusBG->setColor({ 0, 0, 0 });
     bonusBG->setOpacity(50);
     bonusBG->setID("bonus-background");
-    this->addChild(bonusBG, 1);
+    node->addChild(bonusBG, 1);
 
     auto bonusMenu = CCMenu::create();
     bonusMenu->setContentSize(bonusBG->getScaledContentSize());
@@ -89,14 +95,14 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
         ->setAxisAlignment(AxisAlignment::Start)
         ->setAutoScale(false)
     );
-    this->addChild(bonusMenu, 2);
+    node->addChild(bonusMenu, 2);
     m_bonusMenu = bonusMenu;
 
     auto safeMenu = CCMenu::create();
     safeMenu->setPosition({ 0.f, 0.f });
     safeMenu->setContentSize(size);
     safeMenu->setID("safe-button-menu");
-    this->addChild(safeMenu, 2);
+    node->addChild(safeMenu, 2);
 
     auto safeButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_safeBtn_001.png"),
@@ -109,7 +115,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     safeButton->m_scaleMultiplier = 1.15f;
     safeButton->m_baseScale = 0.5f;
     safeButton->setID("safe-button");
-    this->addChild(safeButton);
+    node->addChild(safeButton);
     safeMenu->addChild(safeButton);
 
     std::vector<int> timelyUnk = {GLM->m_dailyIDUnk, GLM->m_weeklyIDUnk, GLM->m_eventIDUnk};
@@ -130,7 +136,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timeLabel->setAnchorPoint({ 1, 0.5f });
     timeLabel->setPosition({ innerBG->getPositionX() + innerBG->getScaledContentSize().width/2 , size.height/9 });
     timeLabel->setID("time-label");
-    this->addChild(timeLabel, 1);
+    node->addChild(timeLabel, 1);
     m_timeLabel = timeLabel;
 
     std::vector<const char*> timeLabelVctr = {"New Daily in:", "New Weekly in:", "New Event in:"};
@@ -140,7 +146,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timeLeftLabel->setPosition({ timeLabel->getPositionX(), timeLabel->getPositionY() + timeLabel->getScaledContentHeight()/2 + timeLeftLabel->getScaledContentHeight()/2});
     timeLeftLabel->setColor({ 200, 200, 200 });
     timeLeftLabel->setID("time-left-label");
-    this->addChild(timeLeftLabel, 1);
+    node->addChild(timeLeftLabel, 1);
     m_timeLeftLabel = timeLeftLabel;
 
     auto timerLoadingCircle = LoadingCircle::create();
@@ -152,7 +158,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timerLoadingCircle->m_sprite->setPosition({ 0 , 0 });
     timerLoadingCircle->m_sprite->runAction(CCRepeatForever::create(CCRotateBy::create(1, 360)));
     timerLoadingCircle->setID("timer-loading-circle");
-    this->addChild(timerLoadingCircle, 2);
+    node->addChild(timerLoadingCircle, 2);
     m_timerLoadingCircle = timerLoadingCircle;
 
     if (time == 0) {
@@ -165,8 +171,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
         this->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
     }
 
-    this->setContentSize(size);
-    this->setScale(scale);
+    this->setContentSize(size * scale);
     this->setID(id);
 
     return true;

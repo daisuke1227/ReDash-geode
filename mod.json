@@ -98,6 +98,12 @@
             "type": "bool",
             "description": "Hide the diamonds and orbs stats.",
             "default": false
+        },
+        "preview-2.21": {
+            "name": "Preview 2.21 menu",
+            "type": "bool",
+            "description": "<cr>EXPERIMENTAL!!</c>\nChanges the menu to a mockup of what the menu would become when GD 2.21 eventually releases. Feedbacks are appreciated.",
+            "default": false
         }
     }
 }

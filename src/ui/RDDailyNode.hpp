@@ -11,6 +11,7 @@ public:
     GJGameLevel* m_currentLevel;
     int m_levelType;
 
+    CCNode* m_mainNode;
     CCMenu* m_menu;
     CCMenu* m_bonusMenu;
     CCScale9Sprite* m_innerBG;

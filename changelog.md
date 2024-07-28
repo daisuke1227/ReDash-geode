@@ -3,6 +3,7 @@
 - beta.3
     - Added compat with SpaghettDev's GD-Roulette mod
     - Added compat with Shine's Minecraft Splash mod
+    - Added a setting to preview a mockup of what the menu would look like when 2.21 releases
 
 - beta.2
     - Added the quests button indicator (like in CreatorLayer)

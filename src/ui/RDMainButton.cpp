@@ -16,10 +16,10 @@ bool RDMainButton::init(CCPoint position, CCSize size, std::string id, float sca
     if (!CCMenuItemSpriteExtra::init(spriteNode, nullptr, this, menu_selector(RDMainButton::onPlay))) return false;
 
     auto background = CCScale9Sprite::create("GJ_square02.png");
-    background->setContentSize(size);
-    background->setPosition({ size.width/2, size.height/2 });
+    background->setContentSize(size * scale);
+    background->setPosition({ size.width/2*scale, size.height/2*scale });
     background->setID("background");
-    spriteNode->addChild(background, 0);
+    this->addChild(background, -1);
 
     auto crownSprite = CCSprite::createWithSpriteFrameName("RD_mainLevel.png"_spr);
     crownSprite->setScale(0.3f);
@@ -239,9 +239,9 @@ bool RDMainButton::init(CCPoint position, CCSize size, std::string id, float sca
     progressLabel->setID("progress-label");
     spriteNode->addChild(progressLabel, 3);
 
-    this->setContentSize(size);
-    this->setPosition(position + size/2);
-    this->setScale(scale);
+    this->setContentSize(size * scale);
+    this->setPosition(position + size*scale/2);
+    spriteNode->setScale(scale);
 	this->m_scaleMultiplier = 1.1f;
     this->setID(id);
 
