@@ -4,6 +4,10 @@
 #include "../ui/RDButton.hpp"
 using namespace geode::prelude;
 
+bool dailySuccess = false;
+bool weeklySuccess = false;
+bool eventSuccess = false;
+
 #define handleLevel(nodeID, IDUnk) \
     if (auto node = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {\
         if (response != "-1") {\
@@ -36,13 +40,13 @@ class $modify(MyGLM, GameLevelManager) {
         Variables::WeeklyLeft--;
         Variables::EventLeft--;
 
-        if (Variables::WeeklyLeft < 1) {
-		    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Weekly);
-		}
-		if (Variables::DailyLeft < 1) {
+		if (Variables::DailyLeft < 1 && dailySuccess) {
 		    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Daily);
 		}
-        if (Variables::EventLeft < 1) {
+        if (Variables::WeeklyLeft < 1 && weeklySuccess) {
+		    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Weekly);
+		}
+        if (Variables::EventLeft < 1 && eventSuccess) {
             GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Event);
         }
     }
@@ -139,6 +143,7 @@ class $modify(MyGLM, GameLevelManager) {
                     }
 
                     Variables::DailyLeft = timeLeft;
+                    dailySuccess = true;
 
                     handleGetDaily("daily-node", this->m_dailyID, this->m_dailyIDUnk);
                 } else if (tag == "weekly_state") {
@@ -147,6 +152,7 @@ class $modify(MyGLM, GameLevelManager) {
                     }
                     
                     Variables::WeeklyLeft = timeLeft;
+                    weeklySuccess = true;
 
                     handleGetDaily("weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
                 } else if (tag == "event_state") {
@@ -155,6 +161,7 @@ class $modify(MyGLM, GameLevelManager) {
                     }
 
                     Variables::EventLeft = timeLeft;
+                    eventSuccess = true;
 
                     handleGetDaily("event-node", this->m_eventID, this->m_eventIDUnk);
                 }

@@ -1,11 +1,11 @@
 {
-	"geode": "3.3.1",
+	"geode": "3.4.0",
 	"gd": {
 		"win": "2.206",
 		"android": "2.206",
 		"mac": "2.206"
 	},
-	"version": "v1.0.2-beta.3",
+	"version": "v1.0.2",
 	"id": "ninxout.redash",
 	"name": "Overcharged Main Menu",
 	"developers": [
@@ -39,6 +39,10 @@
         ]
     },
     "settings": {
+        "stats-nodes-selection": {
+            "name": "Stats Nodes Selection",
+            "type": "custom"
+        },
         "desc-label-color" :{
             "name": "Bottom Buttons Description Color",
             "type": "rgba",
@@ -91,18 +95,6 @@
             "name": "Hide Main levels stats",
             "type": "bool",
             "description": "Hide the stats of the level on the main levels button.",
-            "default": false
-        },
-        "hide-diamonds-orbs": {
-            "name": "Hide Diamonds & Orbs stats",
-            "type": "bool",
-            "description": "Hide the diamonds and orbs stats.",
-            "default": false
-        },
-        "preview-2.21": {
-            "name": "Preview 2.21 menu",
-            "type": "bool",
-            "description": "<cr>EXPERIMENTAL!!</c>\nChanges the menu to a mockup of what the menu would become when GD 2.21 eventually releases. Feedbacks are appreciated.",
             "default": false
         }
     }

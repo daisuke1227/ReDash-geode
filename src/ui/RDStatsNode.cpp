@@ -64,7 +64,9 @@ bool RDStatsNode::init(std::string sprite, std::string string, std::string id) {
     if (sprite == "GJ_demonIcon_001.png") {
         icon->setScale(1.4f);
     }
-
+    if (sprite == "currencyDiamondIcon_001.png") {
+        icon->setPositionX(3.5f);
+    }
     return true;
 }
 

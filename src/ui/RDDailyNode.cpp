@@ -542,7 +542,7 @@ void RDDailyNode::downloadThumbnailFinished() {
             image->initWithImageData(const_cast<uint8_t*>(m_thumbnailData.data()), m_thumbnailData.size());
             geode::Loader::get()->queueInMainThread([this, image](){
                 if (this) {
-                    auto size = this->getContentSize();
+                    auto size = m_mainNode->getContentSize();
                     auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
                     auto texture = CCTextureCache::get()->addUIImage(image, key.c_str());
 

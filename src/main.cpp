@@ -7,6 +7,8 @@
 #include "hooks/GameLevelManager.hpp"
 #include "hooks/LayersHooks.hpp" // same hook index bruh
 
+#include "settings/StatsSettingNode.hpp"
+
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
 #include <Geode/utils/cocos.hpp>
@@ -54,7 +56,7 @@ class $modify(CrazyLayer, MenuLayer) {
 	};
 
 	static void onModify(auto& self) {
-        self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api but after index developer points
+        auto res = self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api but after index developer points
     }
 
 	void setupButtons() {
@@ -381,13 +383,13 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 		);
 
-		if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
-			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
-			mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
-		} else {
+		// if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
+		// 	dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
+		// 	dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
+		// 	dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
+		// 	dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
+		// 	mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
+		// } else {
 			if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
 				dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
 				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
@@ -396,7 +398,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
 			}
 			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
-		}
+		// }
 
 
 		dailiesMenu->updateLayout();
@@ -425,17 +427,26 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 		);
 
-		statsMenu->addChild(RDStatsNode::create("GJ_starsIcon_001.png", fmt::format("{}", gsm->getStat("6")), "stars-stats"));
-		statsMenu->addChild(RDStatsNode::create("GJ_moonsIcon_001.png", fmt::format("{}", gsm->getStat("28")), "moons-stats"));
-		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon_001.png", fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS), "sectet-coins-stats"));
-		statsMenu->addChild(RDStatsNode::create("GJ_coinsIcon2_001.png", fmt::format("{}", gsm->getStat("12")), "user-coins-stats"));
-		statsMenu->addChild(RDStatsNode::create("GJ_demonIcon_001.png", fmt::format("{}", gsm->getStat("5")), "demons-stats"));
-		if (!mod->getSettingValue<bool>("hide-diamonds-orbs")) {
-			statsMenu->addChild(RDStatsNode::create("GJ_diamondsIcon_001.png", fmt::format("{}", gsm->getStat("13")), "diamonds-stats"));
-			statsMenu->addChild(RDStatsNode::create("currencyOrbIcon_001.png", fmt::format("{}", gsm->getStat("14")), "orbs-stats"));
+		std::map<std::string, std::pair<std::string, std::string>> stats = {
+			{"GJ_starsIcon_001.png", {fmt::format("{}", gsm->getStat("6")), "stars-stats"}},
+			{"GJ_moonsIcon_001.png", {fmt::format("{}", gsm->getStat("28")), "moons-stats"}},
+			{"GJ_coinsIcon_001.png", {fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS), "secret-coins-stats"}},
+			{"GJ_coinsIcon2_001.png", {fmt::format("{}", gsm->getStat("12")), "user-coins-stats"}},
+			{"GJ_demonIcon_001.png", {fmt::format("{}", gsm->getStat("5")), "demons-stats"}},
+			{"GJ_diamondsIcon_001.png", {fmt::format("{}", gsm->getStat("13")), "diamonds-stats"}},
+			{"currencyDiamondIcon_001.png", {fmt::format("{}", gsm->getStat("29")), "diamond-diamonds-stats"}},
+			{"currencyOrbIcon_001.png", {fmt::format("{}", gsm->getStat("14")), "orbs-stats"}}
+		};
+		auto settings = as<StatsSettingValue*>(mod->getSetting("stats-nodes-selection"));
+		for (auto& stat : settings->getStatsArray()) {
+			auto statStr = stat.as_string();
+			if (stats.find(statStr) != stats.end()) {
+				auto& [texture, text] = stats[statStr];
+				statsMenu->addChild(RDStatsNode::create(statStr, texture, text));
+			}
 		}
-		statsMenu->updateLayout();
 
+		statsMenu->updateLayout();
 		menu->addChild(statsMenu);
 
 		auto menuButUnder = CCMenu::create();
