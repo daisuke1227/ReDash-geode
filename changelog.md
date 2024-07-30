@@ -2,7 +2,6 @@
 ## v1.0.2
 - Added customization settings for the stats nodes
     - You can add, remove and edit the order of any stat that you want!
-- Added a setting to preview a mockup of what the menu would look like when 2.21 releases
 - Added the quests button indicator (like in CreatorLayer)
 - Added an option to set the green buttons' labels' direction to right-to-left or not
 - Added compat with SpaghettDev's GD-Roulette mod
