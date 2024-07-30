@@ -40,6 +40,10 @@ class $modify(LoadingLayer) {
 			getSelector("spaghettdev.gd-roulette/roulette-button", Variables::RouletteSelector);
 			getSelector("super-expert-button", Variables::SupExSelector);
 			getSelector("demon-progression-button", Variables::GDDPSelector);
+
+            if (loader->isModLoaded("gdutilsdevs.gdutils")) {
+                creatorLayer->retain();
+            }
         }
     }
 };
