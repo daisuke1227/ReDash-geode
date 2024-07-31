@@ -13,4 +13,6 @@ namespace Variables {
     extern cocos2d::SEL_MenuHandler SupExSelector;
     extern cocos2d::SEL_MenuHandler GDDPSelector;
     extern cocos2d::SEL_MenuHandler RouletteSelector;
+
+    extern Ref<cocos2d::CCDictionary> ThumbnailsDict;
 }

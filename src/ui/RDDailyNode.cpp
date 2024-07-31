@@ -12,6 +12,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     // 1: weekly
     // 2: event
     auto GLM = GameLevelManager::get();
+    log::error("1");
 
     std::vector<const char*> bgVctr = {"GJ_square01.png", "GJ_square05.png", "GJ_square05.png"};
     auto background = CCScale9Sprite::create(bgVctr[levelType]);
@@ -22,6 +23,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     background->setPosition({ size.width/2*scale, size.height/2*scale });
     background->setID("background");
     this->addChild(background, -1);
+    log::error("2");
 
     auto node = CCNode::create();
     node->setContentSize(size);
@@ -29,6 +31,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     node->setID("main-node");
     this->addChild(node, 0);
     m_mainNode = node;
+    log::error("3");
 
     std::vector<const char*> crownVctr = {"gj_dailyCrown_001.png", "gj_weeklyCrown_001.png", "RD_eventCrown_001.png"_spr};
     auto crownSprite = CCSprite::createWithSpriteFrameName(crownVctr[levelType]);
@@ -36,6 +39,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     crownSprite->setPosition({ size.width/2, size.height + 8.f });
     crownSprite->setID("crown-sprite");
     node->addChild(crownSprite, 1);
+    log::error("4");
 
     std::vector<const char*> titleArr = {"dailyLevelLabel_001.png", "weeklyLevelLabel_001.png", "eventLevelLabel_001.png"};
     auto titleSprite = CCSprite::createWithSpriteFrameName(titleArr[levelType]);
@@ -43,6 +47,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     titleSprite->setPosition({ size.width/2, size.height - 22.5f });
     titleSprite->setID("title-sprite");
     node->addChild(titleSprite, 1);
+    log::error("5");
 
     auto innerBG = CCScale9Sprite::create("square02b_001.png");
     innerBG->setScale(0.5f);
@@ -53,6 +58,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     innerBG->setID("inner-background");
     node->addChild(innerBG, 1);
     m_innerBG = innerBG;
+    log::error("6");
 
     auto menu = CCMenu::create();
     menu->setPosition({ 0.f, 0.f });
@@ -60,6 +66,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     menu->setID("level-menu");
     node->addChild(menu, 2);
     m_menu = menu;
+    log::error("7");
 
     auto loadingCircle = LoadingCircle::create();
     loadingCircle->setScale(0.75f);
@@ -71,6 +78,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     loadingCircle->setID("loading-circle");
     node->addChild(loadingCircle, 2);
     m_loadingCircle = loadingCircle;
+    log::error("8");
 
 
     auto bonusBG = CCScale9Sprite::create("GJ_square02.png");
@@ -82,6 +90,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     bonusBG->setOpacity(50);
     bonusBG->setID("bonus-background");
     node->addChild(bonusBG, 1);
+    log::error("9");
 
     auto bonusMenu = CCMenu::create();
     bonusMenu->setContentSize(bonusBG->getScaledContentSize());
@@ -97,12 +106,14 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     );
     node->addChild(bonusMenu, 2);
     m_bonusMenu = bonusMenu;
+    log::error("10");
 
     auto safeMenu = CCMenu::create();
     safeMenu->setPosition({ 0.f, 0.f });
     safeMenu->setContentSize(size);
     safeMenu->setID("safe-button-menu");
     node->addChild(safeMenu, 2);
+    log::error("11");
 
     auto safeButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_safeBtn_001.png"),
@@ -117,6 +128,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     safeButton->setID("safe-button");
     node->addChild(safeButton);
     safeMenu->addChild(safeButton);
+    log::error("12");
 
     std::vector<int> timelyUnk = {GLM->m_dailyIDUnk, GLM->m_weeklyIDUnk, GLM->m_eventIDUnk};
     if (auto level = GLM->getSavedDailyLevel(timelyUnk[levelType])) {
@@ -127,6 +139,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
         m_loadingCircle->setVisible(true);
         m_bonusMenu->setVisible(false);
     }
+    log::error("13");
     
     std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
     auto time = timelyLeft[levelType];
@@ -138,6 +151,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timeLabel->setID("time-label");
     node->addChild(timeLabel, 1);
     m_timeLabel = timeLabel;
+    log::error("14");
 
     std::vector<const char*> timeLabelVctr = {"New Daily in:", "New Weekly in:", "New Event in:"};
     auto timeLeftLabel = CCLabelBMFont::create(timeLabelVctr[levelType], "bigFont.fnt");
@@ -148,6 +162,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timeLeftLabel->setID("time-left-label");
     node->addChild(timeLeftLabel, 1);
     m_timeLeftLabel = timeLeftLabel;
+    log::error("15");
 
     auto timerLoadingCircle = LoadingCircle::create();
     timerLoadingCircle->setScale(0.45f);
@@ -160,20 +175,18 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timerLoadingCircle->setID("timer-loading-circle");
     node->addChild(timerLoadingCircle, 2);
     m_timerLoadingCircle = timerLoadingCircle;
+    log::error("16");
 
     if (time == 0) {
         timeLabel->setVisible(false);
         timeLeftLabel->setVisible(false);
         timerLoadingCircle->setVisible(true);
     }
-
-    if (time > 0) {
-        this->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);
-    }
+    log::error("17");
 
     this->setContentSize(size * scale);
     this->setID(id);
-
+    
     return true;
 }
 
@@ -515,8 +528,8 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     m_menu->addChild(starSprite, 8);
 
     // pretty much copied from the level thumbnails mod code lmao
-    if (auto fakeTexture = CCTextureCache::get()->textureForKey(fmt::format("thumbnail-{}", level->m_levelID.value()).c_str())) {
-        downloadThumbnailFinished();
+    if (auto image = typeinfo_cast<CCImage*>(Variables::ThumbnailsDict->objectForKey(fmt::format("thumbnail-{}", level->m_levelID.value())))) {
+        downloadThumbnailFinished(image);
     } else {
         m_listener.bind([this] (web::WebTask::Event* e) {
             if (web::WebResponse* res = e->getValue()) {
@@ -524,8 +537,17 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
                     downloadThumbnailFail();
                 } else {
                     auto data = res->data();
-                    m_thumbnailData = data;
-                    downloadThumbnailFinished();
+                    auto thread = std::thread([this, data]() {
+                        auto image = Ref(new CCImage());
+                        image->autorelease();
+                        image->initWithImageData(const_cast<uint8_t*>(data.data()), data.size());
+                        Variables::ThumbnailsDict->setObject(image, fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value()));
+
+                        geode::Loader::get()->queueInMainThread([this, image](){
+                            downloadThumbnailFinished(image);
+                        });
+                    });
+                    thread.detach();
                 }
             }
         });
@@ -535,50 +557,41 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     }
 }
 
-void RDDailyNode::downloadThumbnailFinished() {
-    if (m_menu) {
-        auto thread = std::thread([this]() {
-            auto image = Ref(new CCImage());
-            image->initWithImageData(const_cast<uint8_t*>(m_thumbnailData.data()), m_thumbnailData.size());
-            geode::Loader::get()->queueInMainThread([this, image](){
-                if (this) {
-                    auto size = m_mainNode->getContentSize();
-                    auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
-                    auto texture = CCTextureCache::get()->addUIImage(image, key.c_str());
+void RDDailyNode::downloadThumbnailFinished(CCImage* image) {
+    if (this && m_menu) {
+        auto size = m_mainNode->getContentSize();
+        auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
+        CCTexture2D* texture = new CCTexture2D();
+        texture->autorelease();
+        texture->initWithImage(image);
 
-                    auto clippingNode = CCClippingNode::create();
-                    clippingNode->setAnchorPoint({ 0.5f, 0.5f });
-                    clippingNode->setPosition(m_innerBG->getPosition());
-                    clippingNode->setContentSize(m_innerBG->getScaledContentSize());
-                    clippingNode->setAlphaThreshold(0.03f);
-                    clippingNode->setID("thumbnail-node");
+        auto clippingNode = CCClippingNode::create();
+        clippingNode->setAnchorPoint({ 0.5f, 0.5f });
+        clippingNode->setPosition(m_innerBG->getPosition());
+        clippingNode->setContentSize(m_innerBG->getScaledContentSize());
+        clippingNode->setAlphaThreshold(0.03f);
+        clippingNode->setID("thumbnail-node");
 
-                    auto stencil = CCScale9Sprite::create("square02b_001.png");
-                    stencil->setScale(0.5f);
-                    stencil->setPosition(clippingNode->getContentSize()/2);
-                    stencil->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
+        auto stencil = CCScale9Sprite::create("square02b_001.png");
+        stencil->setScale(0.5f);
+        stencil->setPosition(clippingNode->getContentSize()/2);
+        stencil->setContentSize({ size.width*2 - 30.f, size.height / 1.16f });
 
-                    auto sprite = CCSprite::createWithTexture(texture);
-                    sprite->setPosition(stencil->getPosition());
-                    sprite->setScale(stencil->getScaledContentWidth() / sprite->getContentWidth());
-                    sprite->setOpacity(0);
+        auto sprite = CCSprite::createWithTexture(texture);
+        sprite->setPosition(stencil->getPosition());
+        sprite->setScale(stencil->getScaledContentWidth() / sprite->getContentWidth());
+        sprite->setOpacity(0);
 
-                    clippingNode->setStencil(stencil);
-                    clippingNode->addChild(sprite);
-                    m_menu->addChild(clippingNode, 0);
-                    sprite->runAction(CCFadeIn::create(0.25f));
+        clippingNode->setStencil(stencil);
+        clippingNode->addChild(sprite);
+        m_menu->addChild(clippingNode, 0);
+        sprite->runAction(CCFadeIn::create(0.25f));
 
-                    auto overlay = CCScale9Sprite::create("innerBG_overlay.png"_spr);
-                    overlay->setPosition(m_innerBG->getPosition());
-                    overlay->setScale(m_innerBG->getScale());
-                    overlay->setContentSize(m_innerBG->getContentSize());
-                    m_menu->addChild(overlay, 1);
-
-                    image->release();
-                }
-            });
-        });
-        thread.detach();
+        auto overlay = CCScale9Sprite::create("innerBG_overlay.png"_spr);
+        overlay->setPosition(m_innerBG->getPosition());
+        overlay->setScale(m_innerBG->getScale());
+        overlay->setContentSize(m_innerBG->getContentSize());
+        m_menu->addChild(overlay, 1);    
     }
 }
 
@@ -591,6 +604,13 @@ void RDDailyNode::downloadThumbnailFail() {
 
 void RDDailyNode::updateTimeLabel(float dt) {
     std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
+    if (timelyLeft[m_levelType] < 0) {
+        m_timeLabel->setVisible(false);
+        m_timeLeftLabel->setVisible(false);
+        m_timerLoadingCircle->setVisible(true);
+        this->unschedule(schedule_selector(RDDailyNode::updateTimeLabel));
+        return;
+    }
     m_timeLabel->setString(GameToolbox::getTimeString(timelyLeft[m_levelType], true).c_str());
     m_timeLabel->setVisible(true);
     m_timeLeftLabel->setVisible(true);

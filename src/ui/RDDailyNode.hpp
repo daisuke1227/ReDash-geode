@@ -6,7 +6,6 @@ using namespace geode::prelude;
 class RDDailyNode : public CCNode {
 public:
     EventListener<web::WebTask> m_listener;
-    ByteVector m_thumbnailData;
 
     GJGameLevel* m_currentLevel;
     int m_levelType;
@@ -34,7 +33,7 @@ public:
     void setupLevelMenu(GJGameLevel* level);
     void setupBonusMenu(GJGameLevel* level);
 
-    void downloadThumbnailFinished();
+    void downloadThumbnailFinished(CCImage* image);
     void downloadThumbnailFail();
 
     static RDDailyNode* create(int levelType, CCSize size, std::string id, float scale);

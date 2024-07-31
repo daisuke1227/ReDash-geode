@@ -167,9 +167,7 @@ class $modify(CrazyLayer, MenuLayer) {
 	}
 
 	bool init() {
-		log::error("MenuLayer::init");
 		if (!MenuLayer::init()) return false;
-		log::error("0");
 
 		auto loader = Loader::get();
 		auto mod = Mod::get();
@@ -186,9 +184,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		}
 		if (Variables::EventLeft < 1) {
 			glm->getGJDailyLevelState(GJTimedLevelType::Event);
-		}
-
-		log::error("1");
+		}		
 
 		if (!Mod::get()->getSettingValue<bool>("hide-bottom-buttons-texts")) {
 			if (GJAccountManager::get()->m_accountID == 0) {
@@ -199,9 +195,7 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 		}
 
-		CrazyLayer::setupButtons();
-
-		log::error("2");
+		CrazyLayer::setupButtons();		
 
 		// MAIN MENU CHANGES (MIGHT BE BREAKING SOME STUFF) - ninXout
 		// no it isn't - Weebify
@@ -236,7 +230,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		if (this->getChildByID("click-gamepad-icon")) this->getChildByID("click-gamepad-icon")->setVisible(false);
 		if (this->getChildByID("click-gamepad-label")) this->getChildByID("click-gamepad-label")->setVisible(false);
 
-		log::error("3");
 
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		bottomMenu->setScale(0.75f);
@@ -259,7 +252,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		bottomMenu->updateLayout();
 		bottomMenu->setZOrder(1);
 
-		log::error("4");
 		
 		auto rightMenu = this->getChildByID("right-side-menu");
 		rightMenu->setPosition(ccp(177.5f, 25.f));
@@ -298,8 +290,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto mapPacksBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_mappacks.png"_spr), this, menu_selector(CreatorLayer::onMapPacks));
 		rightMenu->addChild(mapPacksBtn, 1);
 
-		log::error("5");
-
 		auto playerUsername = this->getChildByID("player-username");
 		playerUsername->setScale(playerUsername->getScale() - 0.1f);
 		playerUsername->setPositionX(bottomMenu->getPositionX());
@@ -313,8 +303,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		profileMenu->setPositionY(playerUsername->getPositionY() - playerUsername->getScaledContentHeight()/2 - profileMenu->getScaledContentHeight()/2 - 1.f);
 		profileMenu->setZOrder(1);
 		profileMenu->updateLayout();
-
-		log::error("6");
 
 		// NEW STUFF YAYY :D - ninXout
 		// yay - Weebify
@@ -335,8 +323,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		menu->setPosition({ 0.f , 0.f });
 		this->addChild(menu, 99);
 
-		log::error("7");
-
 		CCMenu* mainMenu = CCMenu::create();
 		mainMenu->setID("main-menu"_spr);
 		mainMenu->setContentSize({675.f, 100.f});
@@ -350,8 +336,6 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setGrowCrossAxis(true)
 				->setAutoScale(false)
 		);
-
-		log::error("8");
 
 		int activePath = gsm->m_activePath;
 		int pathProgress = gsm->getStat(std::to_string(activePath).c_str());
@@ -383,20 +367,29 @@ class $modify(CrazyLayer, MenuLayer) {
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);
 
-		log::error("9");
+		// start of crash
 
+		log::warn("9.1");
 		auto dailiesMenu = CCMenu::create();
+		log::warn("9.2");
 		dailiesMenu->setID("dailies-menu"_spr);
+		log::warn("9.3");
 		dailiesMenu->setContentSize({ 630.f , 135.f });
+		log::warn("9.4");
 		dailiesMenu->ignoreAnchorPointForPosition(false);
+		log::warn("9.5");
 		dailiesMenu->setPositionX(mainMenu->getPositionX());
+		log::warn("9.6");
 		dailiesMenu->setPositionY(winSize.height/2 + 59.375f);
+		log::warn("9.7");
 		dailiesMenu->setScale(0.75f);
+		log::warn("9.8");
 		dailiesMenu->setLayout(
 			RowLayout::create()
 				->setGap(10.f)
 				->setAutoScale(false)
 		);
+		log::warn("9.9");
 
 		// if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
 		// 	dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
@@ -407,19 +400,26 @@ class $modify(CrazyLayer, MenuLayer) {
 		// } else {
 			if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
 				dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
+				log::warn("9.10");
 				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
+				log::warn("9.11");
 			} else {
 				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
+				log::warn("9.12");
 				dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
+				log::warn("9.13");
 			}
 			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
+			log::warn("9.14");
 		// }
 
 
 		dailiesMenu->updateLayout();
+		log::warn("9.15");
 		menu->addChild(dailiesMenu);
+		log::warn("9.16");
 
-		log::error("10");
+		// end of crash
 
 		if (winSize.width < 562.25f) {
 			auto newWidth = winSize.width - 56;
@@ -466,8 +466,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		statsMenu->updateLayout();
 		menu->addChild(statsMenu);
 
-		log::error("11");
-
 		auto menuButUnder = CCMenu::create();
 		menuButUnder->setID("bottom-menu"_spr);
 		menuButUnder->setAnchorPoint({ 1.f, 0.5f });
@@ -503,8 +501,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		rightMenu->setPositionX(bottomX - rightMenu->getScaledContentWidth()/2);
 
 		menu->addChild(menuButUnder);
-
-		log::error("12");
 
 		auto topMenu = CCMenu::create();
 		topMenu->setID("top-menu"_spr);
@@ -551,8 +547,6 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		menu->addChild(topMenu);
 
-		log::error("13");
-
 		auto hideBtnMenu = CCMenu::create();
 		hideBtnMenu->setID("hide-button-menu"_spr);
 		hideBtnMenu->setAnchorPoint({ 1.f, 0.5f });
@@ -568,8 +562,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		hideToggler->setID("hide-button");
 		hideToggler->setPosition({ hideBtnMenu->getContentWidth() / 2.f, hideBtnMenu->getContentHeight() / 2.f });
 		hideBtnMenu->addChild(hideToggler);
-
-		log::error("14");
 
 		auto pagesMod = loader->getLoadedMod("alphalaneous.pages_api");
 		if (pagesMod->getSettingValue<bool>("menulayer-bottom-menu")) {
@@ -587,12 +579,8 @@ class $modify(CrazyLayer, MenuLayer) {
 			rightMenu->setUserObject("element-count", CCInteger::create((int)((rightMenu->getContentWidth() + 75.f) / 60.f)));
 		}
 
-		log::error("15");
-
 		bottomMenu->updateLayout();
 		rightMenu->updateLayout();
-
-		log::error("16");
 
 		return true;
 	}
