@@ -12,7 +12,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     // 1: weekly
     // 2: event
     auto GLM = GameLevelManager::get();
-    log::error("1");
 
     std::vector<const char*> bgVctr = {"GJ_square01.png", "GJ_square05.png", "GJ_square05.png"};
     auto background = CCScale9Sprite::create(bgVctr[levelType]);
@@ -23,7 +22,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     background->setPosition({ size.width/2*scale, size.height/2*scale });
     background->setID("background");
     this->addChild(background, -1);
-    log::error("2");
 
     auto node = CCNode::create();
     node->setContentSize(size);
@@ -31,7 +29,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     node->setID("main-node");
     this->addChild(node, 0);
     m_mainNode = node;
-    log::error("3");
 
     std::vector<const char*> crownVctr = {"gj_dailyCrown_001.png", "gj_weeklyCrown_001.png", "RD_eventCrown_001.png"_spr};
     auto crownSprite = CCSprite::createWithSpriteFrameName(crownVctr[levelType]);
@@ -39,7 +36,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     crownSprite->setPosition({ size.width/2, size.height + 8.f });
     crownSprite->setID("crown-sprite");
     node->addChild(crownSprite, 1);
-    log::error("4");
 
     std::vector<const char*> titleArr = {"dailyLevelLabel_001.png", "weeklyLevelLabel_001.png", "eventLevelLabel_001.png"};
     auto titleSprite = CCSprite::createWithSpriteFrameName(titleArr[levelType]);
@@ -47,7 +43,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     titleSprite->setPosition({ size.width/2, size.height - 22.5f });
     titleSprite->setID("title-sprite");
     node->addChild(titleSprite, 1);
-    log::error("5");
 
     auto innerBG = CCScale9Sprite::create("square02b_001.png");
     innerBG->setScale(0.5f);
@@ -58,7 +53,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     innerBG->setID("inner-background");
     node->addChild(innerBG, 1);
     m_innerBG = innerBG;
-    log::error("6");
 
     auto menu = CCMenu::create();
     menu->setPosition({ 0.f, 0.f });
@@ -66,7 +60,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     menu->setID("level-menu");
     node->addChild(menu, 2);
     m_menu = menu;
-    log::error("7");
 
     auto loadingCircle = LoadingCircle::create();
     loadingCircle->setScale(0.75f);
@@ -78,7 +71,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     loadingCircle->setID("loading-circle");
     node->addChild(loadingCircle, 2);
     m_loadingCircle = loadingCircle;
-    log::error("8");
 
 
     auto bonusBG = CCScale9Sprite::create("GJ_square02.png");
@@ -90,7 +82,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     bonusBG->setOpacity(50);
     bonusBG->setID("bonus-background");
     node->addChild(bonusBG, 1);
-    log::error("9");
 
     auto bonusMenu = CCMenu::create();
     bonusMenu->setContentSize(bonusBG->getScaledContentSize());
@@ -106,14 +97,12 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     );
     node->addChild(bonusMenu, 2);
     m_bonusMenu = bonusMenu;
-    log::error("10");
 
     auto safeMenu = CCMenu::create();
     safeMenu->setPosition({ 0.f, 0.f });
     safeMenu->setContentSize(size);
     safeMenu->setID("safe-button-menu");
     node->addChild(safeMenu, 2);
-    log::error("11");
 
     auto safeButton = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_safeBtn_001.png"),
@@ -128,7 +117,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     safeButton->setID("safe-button");
     node->addChild(safeButton);
     safeMenu->addChild(safeButton);
-    log::error("12");
 
     std::vector<int> timelyUnk = {GLM->m_dailyIDUnk, GLM->m_weeklyIDUnk, GLM->m_eventIDUnk};
     if (auto level = GLM->getSavedDailyLevel(timelyUnk[levelType])) {
@@ -139,7 +127,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
         m_loadingCircle->setVisible(true);
         m_bonusMenu->setVisible(false);
     }
-    log::error("13");
     
     std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
     auto time = timelyLeft[levelType];
@@ -151,7 +138,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timeLabel->setID("time-label");
     node->addChild(timeLabel, 1);
     m_timeLabel = timeLabel;
-    log::error("14");
 
     std::vector<const char*> timeLabelVctr = {"New Daily in:", "New Weekly in:", "New Event in:"};
     auto timeLeftLabel = CCLabelBMFont::create(timeLabelVctr[levelType], "bigFont.fnt");
@@ -162,7 +148,6 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timeLeftLabel->setID("time-left-label");
     node->addChild(timeLeftLabel, 1);
     m_timeLeftLabel = timeLeftLabel;
-    log::error("15");
 
     auto timerLoadingCircle = LoadingCircle::create();
     timerLoadingCircle->setScale(0.45f);
@@ -175,18 +160,16 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timerLoadingCircle->setID("timer-loading-circle");
     node->addChild(timerLoadingCircle, 2);
     m_timerLoadingCircle = timerLoadingCircle;
-    log::error("16");
 
     if (time == 0) {
         timeLabel->setVisible(false);
         timeLeftLabel->setVisible(false);
         timerLoadingCircle->setVisible(true);
     }
-    log::error("17");
 
     this->setContentSize(size * scale);
     this->setID(id);
-    
+
     return true;
 }
 
