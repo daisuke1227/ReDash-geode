@@ -2,9 +2,10 @@
 	"geode": "3.4.0",
 	"gd": {
 		"win": "2.206",
-		"android": "2.206"
+		"android": "2.206",
+        "mac": "2.206"
 	},
-	"version": "v1.0.3",
+	"version": "v1.1.0-beta.1",
 	"id": "ninxout.redash",
 	"name": "Overcharged Main Menu",
 	"developers": [
@@ -94,6 +95,12 @@
             "name": "Hide Main levels stats",
             "type": "bool",
             "description": "Hide the stats of the level on the main levels button.",
+            "default": false
+        },
+        "preview-2.21": {
+            "name": "Preview 2.21 menu",
+            "type": "bool",
+            "description": "<cr>EXPERIMENTAL!!</c>\nChanges the menu to a mockup of what the menu would become when GD 2.21 eventually releases. Feedbacks are appreciated.",
             "default": false
         }
     }
