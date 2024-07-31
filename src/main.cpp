@@ -378,13 +378,13 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 		);
 
-		if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
-			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
-			mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
-		} else {
+		// if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
+		// 	dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
+		// 	dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
+		// 	dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
+		// 	dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
+		// 	mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
+		// } else {
 			if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
 				dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
 				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
@@ -393,7 +393,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
 			}
 			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
-		}
+		// }
 
 
 		dailiesMenu->updateLayout();
