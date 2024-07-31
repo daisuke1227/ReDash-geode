@@ -367,29 +367,18 @@ class $modify(CrazyLayer, MenuLayer) {
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);
 
-		// start of crash
-
-		log::warn("9.1");
 		auto dailiesMenu = CCMenu::create();
-		log::warn("9.2");
 		dailiesMenu->setID("dailies-menu"_spr);
-		log::warn("9.3");
 		dailiesMenu->setContentSize({ 630.f , 135.f });
-		log::warn("9.4");
 		dailiesMenu->ignoreAnchorPointForPosition(false);
-		log::warn("9.5");
 		dailiesMenu->setPositionX(mainMenu->getPositionX());
-		log::warn("9.6");
 		dailiesMenu->setPositionY(winSize.height/2 + 59.375f);
-		log::warn("9.7");
 		dailiesMenu->setScale(0.75f);
-		log::warn("9.8");
 		dailiesMenu->setLayout(
 			RowLayout::create()
 				->setGap(10.f)
 				->setAutoScale(false)
 		);
-		log::warn("9.9");
 
 		// if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
 		// 	dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
@@ -400,26 +389,17 @@ class $modify(CrazyLayer, MenuLayer) {
 		// } else {
 			if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
 				dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
-				log::warn("9.10");
 				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
-				log::warn("9.11");
 			} else {
 				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
-				log::warn("9.12");
 				dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
-				log::warn("9.13");
 			}
 			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
-			log::warn("9.14");
 		// }
 
 
 		dailiesMenu->updateLayout();
-		log::warn("9.15");
 		menu->addChild(dailiesMenu);
-		log::warn("9.16");
-
-		// end of crash
 
 		if (winSize.width < 562.25f) {
 			auto newWidth = winSize.width - 56;
