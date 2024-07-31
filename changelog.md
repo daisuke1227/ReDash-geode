@@ -1,6 +1,8 @@
 # Overcharged Main Menu Changelog
 ## v1.0.3
 - Fixed an Android crash with GDUtils
+- Fixed another web requests spam bug related to the daily level reset...
+- Disabled MacOS support for now
 ## v1.0.2
 - Added customization settings for the stats nodes
     - You can add, remove and edit the order of any stat that you want!

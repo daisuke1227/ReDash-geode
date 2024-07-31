@@ -108,25 +108,20 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 			auto foundBtn = false;
 			if (loader->isModLoaded("smjs.gdintercept")) {
-				for (int i = 0; i < 2; i++) {
-					CCArrayExt<CCMenuItemSpriteExtra*> buttons = closeMenu->getChildren();
-					for (auto& button : buttons) {
-						if (button->getID() == ""
-						&& button->getNormalImage()->getID() == "smjs.gdintercept/blame-overcharged-menu") {
-							foundBtn = true;
-							closeMenu->removeChild(button);
-							bottomMenu->addChild(button);
-							if (auto sprite = getChildOfType<CCSprite>(button, 0)) {
-								button->setContentSize(button->getContentSize() * 1.5f);
-								sprite->setScale(sprite->getScale() * 1.5f);
-								sprite->setPosition(button->getContentSize() / 2);
-							}
-							break;
+				if (auto node = this->getChildByIDRecursive("smjs.gdintercept/blame-overcharged-menu")) {
+					CCMenuItemSpriteExtra* button = nullptr;
+					if (typeinfo_cast<CCSprite*>(node)) button = as<CCMenuItemSpriteExtra*>(node->getParent());
+					else if (typeinfo_cast<CCMenuItemSpriteExtra*>(node)) button = as<CCMenuItemSpriteExtra*>(node);
+
+					if (button) {
+						button->removeFromParent();
+						bottomMenu->addChild(button);
+						if (auto sprite = getChildOfType<CCSprite>(button, 0)) {
+							button->setContentSize(button->getContentSize() * 1.5f);
+							sprite->setScale(sprite->getScale() * 1.5f);
+							sprite->setPosition(button->getContentSize() / 2);
 						}
 					}
-
-					if (foundBtn) break;
-					else if (i == 0) closeMenu = this->getChildByID("top-right-menu");
 				}
 			}
 		}

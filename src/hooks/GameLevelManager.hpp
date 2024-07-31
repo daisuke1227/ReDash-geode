@@ -4,10 +4,6 @@
 #include "../ui/RDButton.hpp"
 using namespace geode::prelude;
 
-bool dailySuccess = false;
-bool weeklySuccess = false;
-bool eventSuccess = false;
-
 #define handleLevel(nodeID, IDUnk) \
     if (auto node = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {\
         if (response != "-1") {\
@@ -35,18 +31,29 @@ bool eventSuccess = false;
     }
 
 class $modify(MyGLM, GameLevelManager) {
-    void updateTimers() {
+    void updateDailyTimer() {
         Variables::DailyLeft--;
+
+        if (Variables::DailyLeft < 0) {
+            CCScheduler::get()->unscheduleSelector(schedule_selector(MyGLM::updateDailyTimer), this);
+            GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Daily);
+        }
+    }
+
+    void updateWeeklyTimer() {
         Variables::WeeklyLeft--;
+
+        if (Variables::WeeklyLeft < 1) {
+            CCScheduler::get()->unscheduleSelector(schedule_selector(MyGLM::updateWeeklyTimer), this);
+            GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Weekly);
+        }
+    }
+
+    void updateEventTimer() {
         Variables::EventLeft--;
 
-		if (Variables::DailyLeft < 1 && dailySuccess) {
-		    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Daily);
-		}
-        if (Variables::WeeklyLeft < 1 && weeklySuccess) {
-		    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Weekly);
-		}
-        if (Variables::EventLeft < 1 && eventSuccess) {
+        if (Variables::EventLeft < 1) {
+            CCScheduler::get()->unscheduleSelector(schedule_selector(MyGLM::updateEventTimer), this);
             GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Event);
         }
     }
@@ -143,7 +150,7 @@ class $modify(MyGLM, GameLevelManager) {
                     }
 
                     Variables::DailyLeft = timeLeft;
-                    dailySuccess = true;
+                    CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateDailyTimer), this, 1.f, false);
 
                     handleGetDaily("daily-node", this->m_dailyID, this->m_dailyIDUnk);
                 } else if (tag == "weekly_state") {
@@ -152,7 +159,7 @@ class $modify(MyGLM, GameLevelManager) {
                     }
                     
                     Variables::WeeklyLeft = timeLeft;
-                    weeklySuccess = true;
+                    CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateWeeklyTimer), this, 1.f, false);
 
                     handleGetDaily("weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
                 } else if (tag == "event_state") {
@@ -161,13 +168,11 @@ class $modify(MyGLM, GameLevelManager) {
                     }
 
                     Variables::EventLeft = timeLeft;
-                    eventSuccess = true;
+                    CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateEventTimer), this, 1.f, false);
 
                     handleGetDaily("event-node", this->m_eventID, this->m_eventIDUnk);
                 }
             }
-
-            CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateTimers), this, 1.f, false);
         }
     }
 };
