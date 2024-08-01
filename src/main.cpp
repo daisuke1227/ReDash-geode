@@ -84,6 +84,7 @@ class $modify(CrazyLayer, MenuLayer) {
 					menu_selector(MenuLayer::onQuit));
 				cls_btn->setID("close-button");
 				closeMenu->addChild(cls_btn);
+				closeMenu->updateLayout();
 			}
 
 			if (loader->isModLoaded("weebify.restartbtn")) {
@@ -268,7 +269,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		rightMenu->updateLayout();
 		rightMenu->getChildByID("daily-chest-button")->setZOrder(4);
 
-		auto questBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_quests.png"_spr), this, menu_selector(CreatorLayer::onChallenge));
+		auto questBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_quests2.png"_spr), this, menu_selector(CreatorLayer::onChallenge));
 		questBtn->setID("quest-button"_spr);
 		auto piVar2 = CCSprite::createWithSpriteFrameName("exMark_001.png");
 		piVar2->setScale(0.55f);
@@ -287,7 +288,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		}
 		rightMenu->addChild(questBtn, 3);
 
-		auto mapPacksBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_mappacks.png"_spr), this, menu_selector(CreatorLayer::onMapPacks));
+		auto mapPacksBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_mappacks2.png"_spr), this, menu_selector(CreatorLayer::onMapPacks));
 		rightMenu->addChild(mapPacksBtn, 1);
 
 		auto playerUsername = this->getChildByID("player-username");
@@ -366,6 +367,16 @@ class $modify(CrazyLayer, MenuLayer) {
 		
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);
+
+		if (mod->getSettingValue<bool>("rotate-buttons-logos")) {
+			for (auto& button: CCArrayExt<RDButton*>(mainMenu->getChildren())) {
+				if (button->getPositionX() < mainMenu->getContentWidth()/2) {
+					button->rotateIcon(10.f);
+				} else if (button->getPositionX() > mainMenu->getContentWidth()/2) {
+					button->rotateIcon(-10.f);
+				}
+			}
+		}
 
 		auto dailiesMenu = CCMenu::create();
 		dailiesMenu->setID("dailies-menu"_spr);

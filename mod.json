@@ -43,6 +43,12 @@
             "name": "Stats Nodes Selection",
             "type": "custom"
         },
+        "rotate-buttons-logos": {
+            "name": "Rotate Buttons Logos",
+            "type": "bool",
+            "description": "Slightly rotate the logos of the bottom buttons.",
+            "default": true
+        },
         "desc-label-color" :{
             "name": "Bottom Buttons Description Color",
             "type": "rgba",

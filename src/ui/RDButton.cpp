@@ -23,16 +23,15 @@ bool RDButton::init(CCObject* target, std::string title, std::initializer_list<s
 
     auto icon = CCSprite::createWithSpriteFrameName(sprite.c_str());
     icon->setScale(spriteScale);
-	icon->setAnchorPoint({ 1, 0.5f});
-    icon->setPosition(ccp(148, 35));
-	if (id == "saved-button") icon->setPositionX(153);
+    icon->setPosition(ccp(148, 35) - ccp(icon->getScaledContentWidth()/2, 0));
+	if (id == "saved-button") icon->setPositionX(icon->getPositionX() + 5.f);
 	icon->setID("icon-sprite");
     spriteNode->addChild(icon);
 
 	auto labelMenu = CCMenu::create();
 	if (!Mod::get()->getSettingValue<bool>("ltr-texts")) {
 		labelMenu->setAnchorPoint({ 1, 0.5f });
-		labelMenu->setPosition( { icon->getPositionX() - icon->getScaledContentWidth() - 2.5f, 35.f });
+		labelMenu->setPosition( { icon->getPositionX() - icon->getScaledContentWidth()/2 - 2.5f, 35.f });
 	} else {
 		labelMenu->setAnchorPoint({ 0, 0.5f });
 		labelMenu->setPosition( { 7.5f, 35.f });
@@ -127,6 +126,14 @@ void RDButton::updateLeaderboardLabel() {
 	m_labelMenu->setVisible(true);
 	as<CCLabelBMFont*>(m_labelMenu->getChildByID("desc-label-2"))->setString(fmt::format("#{}", Variables::GlobalRank).c_str());
 	m_labelMenu->updateLayout();
+}
+
+void RDButton::rotateIcon(float rotation) {
+	if (this->getID() != "search-button") {
+		if (auto icon = this->getChildByIDRecursive("icon-sprite")) {
+			icon->setRotation(rotation);
+		}
+	}
 }
 
 RDButton* RDButton::create(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
