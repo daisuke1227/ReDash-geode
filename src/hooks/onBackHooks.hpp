@@ -14,7 +14,7 @@ class $modify(GauntletSelectLayer) {
 	void onExit() {
 		CCScene* sc = MenuLayer::scene(false);
         CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
-		SecretLayer2::onExit();
+		GauntletSelectLayer:onExit();
 	}
 	#endif
 };
