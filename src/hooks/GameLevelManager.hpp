@@ -78,8 +78,12 @@ class $modify(MyGLM, GameLevelManager) {
                         Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
                         Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
 
+                        log::error("balls 1");
+
                         if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+                            log::error("found menulayer");
                             if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                                log::error("found button");
                                 button->updateLeaderboardLabel();
                             }
                         }

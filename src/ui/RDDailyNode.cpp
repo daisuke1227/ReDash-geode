@@ -587,17 +587,18 @@ void RDDailyNode::downloadThumbnailFail() {
 
 void RDDailyNode::updateTimeLabel(float dt) {
     std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
-    if (timelyLeft[m_levelType] < 0) {
+    if (timelyLeft[m_levelType] < 1) {
         m_timeLabel->setVisible(false);
         m_timeLeftLabel->setVisible(false);
         m_timerLoadingCircle->setVisible(true);
         this->unschedule(schedule_selector(RDDailyNode::updateTimeLabel));
-        return;
+    } else {
+        m_timeLabel->setString(GameToolbox::getTimeString(timelyLeft[m_levelType], true).c_str());
+        m_timeLabel->setVisible(true);
+        m_timeLeftLabel->setVisible(true);
+        m_timerLoadingCircle->setVisible(false);
     }
-    m_timeLabel->setString(GameToolbox::getTimeString(timelyLeft[m_levelType], true).c_str());
-    m_timeLabel->setVisible(true);
-    m_timeLeftLabel->setVisible(true);
-    m_timerLoadingCircle->setVisible(false);
+
 }
 
 RDDailyNode* RDDailyNode::create(int levelType, CCSize size, std::string id, float scale) {

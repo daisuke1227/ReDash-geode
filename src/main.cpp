@@ -50,6 +50,23 @@ std::string abbreviateNumber(int n) {
 	return fmt::format("{:.1f}b", n / 1000000000.f);
 }
 
+class RDButtonData {
+public:
+	std::string m_titleSpr;
+	std::initializer_list<std::string> m_description;
+	std::string m_iconSpr;
+	float m_iconScale;
+	SEL_MenuHandler m_selector;
+
+	RDButtonData(std::string titleSpr, std::initializer_list<std::string> description, std::string iconSpr, float iconScale, SEL_MenuHandler selector) {
+		m_titleSpr = titleSpr;
+		m_description = description;
+		m_iconSpr = iconSpr;
+		m_iconScale = iconScale;
+		m_selector = selector;
+	}
+};
+
 class $modify(CrazyLayer, MenuLayer) {
 	struct Fields {
 		CCMenuItemSpriteExtra* m_questBtn;
@@ -355,6 +372,17 @@ class $modify(CrazyLayer, MenuLayer) {
 				pathProgress = 1000;
 			}
 		}
+
+		std::map<std::string, RDButtonData> mainButtons = {
+			"create-button", RDButtonData("RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", abbreviateNumber(LocalLevelManager::get()->m_localLevels->count()))}, "RD_create.png"_spr, 0.95f, menu_selector(CreatorLayer::onMyLevels)),
+			"saved-button", RDButtonData("RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", abbreviateNumber(glm->getSavedLevels(false, 0)->count())), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels)),
+			"paths-button", RDButtonData("RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/1000", pathProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths)),
+			"leaderboards-button", RDButtonData("RD_leaderboardsLabel.png"_spr, {"Global", fmt::format("#{}", Variables::GlobalRank)}, "RD_leaderboards.png"_spr, 0.85f, menu_selector(CreatorLayer::onLeaderboards)),
+			"gauntlets-button", RDButtonData("RD_gauntletsLabel.png"_spr, {"Forest", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets)),
+			"featured-button", RDButtonData("RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels)),
+			"lists-button", RDButtonData("RD_listsLabel.png"_spr, {"Play rated", "Lists"}, "RD_lists.png"_spr, 1.f, menu_selector(CreatorLayer::onTopLists)),
+			"search-button", RDButtonData("RD_searchLabel.png"_spr, {"Search" , "For levels", "online"}, "RD_search.png"_spr, 0.9f, menu_selector(CreatorLayer::onOnlineLevels))
+		};
 
 		mainMenu->addChild(RDButton::create(this, "RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", abbreviateNumber(LocalLevelManager::get()->m_localLevels->count()))}, "RD_create.png"_spr, 0.95f, menu_selector(CreatorLayer::onMyLevels), "create-button"));
 		mainMenu->addChild(RDButton::create(this, "RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", abbreviateNumber(glm->getSavedLevels(false, 0)->count())), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels), "saved-button"));
