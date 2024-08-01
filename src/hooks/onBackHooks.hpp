@@ -3,12 +3,10 @@ using namespace geode::prelude;
 
 #include <Geode/modify/GauntletSelectLayer.hpp>
 class $modify(GauntletSelectLayer) {
-	#ifndef GEODE_IS_MACOS
 	void onBack(cocos2d::CCObject* sender) {
 		CCScene* sc = MenuLayer::scene(false);
     	CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(0.5f, sc));
 	}
-	#endif
 };
 
 #include <Geode/modify/SecretRewardsLayer.hpp>
