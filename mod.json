@@ -43,6 +43,10 @@
             "name": "Stats Nodes Selection",
             "type": "custom"
         },
+        "main-buttons-selection": {
+            "name": "Main Buttons Selection",
+            "type": "custom"
+        },
         "rotate-buttons-logos": {
             "name": "Rotate Buttons Logos",
             "type": "bool",
@@ -50,21 +54,21 @@
             "default": true
         },
         "desc-label-color" :{
-            "name": "Bottom Buttons Description Color",
+            "name": "Main Buttons Description Color",
             "type": "rgba",
-            "description": "Change the color of the description text on the bottom buttons.",
+            "description": "Change the color of the description text on the main buttons.",
             "default": "#0000008c"
         },
         "ltr-texts": {
             "name": "Left-to-Right Button Texts",
             "type": "bool",
-            "description": "Change the direction of the bottom buttons' title and description labels to left-to-right.",
+            "description": "Change the direction of the main buttons' title and description labels to left-to-right.",
             "default": true
         },
         "hide-bottom-buttons-texts": {
-            "name": "Hide Buttons Description Texts",
+            "name": "Hide Main Buttons Description Texts",
             "type": "bool",
-            "description": "Hide the static description texts of the 8 bottom buttons.",
+            "description": "Hide the static description texts of the main buttons.",
             "default": false
         },
         "goto-last-played-main": {

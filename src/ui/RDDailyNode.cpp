@@ -115,8 +115,8 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     safeButton->m_scaleMultiplier = 1.15f;
     safeButton->m_baseScale = 0.5f;
     safeButton->setID("safe-button");
-    node->addChild(safeButton);
     safeMenu->addChild(safeButton);
+    m_safeButton = safeButton;
 
     std::vector<int> timelyUnk = {GLM->m_dailyIDUnk, GLM->m_weeklyIDUnk, GLM->m_eventIDUnk};
     if (auto level = GLM->getSavedDailyLevel(timelyUnk[levelType])) {
@@ -594,6 +594,9 @@ void RDDailyNode::updateTimeLabel(float dt) {
         this->unschedule(schedule_selector(RDDailyNode::updateTimeLabel));
     } else {
         m_timeLabel->setString(GameToolbox::getTimeString(timelyLeft[m_levelType], true).c_str());
+        if (m_timeLabel->getPositionX() - m_safeButton->getPositionX() - m_safeButton->getScaledContentWidth()/2 - 5.f < m_timeLabel->getScaledContentWidth()) {
+            m_timeLabel->setScale(m_timeLabel->getScale() * (m_timeLabel->getPositionX() - m_safeButton->getPositionX() - m_safeButton->getScaledContentWidth()/2 - 5.f) / m_timeLabel->getScaledContentWidth());
+        }
         m_timeLabel->setVisible(true);
         m_timeLeftLabel->setVisible(true);
         m_timerLoadingCircle->setVisible(false);

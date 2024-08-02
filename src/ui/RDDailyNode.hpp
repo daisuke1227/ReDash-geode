@@ -20,6 +20,7 @@ public:
     LoadingCircle* m_timerLoadingCircle;
     CCMenuItemSpriteExtra* m_skipButton;
     CCMenuItemSpriteExtra* m_reloadButton;
+    CCMenuItemSpriteExtra* m_safeButton;
 
     void onView(CCObject* sender);
     void onSkiplevel(CCObject* sender);

@@ -39,7 +39,7 @@ using namespace geode::prelude;
     m_bottomMenu->addChild(button);
 
 
-auto DEFAULT_ARRAY = matjson::parse(R"(["GJ_starsIcon_001.png", "GJ_moonsIcon_001.png", "GJ_coinsIcon_001.png", "GJ_coinsIcon2_001.png", "GJ_demonIcon_001.png"])").as_array();
+auto DEFAULT_STATS = matjson::parse(R"(["GJ_starsIcon_001.png", "GJ_moonsIcon_001.png", "GJ_coinsIcon_001.png", "GJ_coinsIcon2_001.png", "GJ_demonIcon_001.png"])").as_array();
 auto ALL_STATS = matjson::parse(R"(["GJ_starsIcon_001.png", "GJ_moonsIcon_001.png", "GJ_coinsIcon_001.png", "GJ_coinsIcon2_001.png", "GJ_demonIcon_001.png", "GJ_diamondsIcon_001.png", "currencyDiamondIcon_001.png", "currencyOrbIcon_001.png"])").as_array();
 
 class StatsSettingValue : public SettingValue {
@@ -136,7 +136,7 @@ protected:
         m_topMenu = topMenu;
 
         auto floorLine = CCSprite::createWithSpriteFrameName("floorLine_01_001.png");
-        floorLine->setPosition({ width/2 , height/2 - 5});
+        floorLine->setPosition({ width/2 , (height - 10)/2 });
         floorLine->setScaleX((width - 30) / floorLine->getContentWidth());
         floorLine->setID("floor-line");
         this->addChild(floorLine);
@@ -222,10 +222,10 @@ public:
         return m_currentStatsArray != static_cast<StatsSettingValue*>(m_value)->getStatsArray();
     }
     bool hasNonDefaultValue() override {
-        return m_currentStatsArray != DEFAULT_ARRAY;
+        return m_currentStatsArray != DEFAULT_STATS;
     }
     void resetToDefault() override {
-        m_currentStatsArray = DEFAULT_ARRAY;
+        m_currentStatsArray = DEFAULT_STATS;
         m_unselectedStatsArray = matjson::Array();
         for (auto& stat : ALL_STATS) {
             if (std::find(m_currentStatsArray.begin(), m_currentStatsArray.end(), stat) == m_currentStatsArray.end()) {
@@ -270,5 +270,5 @@ SettingNode* StatsSettingValue::createNode(float width) {
 }
 
 $on_mod(Loaded) {
-    Mod::get()->addCustomSetting<StatsSettingValue>("stats-nodes-selection", DEFAULT_ARRAY);
+    Mod::get()->addCustomSetting<StatsSettingValue>("stats-nodes-selection", DEFAULT_STATS);
 }

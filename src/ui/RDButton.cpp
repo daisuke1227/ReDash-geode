@@ -1,7 +1,7 @@
 #include "RDButton.hpp"
 #include "../Variables.hpp"
 
-bool RDButton::init(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
+bool RDButton::init(CCObject* target, std::string title, std::vector<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
     auto spriteNode = CCNode::create();
 
 	auto buttonSpr1 = CCScale9Sprite::create("longButtonHalf-1.png"_spr);
@@ -136,7 +136,7 @@ void RDButton::rotateIcon(float rotation) {
 	}
 }
 
-RDButton* RDButton::create(CCObject* target, std::string title, std::initializer_list<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
+RDButton* RDButton::create(CCObject* target, std::string title, std::vector<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
     auto ret = new RDButton();
     if (ret && ret->init(target, title, description, sprite, spriteScale, callback, id)) {
         ret->autorelease();
