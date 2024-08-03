@@ -272,7 +272,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		}
 		bottomMenu->updateLayout();
 		bottomMenu->setZOrder(1);
-
 		
 		auto rightMenu = this->getChildByID("right-side-menu");
 		rightMenu->setPosition(ccp(177.5f, 25.f));
@@ -288,30 +287,6 @@ class $modify(CrazyLayer, MenuLayer) {
 		rightMenu->setContentHeight(60.f);
 		rightMenu->updateLayout();
 		rightMenu->getChildByID("daily-chest-button")->setZOrder(4);
-
-		auto questBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_quests2.png"_spr), this, menu_selector(CreatorLayer::onChallenge));
-		questBtn->setID("quest-button"_spr);
-		auto piVar2 = CCSprite::createWithSpriteFrameName("exMark_001.png");
-		piVar2->setScale(0.55f);
-		piVar2->setVisible(false);
-		piVar2->setPosition(questBtn->getContentSize() - ccp(4,8));
-		piVar2->setID("quest-notif"_spr);
-		questBtn->addChild(piVar2, 1);
-		m_fields->m_questBtn = questBtn;
-
-		int questsCompleted = 0;
-		for (int i = 1; i <= 3; i++) {
-			if (auto challenge = gsm->getChallenge(i)) {
-				if (challenge->m_canClaim) {
-					piVar2->setVisible(true);
-					questsCompleted++;
-				}
-			}
-		}
-		rightMenu->addChild(questBtn, 3);
-
-		auto mapPacksBtn = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName("RD_mappacks2.png"_spr), this, menu_selector(CreatorLayer::onMapPacks));
-		rightMenu->addChild(mapPacksBtn, 1);
 
 		auto playerUsername = this->getChildByID("player-username");
 		playerUsername->setScale(playerUsername->getScale() - 0.1f);
@@ -378,6 +353,15 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 		}
 
+		int questsCompleted = 0;
+		for (int i = 1; i <= 3; i++) {
+			if (auto challenge = gsm->getChallenge(i)) {
+				if (challenge->m_canClaim) {
+					questsCompleted++;
+				}
+			}
+		}
+
 		std::map<std::string, RDButtonData> mainButtons = {
 			{"create-button", RDButtonData("RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", abbreviateNumber(LocalLevelManager::get()->m_localLevels->count())).c_str()}, "RD_create.png"_spr, 0.95f, menu_selector(CreatorLayer::onMyLevels))},
 			{"saved-button", RDButtonData("RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", abbreviateNumber(glm->getSavedLevels(false, 0)->count())), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels))},
@@ -387,7 +371,7 @@ class $modify(CrazyLayer, MenuLayer) {
 			{"featured-button", RDButtonData("RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels))},
 			{"lists-button", RDButtonData("RD_listsLabel.png"_spr, {"Play rated", "Lists"}, "RD_lists.png"_spr, 1.f, menu_selector(CreatorLayer::onTopLists))},
 			{"search-button", RDButtonData("RD_searchLabel.png"_spr, {"Search" , "For levels", "online"}, "RD_search.png"_spr, 0.9f, menu_selector(CreatorLayer::onOnlineLevels))},
-			{"mappacks-button", RDButtonData("RD_mappacksLabel.png"_spr, {fmt::format("{}/65", gsm->m_completedMappacks->count()), "Map Packs", "Completed"}, "RD_mappacks.png"_spr, 0.75f, menu_selector(CreatorLayer::onMapPacks))},
+			{"mappacks-button", RDButtonData("RD_mappacksLabel.png"_spr, {fmt::format("{}/{}", gsm->getCompletedMapPacks()->count(), gsm->m_completedMappacks->count()), "Map Packs", "Completed"}, "RD_mappacks.png"_spr, 0.75f, menu_selector(CreatorLayer::onMapPacks))},
 			{"quests-button", RDButtonData("RD_questsLabel.png"_spr, {fmt::format("{}/3 Quest(s)", questsCompleted), "Completed"}, "RD_quests.png"_spr, 1.f, menu_selector(CreatorLayer::onChallenge))},
 			{"the-map-button", RDButtonData("RD_mapLabel.png"_spr, {"Coming soon", "in 2.21!"}, "RD_map.png"_spr, 0.95f, menu_selector(CreatorLayer::onAdventureMap))},
 			{"versus-button", RDButtonData("RD_versusLabel.png"_spr, {"Coming soon", "in 2.21!"}, "RD_versus.png"_spr, 0.95f, menu_selector(CreatorLayer::onMultiplayer))}
@@ -396,21 +380,42 @@ class $modify(CrazyLayer, MenuLayer) {
 		auto mainButtonsSetting = as<MainButtonsSettingValue*>(mod->getSetting("main-buttons-selection"));
 		for (auto& button : mainButtonsSetting->getButtonsArray()) {
 			auto id = button.as_string();
-			log::info("button: {}", id);
 			if (mainButtons.find(id) != mainButtons.end()) {
 				auto data = mainButtons[id];
-				mainMenu->addChild(RDButton::create(this, data.m_titleSpr, data.m_description, data.m_iconSpr, data.m_iconScale, data.m_selector, id));
+				auto rdBtn = RDButton::create(this, data.m_titleSpr, data.m_description, data.m_iconSpr, data.m_iconScale, data.m_selector, id);
+				if (id == "quests-button") rdBtn->m_completedQuests = questsCompleted;
+				mainMenu->addChild(rdBtn);
 			}
 		}
 
-		// mainMenu->addChild(RDButton::create(this, "RD_createLabel.png"_spr, {"You have", fmt::format("{} Levels", abbreviateNumber(LocalLevelManager::get()->m_localLevels->count()))}, "RD_create.png"_spr, 0.95f, menu_selector(CreatorLayer::onMyLevels), "create-button"));
-		// mainMenu->addChild(RDButton::create(this, "RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", abbreviateNumber(glm->getSavedLevels(false, 0)->count())), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels), "saved-button"));
-		// mainMenu->addChild(RDButton::create(this, "RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/1000", pathProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths), "paths-button"));
-		// mainMenu->addChild(RDButton::create(this, "RD_leaderboardsLabel.png"_spr, {"Global", fmt::format("#{}", Variables::GlobalRank)}, "RD_leaderboards.png"_spr, 0.85f, menu_selector(CreatorLayer::onLeaderboards), "leaderboards-button"));
-		// mainMenu->addChild(RDButton::create(this, "RD_gauntletsLabel.png"_spr, {"Forest", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets), "gauntlets-button"));
-		// mainMenu->addChild(RDButton::create(this, "RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels), "featured-button"));
-		// mainMenu->addChild(RDButton::create(this, "RD_listsLabel.png"_spr, {"Play rated", "Lists"}, "RD_lists.png"_spr, 1.f, menu_selector(CreatorLayer::onTopLists), "lists-button"));
-		// mainMenu->addChild(RDButton::create(this, "RD_searchLabel.png"_spr, {"Search" , "For levels", "online"}, "RD_search.png"_spr, 0.9f, menu_selector(CreatorLayer::onOnlineLevels), "search-button"));
+		for (auto& b : mainButtonsSetting->getNonButtonsArray()) {
+			auto id = b.as_string();
+			if (id != "the-map-button" && id != "versus-button") {
+				if (mainButtons.find(id) != mainButtons.end()) {
+					auto data = mainButtons[id];
+					auto button = CCMenuItemSpriteExtra::create(CCSprite::createWithSpriteFrameName((data.m_iconSpr.substr(0, data.m_iconSpr.length() - 4) + "2.png").c_str()), this, data.m_selector);
+					button->m_baseScale = 0.9;
+					button->setScale(0.9);
+					button->setID(id);
+					rightMenu->addChild(button);
+
+					if (id == "quests-button") m_fields->m_questBtn = button;
+				}
+			}
+		}
+
+		if (m_fields->m_questBtn) {
+			auto piVar2 = CCSprite::createWithSpriteFrameName("exMark_001.png");
+			piVar2->setScale(0.55f);
+			piVar2->setVisible(false);
+			piVar2->setPosition(m_fields->m_questBtn->getContentSize() - ccp(4,8));
+			piVar2->setID("quest-notif"_spr);
+			m_fields->m_questBtn->addChild(piVar2, 1);
+			
+			if (questsCompleted > 0) {
+				piVar2->setVisible(true);
+			}
+		}
 		
 		mainMenu->updateLayout();
 		menu->addChild(mainMenu);
@@ -421,6 +426,8 @@ class $modify(CrazyLayer, MenuLayer) {
 					button->rotateIcon(10.f);
 				} else if (button->getPositionX() > mainMenu->getContentWidth()/2) {
 					button->rotateIcon(-10.f);
+				} else {
+					button->rotateIcon(0.f);
 				}
 			}
 		}
@@ -630,17 +637,23 @@ class $modify(ChallengesPage) {
 		ChallengesPage::claimItem(node, item, point);
 
 		if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
-			auto piVar2 = as<CrazyLayer*>(layer)->m_fields->m_questBtn->getChildByID("quest-notif"_spr);
-			bool claimable = false;
-			for (int i = 1; i <= 3; i++) {
-				if (auto challenge = GameStatsManager::sharedState()->getChallenge(i)) {
-					if (challenge->m_canClaim) {
-						claimable = true;
-						break;
+			if (CCMenuItemSpriteExtra* button = as<CrazyLayer*>(layer)->m_fields->m_questBtn) {
+				auto piVar2 = as<CrazyLayer*>(layer)->m_fields->m_questBtn->getChildByID("quest-notif"_spr);
+				bool claimable = false;
+				for (int i = 1; i <= 3; i++) {
+					if (auto challenge = GameStatsManager::sharedState()->getChallenge(i)) {
+						if (challenge->m_canClaim) {
+							claimable = true;
+							break;
+						}
 					}
 				}
+				piVar2->setVisible(claimable);
+			} else {
+				if (auto button = typeinfo_cast<RDButton*>(layer->getChildByIDRecursive("quests-button"))) {
+					button->updateQuestsLabel();
+				}
 			}
-			piVar2->setVisible(claimable);
 		}
 	}
 };

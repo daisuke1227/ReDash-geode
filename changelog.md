@@ -1,5 +1,6 @@
 # Overcharged Main Menu Changelog
-## v1.0.3
+## v1.1.0
+- Added customization settings for the main buttons
 - Fixed an Android crash with GDUtils
 - Fixed Intel MacOS crash (sorry for the 2 people that got affected by this)
 - Fixed another web requests spam bug related to the daily level reset...

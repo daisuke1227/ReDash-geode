@@ -1,6 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/LoadingLayer.hpp>
+#include <Geode/modify/CreatorLayer.hpp>
 #include "../Variables.hpp"
 using namespace geode::prelude;
 
@@ -45,5 +46,15 @@ class $modify(LoadingLayer) {
                 creatorLayer->retain();
             }
         }
+    }
+};
+
+class $modify(CreatorLayer) {
+    void onChallenge(CCObject* sender) {
+        if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+            ChallengesPage::create()->show();
+            return;
+        }
+        CreatorLayer::onChallenge(sender);
     }
 };

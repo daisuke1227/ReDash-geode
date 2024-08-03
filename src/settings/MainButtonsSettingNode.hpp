@@ -3,7 +3,7 @@
 using namespace geode::prelude;
 
 #define topMainButton(id, scale)\
-    auto buttonStr = idToButtonSpr[button.as_string()].first;\
+    auto buttonStr = idToButtonSpr[id].first;\
 \
     auto bgSprite = CCScale9Sprite::create("RD_square.png"_spr);\
     bgSprite->setContentWidth(bgSprite->getContentWidth() / 80 * 150);\
@@ -40,7 +40,7 @@ using namespace geode::prelude;
 
 
 #define bottomMainButton(id, scale)\
-    auto buttonStr = idToButtonSpr[button.as_string()].first;\
+    auto buttonStr = idToButtonSpr[id].first;\
 \
     auto bgSprite = CCScale9Sprite::create("RD_square.png"_spr);\
     bgSprite->setScale(0.3f);\
@@ -101,6 +101,15 @@ public:
 
     void setButtonsArray(matjson::Array buttonsArray) { m_buttonsArray = buttonsArray; }
     matjson::Array getButtonsArray() const { return m_buttonsArray; }
+    matjson::Array getNonButtonsArray() {
+        matjson::Array nonButtonsArray;
+        for (auto& button : ALL_BUTTONS) {
+            if (std::find(m_buttonsArray.begin(), m_buttonsArray.end(), button) == m_buttonsArray.end()) {
+                nonButtonsArray.push_back(button.as_string());
+            }
+        }
+        return nonButtonsArray;
+    }
 };
 
 class MainButtonsSettingNode : public SettingNode {
@@ -145,6 +154,17 @@ protected:
         m_nameLabel = label;
         menu->addChild(label);
 
+        auto limitLabel = CCLabelBMFont::create(
+            "You can only have at most 8 buttons selected at a time.",
+            "bigFont.fnt"
+        );
+        limitLabel->setPosition({ width / 2, height - 22 });
+        limitLabel->setScale(0.25f);
+        limitLabel->setColor({ 255, 0, 0 });
+        limitLabel->setOpacity(0);
+        limitLabel->setID("limit-label");
+        menu->addChild(limitLabel);
+
         auto resetSpr = CCSprite::createWithSpriteFrameName("geode.loader/reset-gold.png");
         resetSpr->setScale(.5f);
         auto resetButton = CCMenuItemSpriteExtra::create(
@@ -160,7 +180,7 @@ protected:
         if (hasNonDefaultValue()) resetButton->setVisible(true);
 
         auto topMenu = CCMenu::create();
-        topMenu->setPosition({ width/2 , height - 50 });
+        topMenu->setPosition({ width/2 , height - 55 });
         topMenu->setContentSize({ width - 120, 70 });
         topMenu->setLayout(
             RowLayout::create()
@@ -183,9 +203,7 @@ protected:
         bottomMenu->setContentSize({ width - 30, 30 });
         bottomMenu->setLayout(
             RowLayout::create()
-                ->setAxisAlignment(AxisAlignment::Start)
                 ->setGap(5.f)
-                ->setAutoScale(false)
         );
         bottomMenu->setID("bottom-menu");
         this->addChild(bottomMenu);
@@ -213,11 +231,13 @@ protected:
     void updateIconRotation() {
         if (Mod::get()->getSettingValue<bool>("rotate-buttons-logos")) {
 			for (auto& button: CCArrayExt<CCMenuItemSpriteExtra*>(m_topMenu->getChildren())) {
-                if (button->getID() != "search-button"_spr) {
+                if (button->getID() != "search-button") {
                     if (button->getPositionX() < m_topMenu->getContentWidth()/2) {
                         button->getChildByIDRecursive("icon-sprite")->setRotation(10.f);
                     } else if (button->getPositionX() > m_topMenu->getContentWidth()/2) {
                         button->getChildByIDRecursive("icon-sprite")->setRotation(-10.f);
+                    } else {
+                        button->getChildByIDRecursive("icon-sprite")->setRotation(0.f);
                     }
                 }
 			}
@@ -225,45 +245,56 @@ protected:
     }
 
     void onAdd(CCObject* sender) {
-    //     auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
-    //     auto buttonStr = thisBtn->getID();
+        auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
+        auto id = thisBtn->getID();
+        auto scale = idToButtonSpr[id].second;
 
-    //     m_currentButtonsArray.push_back(buttonStr);
-    //     m_unselectedButtonsArray.erase(std::remove(m_unselectedButtonsArray.begin(), m_unselectedButtonsArray.end(), buttonStr), m_unselectedButtonsArray.end());
+        if (m_currentButtonsArray.size() >= 8) {
+            if (auto limitLabel = typeinfo_cast<CCLabelBMFont*>(this->getChildByIDRecursive("limit-label"))) {
+                limitLabel->setOpacity(255);
+                limitLabel->runAction(CCFadeOut::create(1.f));
+            }
+            return;
+        }
+        m_currentButtonsArray.push_back(id);
+        m_unselectedButtonsArray.erase(std::remove(m_unselectedButtonsArray.begin(), m_unselectedButtonsArray.end(), id), m_unselectedButtonsArray.end());
 
-    //     thisBtn->removeFromParent();
-    //     topMainButton(buttonStr);
+        thisBtn->removeFromParent();
+        topMainButton(id, scale);
 
-    //     m_topMenu->updateLayout();
-    //     m_bottomMenu->updateLayout();
+        m_topMenu->updateLayout();
+        m_bottomMenu->updateLayout();
+        updateIconRotation();
 
-    //     this->dispatchChanged();
+        this->dispatchChanged();
 
-    //     if (hasNonDefaultValue()) m_resetButton->setVisible(true);
-    //     else m_resetButton->setVisible(false);
-    //     if (hasUncommittedChanges()) m_nameLabel->setColor({ 17, 221, 0});
-    //     else m_nameLabel->setColor({ 255, 255, 255});
+        if (hasNonDefaultValue()) m_resetButton->setVisible(true);
+        else m_resetButton->setVisible(false);
+        if (hasUncommittedChanges()) m_nameLabel->setColor({ 17, 221, 0});
+        else m_nameLabel->setColor({ 255, 255, 255});
     }
 
     void onRemove(CCObject* sender) {
-    //     auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
-    //     auto buttonStr = thisBtn->getID();
+        auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
+        auto id = thisBtn->getID();
+        auto scale = idToButtonSpr[id].second;
 
-    //     m_unselectedButtonsArray.push_back(buttonStr);
-    //     m_currentButtonsArray.erase(std::remove(m_currentButtonsArray.begin(), m_currentButtonsArray.end(), buttonStr), m_currentButtonsArray.end());
+        m_unselectedButtonsArray.push_back(id);
+        m_currentButtonsArray.erase(std::remove(m_currentButtonsArray.begin(), m_currentButtonsArray.end(), id), m_currentButtonsArray.end());
 
-    //     thisBtn->removeFromParent();
-    //     bottomMainButton(buttonStr);
+        thisBtn->removeFromParent();
+        bottomMainButton(id, scale);
 
-    //     m_topMenu->updateLayout();
-    //     m_bottomMenu->updateLayout();
+        m_topMenu->updateLayout();
+        m_bottomMenu->updateLayout();
+        updateIconRotation();
 
-    //     this->dispatchChanged();
+        this->dispatchChanged();
 
-    //     if (hasNonDefaultValue()) m_resetButton->setVisible(true);
-    //     else m_resetButton->setVisible(false);
-    //     if (hasUncommittedChanges()) m_nameLabel->setColor({ 17, 221, 0});
-    //     else m_nameLabel->setColor({ 255, 255, 255});
+        if (hasNonDefaultValue()) m_resetButton->setVisible(true);
+        else m_resetButton->setVisible(false);
+        if (hasUncommittedChanges()) m_nameLabel->setColor({ 17, 221, 0});
+        else m_nameLabel->setColor({ 255, 255, 255});
     }
 
 public:
@@ -288,26 +319,30 @@ public:
                 m_unselectedButtonsArray.push_back(button.as_string());
             }
         }
-        // m_topMenu->removeAllChildren();
-        // m_bottomMenu->removeAllChildren();
+        m_topMenu->removeAllChildren();
+        m_bottomMenu->removeAllChildren();
 
-        // // for (auto& button : m_currentButtonsArray) {
-        // //     auto buttonStr = button.as_string();
-        // //     topMainButton(buttonStr);
-        // // }
-        // // for (auto& button : m_unselectedButtonsArray) {
-        // //     auto buttonStr = button.as_string();
-        // //     bottomMainButton(buttonStr);
-        // // }
+        for (auto& button : m_currentButtonsArray) {
+            auto id = button.as_string();
+            auto scale = idToButtonSpr[id].second;
+            topMainButton(id, scale);
+        }
 
-        // m_topMenu->updateLayout();
-        // m_bottomMenu->updateLayout();
+        for (auto& button : m_unselectedButtonsArray) {
+            auto id = button.as_string();
+            auto scale = idToButtonSpr[id].second;
+            bottomMainButton(id, scale);
+        }
 
-        // m_resetButton->setVisible(false);
-        // if (hasUncommittedChanges()) m_nameLabel->setColor({ 17, 221, 0});
-        // else m_nameLabel->setColor({ 255, 255, 255});
+        m_topMenu->updateLayout();
+        m_bottomMenu->updateLayout();
+        updateIconRotation();
 
-        // this->dispatchChanged();
+        m_resetButton->setVisible(false);
+        if (hasUncommittedChanges()) m_nameLabel->setColor({ 17, 221, 0});
+        else m_nameLabel->setColor({ 255, 255, 255});
+
+        this->dispatchChanged();
     }
 
     static MainButtonsSettingNode* create(MainButtonsSettingValue* value, float width) {

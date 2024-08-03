@@ -136,6 +136,12 @@ void RDButton::rotateIcon(float rotation) {
 	}
 }
 
+void RDButton::updateQuestsLabel() {
+	m_completedQuests--;
+	as<CCLabelBMFont*>(m_labelMenu->getChildByID("desc-label-1"))->setString(fmt::format("{}/3 Quest(s)", m_completedQuests).c_str());
+	m_labelMenu->updateLayout();
+}
+
 RDButton* RDButton::create(CCObject* target, std::string title, std::vector<std::string> description, std::string sprite, float spriteScale, cocos2d::SEL_MenuHandler callback, std::string id) {
     auto ret = new RDButton();
     if (ret && ret->init(target, title, description, sprite, spriteScale, callback, id)) {
