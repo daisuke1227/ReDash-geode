@@ -1,65 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/loader/SettingNode.hpp>
+#include "MiniButtons.hpp"
 using namespace geode::prelude;
-
-#define topMainButton(id, scale)\
-    auto buttonStr = idToButtonSpr[id].first;\
-\
-    auto bgSprite = CCScale9Sprite::create("RD_square.png"_spr);\
-    bgSprite->setContentWidth(bgSprite->getContentWidth() / 80 * 150);\
-    bgSprite->setScale(0.3f);\
-\
-    auto sprite = CCSprite::createWithSpriteFrameName(buttonStr.c_str());\
-    sprite->setPosition(bgSprite->getContentSize()/2 + ccp(bgSprite->getContentWidth()/2 - sprite->getContentWidth()/2 - 0.5f, 0));\
-    sprite->setScale(scale);\
-    sprite->setID("icon-sprite");\
-    bgSprite->addChild(sprite);\
-\
-    bgSprite->setColor({ 0, 255, 0});\
-    auto theButton = CCMenuItemSpriteExtra::create(\
-        bgSprite,\
-        this,\
-        menu_selector(MainButtonsSettingNode::onRemove)\
-    );\
-\
-    auto label = CCSprite::create("labelSmall.png"_spr);\
-    label->setAnchorPoint({ 1, 0.5f });\
-    if (!Mod::get()->getSettingValue<bool>("ltr-texts")) {\
-		label->setPosition( { sprite->getPositionX() - sprite->getScaledContentWidth()/2 - 3.f, 40.f });\
-	} else {\
-        label->setScaleX(-1);\
-		label->setPosition( { 7.5f, 40.f });\
-	}\
-	label->setID("smol-label");\
-	bgSprite->addChild(label);\
-\
-    bgSprite->setID("bg-sprite");\
-    theButton->setID(id);\
-    theButton->m_scaleMultiplier = 1.1f;\
-    m_topMenu->addChild(theButton);
-
-
-#define bottomMainButton(id, scale)\
-    auto buttonStr = idToButtonSpr[id].first;\
-\
-    auto bgSprite = CCScale9Sprite::create("RD_square.png"_spr);\
-    bgSprite->setScale(0.3f);\
-\
-    auto sprite = CCSprite::createWithSpriteFrameName(buttonStr.c_str());\
-    sprite->setPosition(bgSprite->getContentSize() / 2);\
-    sprite->setScale(scale);\
-    sprite->setID("icon-sprite");\
-    bgSprite->addChild(sprite);\
-\
-    bgSprite->setColor({ 255, 50, 0});\
-    auto theButton = CCMenuItemSpriteExtra::create(\
-        bgSprite,\
-        this,\
-        menu_selector(MainButtonsSettingNode::onAdd)\
-    );\
-    bgSprite->setID("bg-sprite");\
-    theButton->setID(id);\
-    m_bottomMenu->addChild(theButton);
 
 std::map<std::string, std::pair<std::string, float>> idToButtonSpr = {
     {"create-button", {"RD_create.png"_spr, 0.95f}},
@@ -211,18 +153,20 @@ protected:
 
         for (auto& button : m_currentButtonsArray) {
             auto id = button.as_string();
+            auto spr = idToButtonSpr[id].first;
             auto scale = idToButtonSpr[id].second;
-            topMainButton(id, scale);
+            m_topMenu->addChild(MiniRDButton::create(spr, scale, { 0, 255, 0 }, this, menu_selector(MainButtonsSettingNode::onRemove), id));
         }
 
         for (auto& button : m_unselectedButtonsArray) {
             auto id = button.as_string();
+            auto spr = idToButtonSpr[id].first;
             auto scale = idToButtonSpr[id].second;
-            bottomMainButton(id, scale);
+            m_bottomMenu->addChild(MiniButton::create(spr, scale, { 255, 50, 0 }, this, menu_selector(MainButtonsSettingNode::onAdd), id));
         }
         
-        topMenu->updateLayout();
-        bottomMenu->updateLayout();
+        m_topMenu->updateLayout();
+        m_bottomMenu->updateLayout();
         updateIconRotation();
 
         return true;
@@ -247,6 +191,7 @@ protected:
     void onAdd(CCObject* sender) {
         auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
         auto id = thisBtn->getID();
+        auto spr = idToButtonSpr[id].first;
         auto scale = idToButtonSpr[id].second;
 
         if (m_currentButtonsArray.size() >= 8) {
@@ -260,7 +205,7 @@ protected:
         m_unselectedButtonsArray.erase(std::remove(m_unselectedButtonsArray.begin(), m_unselectedButtonsArray.end(), id), m_unselectedButtonsArray.end());
 
         thisBtn->removeFromParent();
-        topMainButton(id, scale);
+        m_topMenu->addChild(MiniRDButton::create(spr, scale, { 0, 255, 0 }, this, menu_selector(MainButtonsSettingNode::onRemove), id));
 
         m_topMenu->updateLayout();
         m_bottomMenu->updateLayout();
@@ -277,13 +222,14 @@ protected:
     void onRemove(CCObject* sender) {
         auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
         auto id = thisBtn->getID();
+        auto spr = idToButtonSpr[id].first;
         auto scale = idToButtonSpr[id].second;
 
         m_unselectedButtonsArray.push_back(id);
         m_currentButtonsArray.erase(std::remove(m_currentButtonsArray.begin(), m_currentButtonsArray.end(), id), m_currentButtonsArray.end());
 
         thisBtn->removeFromParent();
-        bottomMainButton(id, scale);
+        m_bottomMenu->addChild(MiniButton::create(spr, scale, { 255, 50, 0 }, this, menu_selector(MainButtonsSettingNode::onAdd), id));
 
         m_topMenu->updateLayout();
         m_bottomMenu->updateLayout();
@@ -324,14 +270,16 @@ public:
 
         for (auto& button : m_currentButtonsArray) {
             auto id = button.as_string();
+            auto spr = idToButtonSpr[id].first;
             auto scale = idToButtonSpr[id].second;
-            topMainButton(id, scale);
+            m_topMenu->addChild(MiniRDButton::create(spr, scale, { 0, 255, 0 }, this, menu_selector(MainButtonsSettingNode::onRemove), id));
         }
 
         for (auto& button : m_unselectedButtonsArray) {
             auto id = button.as_string();
+            auto spr = idToButtonSpr[id].first;
             auto scale = idToButtonSpr[id].second;
-            bottomMainButton(id, scale);
+            m_bottomMenu->addChild(MiniButton::create(spr, scale, { 255, 50, 0 }, this, menu_selector(MainButtonsSettingNode::onAdd), id));
         }
 
         m_topMenu->updateLayout();

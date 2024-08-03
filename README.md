@@ -20,3 +20,4 @@ Geometry Dash if it was a flashy mobile game.
 - [The GD Modding server](https://discord.gg/gd-modding-822510988409831486), for providing feedbacks and bug reports when the mod was in development.
 - [GD-Roulette](https://github.com/SpaghettDev/GD-Roulette), [GDDP Integration](https://github.com/Minemaker0430/GDDPIntegration) and [Super Expert](https://github.com/LXanii/Super-Expert) for the sprites that we forcefully stole for compatibilities :D.
 - [Level Thumbnails](https://github.com/cdc-sys/level-thumbs-mod), because I pretty much copied its code and used its thumbnail hosting github for the thumbnails of the timely levels.
+- [zmx](https://github.com/qimiko), [Erymanthus](https://github.com/RayDeeUx) and [catgirlanh](https://github.com/AnhNguyenlost13), for testing this mod on MacOS

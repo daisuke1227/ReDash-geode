@@ -490,21 +490,21 @@ class $modify(CrazyLayer, MenuLayer) {
 		);
 
 		std::map<std::string, std::pair<std::string, std::string>> statNodes = {
-			{"GJ_starsIcon_001.png", {fmt::format("{}", gsm->getStat("6")), "stars-stats"}},
-			{"GJ_moonsIcon_001.png", {fmt::format("{}", gsm->getStat("28")), "moons-stats"}},
-			{"GJ_coinsIcon_001.png", {fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS), "secret-coins-stats"}},
-			{"GJ_coinsIcon2_001.png", {fmt::format("{}", gsm->getStat("12")), "user-coins-stats"}},
-			{"GJ_demonIcon_001.png", {fmt::format("{}", gsm->getStat("5")), "demons-stats"}},
-			{"GJ_diamondsIcon_001.png", {fmt::format("{}", gsm->getStat("13")), "diamonds-stats"}},
-			{"currencyDiamondIcon_001.png", {fmt::format("{}", gsm->getStat("29")), "diamond-diamonds-stats"}},
-			{"currencyOrbIcon_001.png", {fmt::format("{}", gsm->getStat("14")), "orbs-stats"}}
+			{"stars-stats", {fmt::format("{}", gsm->getStat("6")), "GJ_starsIcon_001.png"}},
+			{"moons-stats", {fmt::format("{}", gsm->getStat("28")), "GJ_moonsIcon_001.png"}},
+			{"secret-coins-stats", {fmt::format("{}/{}", gsm->getStat("8"), MAX_SECRET_COINS), "GJ_coinsIcon_001.png"}},
+			{"user-coins-stats", {fmt::format("{}", gsm->getStat("12")), "GJ_coinsIcon2_001.png"}},
+			{"demons-stats", {fmt::format("{}", gsm->getStat("5")), "GJ_demonIcon_001.png"}},
+			{"diamonds-stats", {fmt::format("{}", gsm->getStat("13")), "GJ_diamondsIcon_001.png"}},
+			{"diamond-diamonds-stats", {fmt::format("{}", gsm->getStat("29")), "currencyDiamondIcon_001.png"}},
+			{"orbs-stats", {fmt::format("{}", gsm->getStat("14")), "currencyOrbIcon_001.png"}}
 		};
 		auto statsSettings = as<StatsSettingValue*>(mod->getSetting("stats-nodes-selection"));
 		for (auto& stat : statsSettings->getStatsArray()) {
-			auto statStr = stat.as_string();
-			if (statNodes.find(statStr) != statNodes.end()) {
-				auto& [texture, text] = statNodes[statStr];
-				statsMenu->addChild(RDStatsNode::create(statStr, texture, text));
+			auto id = stat.as_string();
+			if (statNodes.find(id) != statNodes.end()) {
+				auto& [desc, sprite] = statNodes[id];
+				statsMenu->addChild(RDStatsNode::create(sprite, desc, id));
 			}
 		}
 

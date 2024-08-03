@@ -1,46 +1,21 @@
 #include <Geode/Geode.hpp>
 #include <Geode/loader/SettingNode.hpp>
+#include "MiniButtons.hpp"
 using namespace geode::prelude;
 
-#define topButton(statSpr)\
-    auto bgSprite = CCScale9Sprite::create("RD_square.png"_spr);\
-    bgSprite->setScale(0.3f);\
-\
-    auto sprite = CCSprite::createWithSpriteFrameName(statStr.c_str());\
-    sprite->setPosition(bgSprite->getContentSize() / 2);\
-    sprite->setScale(2.f);\
-    bgSprite->addChild(sprite);\
-\
-    bgSprite->setColor({ 0, 255, 0});\
-    auto button = CCMenuItemSpriteExtra::create(\
-        bgSprite,\
-        this,\
-        menu_selector(StatsSettingNode::onRemove)\
-    );\
-    button->setID(statStr);\
-    m_topMenu->addChild(button);
+std::map<std::string, std::string> idToStatSpr = {
+    {"stars-stats", "GJ_starsIcon_001.png"},
+    {"moons-stats", "GJ_moonsIcon_001.png"},
+    {"secret-coins-stats", "GJ_coinsIcon_001.png"},
+    {"user-coins-stats", "GJ_coinsIcon2_001.png"},
+    {"demons-stats", "GJ_demonIcon_001.png"},
+    {"diamonds-stats", "GJ_diamondsIcon_001.png"},
+    {"diamond-diamonds-stats", "currencyDiamondIcon_001.png"},
+    {"orbs-stats", "currencyOrbIcon_001.png"},
+};
 
-#define bottomButton(statSpr)\
-    auto bgSprite = CCScale9Sprite::create("RD_square.png"_spr);\
-    bgSprite->setScale(0.3f);\
-\
-    auto sprite = CCSprite::createWithSpriteFrameName(statStr.c_str());\
-    sprite->setPosition(bgSprite->getContentSize() / 2);\
-    sprite->setScale(2.f);\
-    bgSprite->addChild(sprite);\
-\
-    bgSprite->setColor({ 255, 50, 0});\
-    auto button = CCMenuItemSpriteExtra::create(\
-        bgSprite,\
-        this,\
-        menu_selector(StatsSettingNode::onAdd)\
-    );\
-    button->setID(statStr);\
-    m_bottomMenu->addChild(button);
-
-
-auto DEFAULT_STATS = matjson::parse(R"(["GJ_starsIcon_001.png", "GJ_moonsIcon_001.png", "GJ_coinsIcon_001.png", "GJ_coinsIcon2_001.png", "GJ_demonIcon_001.png"])").as_array();
-auto ALL_STATS = matjson::parse(R"(["GJ_starsIcon_001.png", "GJ_moonsIcon_001.png", "GJ_coinsIcon_001.png", "GJ_coinsIcon2_001.png", "GJ_demonIcon_001.png", "GJ_diamondsIcon_001.png", "currencyDiamondIcon_001.png", "currencyOrbIcon_001.png"])").as_array();
+auto DEFAULT_STATS = matjson::parse(R"(["stars-stats", "moons-stats", "secret-coins-stats", "user-coins-stats", "demons-stats"])").as_array();
+auto ALL_STATS = matjson::parse(R"(["stars-stats", "moons-stats", "secret-coins-stats", "user-coins-stats", "demons-stats", "diamonds-stats", "diamond-diamonds-stats", "orbs-stats"])").as_array();
 
 class StatsSettingValue : public SettingValue {
 protected:
@@ -155,30 +130,30 @@ protected:
         m_bottomMenu = bottomMenu;
 
         for (auto& stat : m_currentStatsArray) {
-            auto statStr = stat.as_string();
-            topButton(statStr);
+            auto id = stat.as_string();
+            m_topMenu->addChild(MiniButton::create(idToStatSpr[id], 2.f, { 0, 255, 0 }, this, menu_selector(StatsSettingNode::onRemove), id));
         }
 
         for (auto& stat : m_unselectedStatsArray) {
-            auto statStr = stat.as_string();
-            bottomButton(statStr);
+            auto id = stat.as_string();
+            m_bottomMenu->addChild(MiniButton::create(idToStatSpr[id], 2.f, { 255, 50, 0 }, this, menu_selector(StatsSettingNode::onAdd), id));
         }
         
-        topMenu->updateLayout();
-        bottomMenu->updateLayout();
+        m_topMenu->updateLayout();
+        m_bottomMenu->updateLayout();
 
         return true;
     }
 
     void onAdd(CCObject* sender) {
         auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
-        auto statStr = thisBtn->getID();
+        auto id = thisBtn->getID();
 
-        m_currentStatsArray.push_back(statStr);
-        m_unselectedStatsArray.erase(std::remove(m_unselectedStatsArray.begin(), m_unselectedStatsArray.end(), statStr), m_unselectedStatsArray.end());
+        m_currentStatsArray.push_back(id);
+        m_unselectedStatsArray.erase(std::remove(m_unselectedStatsArray.begin(), m_unselectedStatsArray.end(), id), m_unselectedStatsArray.end());
 
         thisBtn->removeFromParent();
-        topButton(statStr);
+        m_topMenu->addChild(MiniButton::create(idToStatSpr[id], 2.f, { 0, 255, 0 }, this, menu_selector(StatsSettingNode::onRemove), id));;
 
         m_topMenu->updateLayout();
         m_bottomMenu->updateLayout();
@@ -193,13 +168,13 @@ protected:
 
     void onRemove(CCObject* sender) {
         auto thisBtn = static_cast<CCMenuItemSpriteExtra*>(sender);
-        auto statStr = thisBtn->getID();
+        auto id = thisBtn->getID();
 
-        m_unselectedStatsArray.push_back(statStr);
-        m_currentStatsArray.erase(std::remove(m_currentStatsArray.begin(), m_currentStatsArray.end(), statStr), m_currentStatsArray.end());
+        m_unselectedStatsArray.push_back(id);
+        m_currentStatsArray.erase(std::remove(m_currentStatsArray.begin(), m_currentStatsArray.end(), id), m_currentStatsArray.end());
 
         thisBtn->removeFromParent();
-        bottomButton(statStr);
+        m_bottomMenu->addChild(MiniButton::create(idToStatSpr[id], 2.f, { 255, 50, 0 }, this, menu_selector(StatsSettingNode::onAdd), id));;
 
         m_topMenu->updateLayout();
         m_bottomMenu->updateLayout();
@@ -236,12 +211,13 @@ public:
         m_bottomMenu->removeAllChildren();
 
         for (auto& stat : m_currentStatsArray) {
-            auto statStr = stat.as_string();
-            topButton(statStr);
+            auto id = stat.as_string();
+            m_topMenu->addChild(MiniButton::create(idToStatSpr[id], 2.f, { 0, 255, 0 }, this, menu_selector(StatsSettingNode::onRemove), id));
         }
+
         for (auto& stat : m_unselectedStatsArray) {
-            auto statStr = stat.as_string();
-            bottomButton(statStr);
+            auto id = stat.as_string();
+            m_bottomMenu->addChild(MiniButton::create(idToStatSpr[id], 2.f, { 255, 50, 0 }, this, menu_selector(StatsSettingNode::onAdd), id));
         }
 
         m_topMenu->updateLayout();
@@ -271,4 +247,15 @@ SettingNode* StatsSettingValue::createNode(float width) {
 
 $on_mod(Loaded) {
     Mod::get()->addCustomSetting<StatsSettingValue>("stats-nodes-selection", DEFAULT_STATS);
+
+    auto statsSettings = as<StatsSettingValue*>(Mod::get()->getSetting("stats-nodes-selection"));
+    std::vector<std::string> oldStats = {"GJ_starsIcon_001.png", "GJ_moonsIcon_001.png", "GJ_coinsIcon_001.png", "GJ_coinsIcon2_001.png", "GJ_demonIcon_001.png", "GJ_diamondsIcon_001.png", "currencyDiamondIcon_001.png", "currencyOrbIcon_001.png"};
+    for (auto& stat : statsSettings->getStatsArray()) {
+        log::info("yippee '{}'", stat.as_string());
+        if (find(oldStats.begin(), oldStats.end(), stat.as_string()) != oldStats.end()){
+            statsSettings->setStatsArray(DEFAULT_STATS);
+            break;
+        }
+
+    }
 }

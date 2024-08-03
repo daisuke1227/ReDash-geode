@@ -14,3 +14,4 @@
 - [The GD Modding server](https://discord.gg/gd-modding-822510988409831486), for providing feedbacks and bug reports during the mod's development.
 - [GD-Roulette](mod:spaghettdev.gd-roulette), [GDDP Integration](mod:minemaker0430.gddp_integration) and [Super Expert](mod:xanii.super_expert) for the sprites that we forcefully stole for compatibilities :D.
 - [Level Thumbnails](mod:cdc.level_thumbnails), because I pretty much copied its code and used its thumbnail hosting github for the thumbnails of the timely levels.
+- [zmx](user:5327860), [Erymanthus](user:1941705) and [catgirlanh](user:27318792), for testing this mod on MacOS
