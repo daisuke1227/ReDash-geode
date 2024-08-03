@@ -16,7 +16,7 @@ using namespace geode::prelude;
     bgSprite->addChild(sprite);\
 \
     bgSprite->setColor({ 0, 255, 0});\
-    auto button = CCMenuItemSpriteExtra::create(\
+    auto theButton = CCMenuItemSpriteExtra::create(\
         bgSprite,\
         this,\
         menu_selector(MainButtonsSettingNode::onRemove)\
@@ -34,9 +34,9 @@ using namespace geode::prelude;
 	bgSprite->addChild(label);\
 \
     bgSprite->setID("bg-sprite");\
-    button->setID(id);\
-    button->m_scaleMultiplier = 1.1f;\
-    m_topMenu->addChild(button);
+    theButton->setID(id);\
+    theButton->m_scaleMultiplier = 1.1f;\
+    m_topMenu->addChild(theButton);
 
 
 #define bottomMainButton(id, scale)\
@@ -52,14 +52,14 @@ using namespace geode::prelude;
     bgSprite->addChild(sprite);\
 \
     bgSprite->setColor({ 255, 50, 0});\
-    auto button = CCMenuItemSpriteExtra::create(\
+    auto theButton = CCMenuItemSpriteExtra::create(\
         bgSprite,\
         this,\
         menu_selector(MainButtonsSettingNode::onAdd)\
     );\
     bgSprite->setID("bg-sprite");\
-    button->setID(id);\
-    m_bottomMenu->addChild(button);
+    theButton->setID(id);\
+    m_bottomMenu->addChild(theButton);
 
 std::map<std::string, std::pair<std::string, float>> idToButtonSpr = {
     {"create-button", {"RD_create.png"_spr, 0.95f}},
