@@ -15,4 +15,8 @@ namespace Variables {
     extern cocos2d::SEL_MenuHandler RouletteSelector;
 
     extern Ref<cocos2d::CCDictionary> ThumbnailsDict;
+
+    extern bool didGetGJChallenge;
+    extern std::vector<ChallengesPage*> challengesPages;
+
 }

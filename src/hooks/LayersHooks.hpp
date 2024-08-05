@@ -52,7 +52,12 @@ class $modify(LoadingLayer) {
 class $modify(CreatorLayer) {
     void onChallenge(CCObject* sender) {
         if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
-            ChallengesPage::create()->show();
+            auto popup = ChallengesPage::create();
+            popup->show();
+            if (!Variables::didGetGJChallenge) {
+                Variables::challengesPages.push_back(popup);
+                popup->retain();
+            }
             return;
         }
         CreatorLayer::onChallenge(sender);

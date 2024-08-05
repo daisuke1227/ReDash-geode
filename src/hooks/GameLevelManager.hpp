@@ -60,6 +60,23 @@ class $modify(MyGLM, GameLevelManager) {
         }
     }
 
+    void onGetGJChallengesCompleted(gd::string response, gd::string tag) {
+        GameLevelManager::onGetGJChallengesCompleted(response, tag);
+
+        Variables::didGetGJChallenge = true;
+        for (auto page : Variables::challengesPages) {
+            if (page && page->retainCount() > 0) {
+                page->release();
+            };
+        }
+        Variables::challengesPages.clear();
+    }
+
+    void getGJChallenges() {
+        GameLevelManager::getGJChallenges();
+        Variables::didGetGJChallenge = false;    
+    }
+
     void onGetLeaderboardScoresCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetLeaderboardScoresCompleted(response, tag);
 

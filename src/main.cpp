@@ -600,8 +600,8 @@ class $modify(CrazyLayer, MenuLayer) {
 		hideBtnMenu->setScale(0.75f);
 		this->addChild(hideBtnMenu, 100);
 
-		auto spr1 = CCSprite::create("RD_hideButton_01.png"_spr);
-		auto spr2 = CCSprite::create("RD_hideButton_02.png"_spr);
+		auto spr1 = CircleButtonSprite::createWithSprite("RD_hide_01.png"_spr, 1.45f, CircleBaseColor::Green, CircleBaseSize::MediumAlt);
+		auto spr2 = CircleButtonSprite::createWithSprite("RD_hide_02.png"_spr, 1.45f, CircleBaseColor::Green, CircleBaseSize::MediumAlt);
 		// spr2->setOpacity(50);
 		auto hideToggler = CCMenuItemToggler::create(spr1, spr2, this, menu_selector(CrazyLayer::onHideMenu));
 		hideToggler->setID("hide-button");
