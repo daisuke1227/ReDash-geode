@@ -1,5 +1,6 @@
 # Overcharged Main Menu Changelog
 ## v1.1.1
+- Fixed another silly incompat with GD Intercept!!
 - Removed Herobrine
 ## v1.1.0
 - Added customization settings for the main buttons

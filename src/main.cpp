@@ -12,9 +12,11 @@
 
 #include <Geode/modify/MenuLayer.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
+#include <Geode/ui/GeodeUI.hpp>
 #include <Geode/utils/cocos.hpp>
 
 #include <fmt/core.h>
+
 #define MAX_SECRET_COINS 164
 #define addCreatorButton(mod, id, selector, texture) \
 	if (loader->isModLoaded(mod) && selector != nullptr) {\
@@ -127,9 +129,11 @@ class $modify(CrazyLayer, MenuLayer) {
 					}
 				}
 			}
-			auto foundBtn = false;
+
 			if (loader->isModLoaded("smjs.gdintercept")) {
-				if (auto node = this->getChildByIDRecursive("smjs.gdintercept/blame-overcharged-menu")) {
+				auto id = "smjs.gdintercept/GDI";
+				if (loader->getLoadedMod("smjs.gdintercept")->getVersion() < VersionInfo::parse("v0.5.0-alpha.5")) id = "smjs.gdintercept/blame-overcharged-menu";
+				if (auto node = this->getChildByIDRecursive(id)) {
 					CCMenuItemSpriteExtra* button = nullptr;
 					if (typeinfo_cast<CCSprite*>(node)) button = as<CCMenuItemSpriteExtra*>(node->getParent());
 					else if (typeinfo_cast<CCMenuItemSpriteExtra*>(node)) button = as<CCMenuItemSpriteExtra*>(node);
@@ -142,6 +146,22 @@ class $modify(CrazyLayer, MenuLayer) {
 							sprite->setScale(sprite->getScale() * 1.5f);
 							sprite->setPosition(button->getContentSize() / 2);
 						}
+					}
+				} else {
+					if (loader->getLoadedMod("smjs.gdintercept")->getVersion() < VersionInfo::parse("v0.4.0-alpha.0")) {
+						auto alert = geode::createQuickPopup(
+							"Uh oh!",
+							"It looks like your GDIntercept's version is below v0.4.0-alpha.0.\nPlease update it to fix the issue with the button (top left corner).",
+							"Cancel", "OK",
+							[loader](auto, bool btn2) {
+								if (btn2) {
+									geode::openIndexPopup(loader->getLoadedMod("smjs.gdintercept"));
+								}
+							},
+							false
+						);
+						alert->m_scene = this;
+						alert->show();
 					}
 				}
 			}
