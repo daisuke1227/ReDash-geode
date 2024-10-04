@@ -1,4 +1,6 @@
 # Overcharged Main Menu Changelog
+## v1.1.3
+- Bugfixes idk
 ## v1.1.2
 - Fixed another silly incompat with GD Intercept!!
 ## v1.1.1

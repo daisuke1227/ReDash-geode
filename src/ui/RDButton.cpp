@@ -138,7 +138,9 @@ void RDButton::rotateIcon(float rotation) {
 
 void RDButton::updateQuestsLabel() {
 	m_completedQuests--;
-	as<CCLabelBMFont*>(m_labelMenu->getChildByID("desc-label-1"))->setString(fmt::format("{}/3 Quest(s)", m_completedQuests).c_str());
+	if (auto descLabel1 = m_labelMenu->getChildByID("desc-label")) {
+		as<CCLabelBMFont*>(descLabel1)->setString(fmt::format("{}/3 Quest(s)", m_completedQuests).c_str());
+	}
 	m_labelMenu->updateLayout();
 }
 

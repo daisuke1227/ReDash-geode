@@ -554,7 +554,7 @@ class $modify(CrazyLayer, MenuLayer) {
 			menuButUnder->addChild(creatorBtn);
 			bottomX -= creatorBtn->getScaledContentWidth()*menuButUnder->getScale();
 		}
-		auto treasureSpr = CCSprite::createWithSpriteFrameName("secretDoorBtn_open_001.png");
+		auto treasureSpr = CCSprite::createWithSpriteFrameName(gm->getUGV("5") ? "secretDoorBtn_open_001.png" : "secretDoorBtn_closed_001.png");
 		treasureSpr->setScale(1.25f);
 		auto treasureBtn = CCMenuItemSpriteExtra::create(treasureSpr, this, menu_selector(CreatorLayer::onTreasureRoom));
 		treasureBtn->setID("treasure-room-button");
