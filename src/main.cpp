@@ -628,20 +628,21 @@ class $modify(CrazyLayer, MenuLayer) {
 		hideToggler->setPosition({ hideBtnMenu->getContentWidth() / 2.f, hideBtnMenu->getContentHeight() / 2.f });
 		hideBtnMenu->addChild(hideToggler);
 
-		auto pagesMod = loader->getLoadedMod("alphalaneous.pages_api");
-		if (pagesMod->getSettingValue<bool>("menulayer-bottom-menu")) {
-			bottomMenu->setScale(0.975);
-			bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
-			bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
-			bottomMenu->setUserObject("element-count", CCInteger::create(5));	
-		}
+		if (auto pagesMod = loader->getLoadedMod("alphalaneous.vanilla_pages")) {
+			if (pagesMod->getSettingValue<bool>("menulayer-bottom-menu")) {
+				bottomMenu->setScale(0.975);
+				bottomMenu->setContentHeight(bottomMenu->getContentHeight() - 90.f);
+				bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
+				bottomMenu->setUserObject("element-count", CCInteger::create(5));	
+			}
 
-		if (pagesMod->getSettingValue<bool>("menulayer-right-menu")) {
-			rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false));
-			rightMenu->setScale(0.95);
-			rightMenu->setContentWidth(rightMenu->getContentWidth() - 75.f);
-			rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
-			rightMenu->setUserObject("element-count", CCInteger::create((int)((rightMenu->getContentWidth() + 75.f) / 60.f)));
+			if (pagesMod->getSettingValue<bool>("menulayer-right-menu")) {
+				rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false)->setAxisAlignment(AxisAlignment::Center));
+				rightMenu->setScale(0.95);
+				rightMenu->setContentWidth(rightMenu->getContentWidth() - 75.f);
+				rightMenu->setUserObject("orientation", CCInteger::create(1)); // HORIZONTAL
+				rightMenu->setUserObject("element-count", CCInteger::create((int)((rightMenu->getContentWidth() + 75.f) / 60.f)));
+			}
 		}
 
 		bottomMenu->updateLayout();
