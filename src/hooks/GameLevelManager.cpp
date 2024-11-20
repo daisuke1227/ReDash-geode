@@ -18,7 +18,7 @@ using namespace geode::prelude;
     }
 
 #define handleGetDaily(nodeID, ID, IDUnk) \
-    if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {\
+    if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {\
         if (auto node = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {\
             node->updateTimeLabel(1.f);\
             node->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);\
@@ -55,8 +55,13 @@ class $modify(MyGLM, GameLevelManager) {
         Variables::EventLeft--;
 
         if (Variables::EventLeft < 1) {
-            CCScheduler::get()->unscheduleSelector(schedule_selector(MyGLM::updateEventTimer), this);
-            GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Event);
+            // update event only happens if user is in menulayer
+            if (auto scene = CCDirector::sharedDirector()->getRunningScene()) {
+                if (auto layer = scene->getChildByType<MenuLayer>(0)) {
+                    CCScheduler::get()->unscheduleSelector(schedule_selector(MyGLM::updateEventTimer), this);
+                    GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Event);
+                }
+            }
         }
     }
 
@@ -97,7 +102,7 @@ class $modify(MyGLM, GameLevelManager) {
                         Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
                         Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
 
-                        if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+                        if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
                             if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
                                 button->updateLeaderboardLabel();
                             }
@@ -111,7 +116,7 @@ class $modify(MyGLM, GameLevelManager) {
                 }
             } else {
                 if (Variables::GlobalRank != -1) {
-                    if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+                    if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
                         if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
                             button->getLeaderboardRankFailed();
                         }
@@ -142,7 +147,7 @@ class $modify(MyGLM, GameLevelManager) {
             }
         }
 
-        if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+        if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
             if (tag == "-1_0") {
                 handleLevel("daily-node", this->m_dailyIDUnk);
             } else if (tag == "-2_0") {
@@ -181,6 +186,24 @@ class $modify(MyGLM, GameLevelManager) {
 
                 handleGetDaily("weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
             } else if (tag == "event_state") {
+                // std::string word = "";
+                // std::vector<std::string> r;
+                // for (auto thing : response) {
+                //     if (thing == '|') {
+                //         r.push_back(word);
+                //         word = "";
+                //     } else {
+                //         word += thing;
+                //     }
+                // }
+
+                // word = r.at(2);
+                // log::warn("event_state word: {}", word);
+                // std::string d1 = ZipUtils::base64DecodeEnc(word, "59182");
+                // log::error("event_state d1: {}", d1.c_str());
+                // log::warn("event_state d1: {}", d1);
+
+                // timeLeft = 3600;
                 if (this->m_eventIDUnk == 0) {
                     this->downloadLevel(-3, false);
                 }

@@ -86,8 +86,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     auto bonusMenu = CCMenu::create();
     bonusMenu->setContentSize(bonusBG->getScaledContentSize());
     bonusMenu->setPosition(bonusBG->getPosition());
-    std::vector<float> bonusOffset = {2.f, 5.f, 2.f};
-    bonusMenu->setPositionX(bonusMenu->getPositionX() + bonusOffset[levelType]);
+    bonusMenu->setPositionX(bonusMenu->getPositionX() + (levelType != 0 ? 5.f : 2.f));
     bonusMenu->setID("bonus-menu");
     bonusMenu->setLayout(
         RowLayout::create()
@@ -131,6 +130,7 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
     auto time = timelyLeft[levelType];
     if (time < 0) time = 0;
+    
     auto timeLabel = CCLabelBMFont::create(GameToolbox::getTimeString(time, true).c_str(), Mod::get()->getSettingValue<bool>("use-pusab") ? "bigFont.fnt" : "gjFont16.fnt");
     timeLabel->setScale(0.55f);
     timeLabel->setAnchorPoint({ 1, 0.5f });
@@ -138,12 +138,23 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
     timeLabel->setID("time-label");
     node->addChild(timeLabel, 1);
     m_timeLabel = timeLabel;
+    if (levelType == 2) {
+        // if (roundf(rand() / 32767.f * 1000) == 187) {
+        //     string = "This message is extremely rare."; // why specifically 187??? what the fuck rob
+        // } else {
+        //     std::vector<std::string> dude = {"New event level in ... ?", "Events are pretty random", "Next event in random hours from now", "When is the next event?", "NEW EVENT! .... soon", "Why did I program this...", "I believe in you", "You can do it", "Next one is a banger", "This is fun", "I can\'t find anything", "Why is this a thing?", "Do or do not. There is no try", "The cake is a lie", "Challenge accepted", "I wonder what\'s next", "Welcome to the event", "Jump cube, jump", "No event for you", "This looks interesting", "Something epic is coming...", "Unlocking something... or not", "This could be legendary", "I wonder if it\'s a demon?", "A wild event appears!", "Let me cook", "Please wait, cooking.", "I don\'t think it\'s coming", "Geometry Dashn\'t", "Uber gamer moment", "Free event is free"};
+        //     string = dude[rand() % dude.size()];
+        // }
+        timeLabel->setString("who knows...");
+        timeLabel->setScale(0.35f);
+        timeLabel->setColor({ 255, 0, 0 });
+    }
 
     std::vector<const char*> timeLabelVctr = {"New Daily in:", "New Weekly in:", "New Event in:"};
     auto timeLeftLabel = CCLabelBMFont::create(timeLabelVctr[levelType], "bigFont.fnt");
     timeLeftLabel->setScale(0.3f);
     timeLeftLabel->setAnchorPoint({ 1, 0.5f });
-    timeLeftLabel->setPosition({ timeLabel->getPositionX(), timeLabel->getPositionY() + timeLabel->getScaledContentHeight()/2 + timeLeftLabel->getScaledContentHeight()/2});
+    timeLeftLabel->setPosition({ timeLabel->getPositionX(), (safeButton->getPositionY() + innerBG->getPositionY() - innerBG->getScaledContentHeight()/2)/2});
     timeLeftLabel->setColor({ 200, 200, 200 });
     timeLeftLabel->setID("time-left-label");
     node->addChild(timeLeftLabel, 1);
@@ -167,6 +178,12 @@ bool RDDailyNode::init(int levelType, CCSize size, std::string id, float scale) 
         timerLoadingCircle->setVisible(true);
     }
 
+    if (levelType == 2) {
+        timeLabel->setVisible(true);
+        timeLeftLabel->setVisible(true);
+        timerLoadingCircle->setVisible(false);
+    }
+
     this->setContentSize(size * scale);
     this->setID(id);
 
@@ -187,7 +204,7 @@ void RDDailyNode::onClaimReward(CCObject* sender) {
     std::vector<std::string> claimedTimely = {"claimed-daily", "claimed-weekly", "claimed-event"};
     Mod::get()->setSavedValue(claimedTimely[m_levelType], true);
 
-    if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+    if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
         auto point = ccp(232.49, 200);
         if (auto menu = layer->getChildByID("redash-menu"_spr)) {
             if (auto dailiesMenu = menu->getChildByID("dailies-menu"_spr)) {
@@ -199,77 +216,78 @@ void RDDailyNode::onClaimReward(CCObject* sender) {
             }
         }
 
-        if (m_levelType == 1) {
-            int diamonds = 0;
-            int orbs = 0;
-            int keySprite = 0;
-            int key = 0;
-            int shardsType = 0;
-            int shards = 0;
-            for (auto t : CCArrayExt<GJRewardObject*>(reward->m_rewardObjects)) {
-                switch (as<int>(t->m_specialRewardItem)) {
-                    case 7:
-                        orbs = t->m_total;
-                        break;
-                    case 8:
-                        diamonds = t->m_total;
-                        break;
-                    case 6:
-                        keySprite = 9;
-                        key = t->m_total;
-                    // shards
-                    case 1:
-                        shardsType = 4;
-                        shards = t->m_total;
-                        break;
-                    case 2:
-                        shardsType = 5;
-                        shards = t->m_total;
-                        break;
-                    case 3:
-                        shardsType = 6;
-                        shards = t->m_total;
-                        break;
-                    case 4:
-                        shardsType = 7;
-                        shards = t->m_total;
-                        break;
-                    case 5:
-                        shardsType = 8;
-                        shards = t->m_total;
-                        break;
-                    case 10:
-                        shardsType = 10;
-                        shards = t->m_total;
-                        break;
-                    case 11:
-                        shardsType = 11;
-                        shards = t->m_total;
-                        break;
-                    case 12:
-                        shardsType = 12;
-                        shards = t->m_total;
-                        break;
-                    case 13:
-                        shardsType = 13;
-                        shards = t->m_total;
-                        break;
-                    case 14:
-                        shardsType = 14;
-                        shards = t->m_total;
-                        break;
-                }
-            }
+        if (m_levelType != 0) {
+            // int diamonds = 0;
+            // int orbs = 0;
+            // int keySprite = 0;
+            // int key = 0;
+            // int shardsType = 0;
+            // int shards = 0;
+            // for (auto t : CCArrayExt<GJRewardObject*>(reward->m_rewardObjects)) {
+            //     switch (as<int>(t->m_specialRewardItem)) {
+            //         case 7:
+            //             orbs = t->m_total;
+            //             break;
+            //         case 8:
+            //             diamonds = t->m_total;
+            //             break;
+            //         case 6:
+            //             keySprite = 9;
+            //             key = t->m_total;
+            //         // shards
+            //         case 1:
+            //             shardsType = 4;
+            //             shards = t->m_total;
+            //             break;
+            //         case 2:
+            //             shardsType = 5;
+            //             shards = t->m_total;
+            //             break;
+            //         case 3:
+            //             shardsType = 6;
+            //             shards = t->m_total;
+            //             break;
+            //         case 4:
+            //             shardsType = 7;
+            //             shards = t->m_total;
+            //             break;
+            //         case 5:
+            //             shardsType = 8;
+            //             shards = t->m_total;
+            //             break;
+            //         case 10:
+            //             shardsType = 10;
+            //             shards = t->m_total;
+            //             break;
+            //         case 11:
+            //             shardsType = 11;
+            //             shards = t->m_total;
+            //             break;
+            //         case 12:
+            //             shardsType = 12;
+            //             shards = t->m_total;
+            //             break;
+            //         case 13:
+            //             shardsType = 13;
+            //             shards = t->m_total;
+            //             break;
+            //         case 14:
+            //             shardsType = 14;
+            //             shards = t->m_total;
+            //             break;
+            //     }
+            // }
 
-            auto rewardLayer = CurrencyRewardLayer::create(orbs, 0, 0, diamonds, as<CurrencySpriteType>(keySprite), key, as<CurrencySpriteType>(shardsType), shards, point, as<CurrencyRewardType>(1), 0, 1);
+            // auto rewardLayer = CurrencyRewardLayer::create(orbs, 0, 0, diamonds, as<CurrencySpriteType>(keySprite), key, as<CurrencySpriteType>(shardsType), shards, point, as<CurrencyRewardType>(1), 0, 1);
+            // layer->addChild(rewardLayer, 1000);
+            auto rewardLayer = RewardUnlockLayer::create(as<int>(reward->m_rewardType), nullptr);
             layer->addChild(rewardLayer, 1000);
-            FMODAudioEngine::sharedEngine()->playEffect("gold01.ogg");
-            FMODAudioEngine::sharedEngine()->playEffect("secretKey.ogg");
+            rewardLayer->showCollectReward(reward);
         } else {
             auto rewardLayer = CurrencyRewardLayer::create(0, 0, 0, getBonusDiamonds(m_currentLevel), as<CurrencySpriteType>(0), 0, as<CurrencySpriteType>(0), 0, point, as<CurrencyRewardType>(0), 0, 1);
             layer->addChild(rewardLayer, 1000);
-            FMODAudioEngine::sharedEngine()->playEffect("gold02.ogg");
         }
+        FMODAudioEngine::sharedEngine()->playEffect("gold02.ogg");
     }
 
     viewButton->setScale(0.6f);
@@ -351,14 +369,14 @@ void RDDailyNode::downloadLevelFailed() {
 void RDDailyNode::setupBonusMenu(GJGameLevel* level) {
     m_bonusMenu->removeAllChildren();
 
-    auto bonusSprite = m_levelType == 1 ? 
+    auto bonusSprite = m_levelType != 0 ? 
         CCSprite::createWithSpriteFrameName("chest_03_02_001.png") :
         CCSprite::createWithSpriteFrameName("GJ_bigDiamond_001.png");
-    bonusSprite->setScale(m_levelType == 1 ? 0.16f : 0.4f);
+    bonusSprite->setScale(m_levelType != 0 ? 0.16f : 0.4f);
     bonusSprite->setID("bonus-sprite");
     m_bonusMenu->addChild(bonusSprite);
 
-    auto bonusLabel = CCLabelBMFont::create((m_levelType == 1 ? " / Bonus" : fmt::format("x{} Bonus", getBonusDiamonds(level)).c_str()), "bigFont.fnt");
+    auto bonusLabel = CCLabelBMFont::create((m_levelType != 0 ? " / Bonus" : fmt::format("x{} Bonus", getBonusDiamonds(level)).c_str()), "bigFont.fnt");
     bonusLabel->setScale(0.4f);
     bonusLabel->setID("bonus-label");
     m_bonusMenu->addChild(bonusLabel);
@@ -586,7 +604,9 @@ void RDDailyNode::downloadThumbnailFail() {
 }
 
 void RDDailyNode::updateTimeLabel(float dt) {
-    std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft, Variables::EventLeft};
+    if (m_levelType == 2) return;
+
+    std::vector<int> timelyLeft = {Variables::DailyLeft, Variables::WeeklyLeft};
     if (timelyLeft[m_levelType] < 1) {
         m_timeLabel->setVisible(false);
         m_timeLeftLabel->setVisible(false);

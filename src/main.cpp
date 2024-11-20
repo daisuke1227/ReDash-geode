@@ -1,19 +1,21 @@
-// #include "ui/RDButton.hpp"
-// #include "RDDailyNode.hpp"
-#include "ui/RDStatsNode.hpp"
-#include "ui/RDMainButton.hpp"
-
-#include "hooks/onBackHooks.hpp"
-#include "hooks/GameLevelManager.hpp"
-#include "hooks/LayersHooks.hpp" // same hook index bruh
-
-#include "settings/StatsSettingNode.hpp"
-#include "settings/MainButtonsSettingNode.hpp"
-
+#include <Geode/Geode.hpp>
 #include <Geode/modify/MenuLayer.hpp>
+#include <Geode/modify/ChallengesPage.hpp>
 #include <Geode/ui/BasedButtonSprite.hpp>
 #include <Geode/ui/GeodeUI.hpp>
 #include <Geode/utils/cocos.hpp>
+
+#include "Variables.hpp"
+
+#include "ui/RDButton.hpp"
+#include "ui/RDDailyNode.hpp"
+#include "ui/RDStatsNode.hpp"
+#include "ui/RDMainButton.hpp"
+
+#include "settings/StatsSettingV3.hpp"
+#include "settings/StatsSettingNodeV3.hpp"
+#include "settings/MainButtonsSettingV3.hpp"
+#include "settings/MainButtonsSettingNodeV3.hpp"
 
 #include <fmt/core.h>
 
@@ -113,7 +115,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				if (auto restartBtn = typeinfo_cast<CCMenuItemSpriteExtra*>(closeMenu->getChildByID("restart-button"))) {
 					closeMenu->removeChild(restartBtn);
 					bottomMenu->addChild(restartBtn);
-					if (auto sprite = getChildOfType<CCSprite>(restartBtn, 0)) {
+					if (auto sprite = restartBtn->getChildByType<CCSprite>(0)) {
 						restartBtn->setContentSize(restartBtn->getContentSize() * 1.5f);
 						sprite->setScale(sprite->getScale() * 1.5f);
 						sprite->setPosition(restartBtn->getContentSize() / 2);
@@ -122,7 +124,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				if (auto reloadBtn = typeinfo_cast<CCMenuItemSpriteExtra*>(closeMenu->getChildByID("reload-button"))) {
 					closeMenu->removeChild(reloadBtn);
 					bottomMenu->addChild(reloadBtn);
-					if (auto sprite = getChildOfType<CCSprite>(reloadBtn, 0)) {
+					if (auto sprite = reloadBtn->getChildByType<CCSprite>(0)) {
 						reloadBtn->setContentSize(reloadBtn->getContentSize() * 1.5f);
 						sprite->setScale(sprite->getScale() * 1.5f);
 						sprite->setPosition(reloadBtn->getContentSize() / 2);
@@ -132,7 +134,7 @@ class $modify(CrazyLayer, MenuLayer) {
 
 			if (loader->isModLoaded("smjs.gdintercept")) {
 				auto id = "smjs.gdintercept/GDI";
-				if (loader->getLoadedMod("smjs.gdintercept")->getVersion() < VersionInfo::parse("v0.5.0-alpha.5")) id = "smjs.gdintercept/blame-overcharged-menu";
+				if (loader->getLoadedMod("smjs.gdintercept")->getVersion() < VersionInfo::parse("v0.5.0-alpha.5").unwrapOrDefault()) id = "smjs.gdintercept/blame-overcharged-menu";
 				if (auto node = this->getChildByIDRecursive(id)) {
 					CCMenuItemSpriteExtra* button = nullptr;
 					if (typeinfo_cast<CCSprite*>(node)) button = as<CCMenuItemSpriteExtra*>(node->getParent());
@@ -141,21 +143,21 @@ class $modify(CrazyLayer, MenuLayer) {
 					if (button) {
 						button->removeFromParent();
 						bottomMenu->addChild(button);
-						if (auto sprite = getChildOfType<CCSprite>(button, 0)) {
+						if (auto sprite = button->getChildByType<CCSprite>(0)) {
 							button->setContentSize(button->getContentSize() * 1.5f);
 							sprite->setScale(sprite->getScale() * 1.5f);
 							sprite->setPosition(button->getContentSize() / 2);
 						}
 					}
 				} else {
-					if (loader->getLoadedMod("smjs.gdintercept")->getVersion() < VersionInfo::parse("v0.4.0-alpha.0")) {
+					if (loader->getLoadedMod("smjs.gdintercept")->getVersion() < VersionInfo::parse("v0.4.0-alpha.0").unwrapOrDefault()) {
 						auto alert = geode::createQuickPopup(
 							"Uh oh!",
 							"It looks like your GDIntercept's version is below v0.4.0-alpha.0.\nPlease update it to fix the issue with the button (top left corner).",
 							"Cancel", "OK",
 							[loader](auto, bool btn2) {
 								if (btn2) {
-									geode::openIndexPopup(loader->getLoadedMod("smjs.gdintercept"));
+									geode::openInfoPopup(loader->getLoadedMod("smjs.gdintercept"));
 								}
 							},
 							false
@@ -239,7 +241,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		CrazyLayer::setupButtons();		
 
 		// MAIN MENU CHANGES (MIGHT BE BREAKING SOME STUFF) - ninXout
-		// no it isn't - Weebify
+		// no it ain't - Weebify
 		if (loader->isModLoaded("sofabeddd.geometry_dash")) {
 			if (this->getChildByID("sofabeddd.geometry_dash/main-title-menu")) {
 				this->getChildByID("sofabeddd.geometry_dash/main-title-menu")->setVisible(false);
@@ -397,9 +399,9 @@ class $modify(CrazyLayer, MenuLayer) {
 			{"versus-button", RDButtonData("RD_versusLabel.png"_spr, {"Coming soon", "in 2.21!"}, "RD_versus.png"_spr, 0.95f, menu_selector(CreatorLayer::onMultiplayer))}
 		};
 
-		auto mainButtonsSetting = as<MainButtonsSettingValue*>(mod->getSetting("main-buttons-selection"));
-		for (auto& button : mainButtonsSetting->getButtonsArray()) {
-			auto id = button.as_string();
+		auto mainButtonsSetting = static_pointer_cast<MainButtonsSettingV3>(mod->getSetting("main-buttons-selection"));
+		for (auto& button : mainButtonsSetting->getButtons()) {
+			auto id = button.asString().unwrapOrDefault();
 			if (mainButtons.find(id) != mainButtons.end()) {
 				auto data = mainButtons[id];
 				auto rdBtn = RDButton::create(this, data.m_titleSpr, data.m_description, data.m_iconSpr, data.m_iconScale, data.m_selector, id);
@@ -408,8 +410,8 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 		}
 
-		for (auto& b : mainButtonsSetting->getNonButtonsArray()) {
-			auto id = b.as_string();
+		for (auto& b : mainButtonsSetting->getNonButtons()) {
+			auto id = b.asString().unwrapOrDefault();
 			if (id != "the-map-button" && id != "versus-button") {
 				if (mainButtons.find(id) != mainButtons.end()) {
 					auto data = mainButtons[id];
@@ -466,20 +468,20 @@ class $modify(CrazyLayer, MenuLayer) {
 		);
 
 		// if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
-		// 	dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
-		// 	dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
-		// 	dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
-		// 	dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
-		// 	mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
+			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
+			dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
+			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
+			dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
+			mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
 		// } else {
-			if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
-				dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
-				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
-			} else {
-				dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
-				dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
-			}
-			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
+			// if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
+			// 	dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
+			// 	dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
+			// } else {
+			// 	dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
+			// 	dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
+			// }
+			// dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
 		// }
 
 
@@ -519,9 +521,9 @@ class $modify(CrazyLayer, MenuLayer) {
 			{"diamond-diamonds-stats", {fmt::format("{}", gsm->getStat("29")), "currencyDiamondIcon_001.png"}},
 			{"orbs-stats", {fmt::format("{}", gsm->getStat("14")), "currencyOrbIcon_001.png"}}
 		};
-		auto statsSettings = as<StatsSettingValue*>(mod->getSetting("stats-nodes-selection"));
-		for (auto& stat : statsSettings->getStatsArray()) {
-			auto id = stat.as_string();
+		auto statsSettings = static_pointer_cast<StatsSettingV3>(mod->getSetting("stats-nodes-selection"));
+		for (auto& stat : statsSettings->getStats()) {
+			auto id = stat.asString().unwrapOr("");
 			if (statNodes.find(id) != statNodes.end()) {
 				auto& [desc, sprite] = statNodes[id];
 				statsMenu->addChild(RDStatsNode::create(sprite, desc, id));
@@ -652,12 +654,11 @@ class $modify(CrazyLayer, MenuLayer) {
 	}
 };
 
-#include <Geode/modify/ChallengesPage.hpp>
-class $modify(ChallengesPage) {
+class $modify(test, ChallengesPage) {
 	void claimItem(ChallengeNode* node, GJChallengeItem* item, cocos2d::CCPoint point) {
 		ChallengesPage::claimItem(node, item, point);
 
-		if (auto layer = getChildOfType<MenuLayer>(CCDirector::sharedDirector()->getRunningScene(), 0)) {
+		if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
 			if (CCMenuItemSpriteExtra* button = as<CrazyLayer*>(layer)->m_fields->m_questBtn) {
 				auto piVar2 = as<CrazyLayer*>(layer)->m_fields->m_questBtn->getChildByID("quest-notif"_spr);
 				bool claimable = false;
