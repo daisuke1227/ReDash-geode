@@ -239,15 +239,6 @@ void RDTimelyNode::setupLevelMenu(GJGameLevel* level) {
     if (level->m_featured) featureRating += 1;
     featureRating += level->m_isEpic;
 
-    log::info("level->m_levelName = {}", level->m_levelName);
-    log::warn("difficultyRating = {}", difficultyRating);
-    log::warn("featureRating = {}", featureRating);
-    log::warn("level->m_demon = {}", level->m_demon.value());
-    log::warn("level->m_demonDifficulty = {}", level->m_demonDifficulty);
-    log::warn("getAverageDifficulty() = {}", level->getAverageDifficulty());
-    log::error("level->m_featured = {}", level->m_featured);
-    log::error("level->m_isEpic = {}", level->m_isEpic);
-
     auto difficultySprite = GJDifficultySprite::create(difficultyRating, GJDifficultyName::Short);
     difficultySprite->updateFeatureState(as<GJFeatureState>(featureRating));
     difficultySprite->setScale(0.8f);
