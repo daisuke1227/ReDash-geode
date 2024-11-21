@@ -4,8 +4,8 @@
 using namespace geode::prelude;
 
 #define getSelector(id, var) \
-	if (auto button = creatorLayer->getChildByIDRecursive(id)) {\
-		var = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;\
+	if (auto button = creatorLayer->getChildByIDRecursive(id)) {		\
+		var = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;		\
 	}
 
 int thing = 0;

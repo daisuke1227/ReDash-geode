@@ -1,35 +1,38 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameLevelManager.hpp>
-#include "../ui/RDDailyNode.hpp"
+#include "../ui/timely/RDTimelyNode.hpp"
+#include "../ui/timely/RDDailyNode.hpp"
+#include "../ui/timely/RDWeeklyNode.hpp"
+#include "../ui/timely/RDEventNode.hpp"
 #include "../ui/RDButton.hpp"
 using namespace geode::prelude;
 
 #define handleLevel(nodeID, IDUnk) \
-    if (auto node = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {\
-        if (response != "-1") {\
-            if (auto level = this->getSavedDailyLevel(IDUnk)) {\
-                node->setupLevelMenu(level);\
-            } else {\
-                log::error("where did my {} level go??", nodeID);\
-            }\
-        } else {\
-            node->downloadLevelFailed();\
-        }\
+    if (auto node = typeinfo_cast<RDTimelyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {         \
+        if (response != "-1") {                                                                                                                             \
+            if (auto level = this->getSavedDailyLevel(IDUnk)) {                                                                                             \
+                node->setupLevelMenu(level);                                                                                                                \
+            } else {                                                                                                                                        \
+                log::error("where did my {} level go??", nodeID);                                                                                           \
+            }                                                                                                                                               \
+        } else {                                                                                                                                            \
+            node->downloadLevelFailed();                                                                                                                    \
+        } \
     }
 
-#define handleGetDaily(nodeID, ID, IDUnk) \
-    if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {\
-        if (auto node = typeinfo_cast<RDDailyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {\
-            node->updateTimeLabel(1.f);\
-            node->schedule(schedule_selector(RDDailyNode::updateTimeLabel), 1.f);\
-            if (node->m_skipButton) {\
-                if (IDUnk < ID && (node->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(IDUnk))) {\
-                    node->m_skipButton->setVisible(true);\
-                } else {\
-                    node->m_skipButton->setVisible(false);\
-                }\
-            }\
-        }\
+#define handleGetDaily(NodeType, nodeID, ID, IDUnk) \
+if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {                                                           \
+        if (auto node = typeinfo_cast<NodeType*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {         \
+            node->updateTimeLabel(1.f);                                                                                                                     \
+            node->schedule(schedule_selector(NodeType::updateTimeLabel), 1.f);                                                                              \
+            if (node->m_skipButton) {                                                                                                                       \
+                if (IDUnk < ID && (node->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(IDUnk))) {        \
+                    node->m_skipButton->setVisible(true);                                                                                                   \
+                } else {                                                                                                                                    \
+                    node->m_skipButton->setVisible(false);                                                                                                  \
+                }                                                                                                                                           \
+            }                                                                                                                                               \
+        } \
     }
 
 class $modify(MyGLM, GameLevelManager) {
@@ -54,10 +57,10 @@ class $modify(MyGLM, GameLevelManager) {
     void updateEventTimer() {
         Variables::EventLeft--;
 
-        if (Variables::EventLeft < 1) {
-            // update event only happens if user is in menulayer
-            if (auto scene = CCDirector::sharedDirector()->getRunningScene()) {
-                if (auto layer = scene->getChildByType<MenuLayer>(0)) {
+        // update event only happens if user is in menulayer
+        if (auto scene = CCDirector::sharedDirector()->getRunningScene()) {
+            if (auto layer = scene->getChildByType<MenuLayer>(0)) {
+                if (Variables::EventLeft < 1 && Mod::get()->getSettingValue<bool>("events-check")) {
                     CCScheduler::get()->unscheduleSelector(schedule_selector(MyGLM::updateEventTimer), this);
                     GameLevelManager::getGJDailyLevelState(GJTimedLevelType::Event);
                 }
@@ -160,6 +163,8 @@ class $modify(MyGLM, GameLevelManager) {
 
     void onGetGJDailyLevelStateCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetGJDailyLevelStateCompleted(response, tag);
+
+        // log::warn("onGetGJDailyLevelStateCompleted: '{}', '{}'", response, tag);
         
         if (response != "-1") {
             auto responseStd = std::string(response.c_str());
@@ -175,7 +180,7 @@ class $modify(MyGLM, GameLevelManager) {
                 Variables::DailyLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateDailyTimer), this, 1.f, false);
 
-                handleGetDaily("daily-node", this->m_dailyID, this->m_dailyIDUnk);
+                handleGetDaily(RDDailyNode, "daily-node", this->m_dailyID, this->m_dailyIDUnk);
             } else if (tag == "weekly_state") {
                 if (this->m_weeklyIDUnk == 0) {
                     this->downloadLevel(-2, false);
@@ -184,26 +189,8 @@ class $modify(MyGLM, GameLevelManager) {
                 Variables::WeeklyLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateWeeklyTimer), this, 1.f, false);
 
-                handleGetDaily("weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
+                handleGetDaily(RDWeeklyNode, "weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
             } else if (tag == "event_state") {
-                // std::string word = "";
-                // std::vector<std::string> r;
-                // for (auto thing : response) {
-                //     if (thing == '|') {
-                //         r.push_back(word);
-                //         word = "";
-                //     } else {
-                //         word += thing;
-                //     }
-                // }
-
-                // word = r.at(2);
-                // log::warn("event_state word: {}", word);
-                // std::string d1 = ZipUtils::base64DecodeEnc(word, "59182");
-                // log::error("event_state d1: {}", d1.c_str());
-                // log::warn("event_state d1: {}", d1);
-
-                // timeLeft = 3600;
                 if (this->m_eventIDUnk == 0) {
                     this->downloadLevel(-3, false);
                 }
@@ -211,7 +198,18 @@ class $modify(MyGLM, GameLevelManager) {
                 Variables::EventLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateEventTimer), this, 1.f, false);
 
-                handleGetDaily("event-node", this->m_eventID, this->m_eventIDUnk);
+                // handleGetDaily("event-node", this->m_eventID, this->m_eventIDUnk);
+                if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
+                    if (auto node = typeinfo_cast<RDEventNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("event-node"))) {
+                        if (node->m_skipButton) {
+                            if (this->m_eventIDUnk < this->m_eventID && (node->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(this->m_eventIDUnk))) {
+                                node->m_skipButton->setVisible(true);
+                            } else {
+                                node->m_skipButton->setVisible(false);
+                            }                                                                                                                                           
+                        }                                                                                                                                               
+                    }
+                }
             }
         }
     }

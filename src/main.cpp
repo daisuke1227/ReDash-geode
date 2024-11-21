@@ -8,9 +8,12 @@
 #include "Variables.hpp"
 
 #include "ui/RDButton.hpp"
-#include "ui/RDDailyNode.hpp"
 #include "ui/RDStatsNode.hpp"
 #include "ui/RDMainButton.hpp"
+#include "ui/timely/RDTimelyNode.hpp"
+#include "ui/timely/RDDailyNode.hpp"
+#include "ui/timely/RDWeeklyNode.hpp"
+#include "ui/timely/RDEventNode.hpp"
 
 #include "settings/StatsSettingV3.hpp"
 #include "settings/StatsSettingNodeV3.hpp"
@@ -21,14 +24,14 @@
 
 #define MAX_SECRET_COINS 164
 #define addCreatorButton(mod, id, selector, texture) \
-	if (loader->isModLoaded(mod) && selector != nullptr) {\
-		auto btn = CCMenuItemSpriteExtra::create(\
-			CCSprite::createWithSpriteFrameName(texture),\
-			this,\
-			selector\
-		);\
-		btn->setID(id);\
-		rightMenu->addChild(btn);\
+	if (loader->isModLoaded(mod) && selector != nullptr) {			\
+		auto btn = CCMenuItemSpriteExtra::create(					\
+			CCSprite::createWithSpriteFrameName(texture),			\
+			this,													\
+			selector												\
+		);															\
+		btn->setID(id);												\
+		rightMenu->addChild(btn); 									\
 	}
 
 std::string getPathString(int n) {
@@ -469,19 +472,19 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		// if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
 			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
-			dailiesMenu->addChild(RDDailyNode::create(2, { 230.f , 152.7f }, "event-node", 600/(230*4.f)));
+			dailiesMenu->addChild(RDDailyNode::create({ 230.f , 152.7f }, "daily-node", 600/(230*4.f)));
+			dailiesMenu->addChild(RDWeeklyNode::create({ 230.f , 152.7f }, "weekly-node", 600/(230*4.f)));
+			dailiesMenu->addChild(RDEventNode::create({ 230.f , 152.7f }, "event-node", 600/(230*4.f)));
 			mainMenu->setPositionY(mainMenu->getPositionY() + 12.5f);
 		// } else {
 			// if (Mod::get()->getSettingValue<bool>("main-levels-leftmost")) {
 			// 	dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
-			// 	dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
+			// 	dailiesMenu->addChild(RDTimelyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
 			// } else {
-			// 	dailiesMenu->addChild(RDDailyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
+			// 	dailiesMenu->addChild(RDTimelyNode::create(0, { 230.f , 135.f }, "daily-node", 1.f));
 			// 	dailiesMenu->addChild(RDMainButton::create({ 265.f , 0.f }, { 150.f , 135.f }, "main-levels-button", 1.f));
 			// }
-			// dailiesMenu->addChild(RDDailyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
+			// dailiesMenu->addChild(RDTimelyNode::create(1, { 230.f , 135.f }, "weekly-node", 1.f));
 		// }
 
 

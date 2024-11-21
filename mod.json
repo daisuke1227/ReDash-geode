@@ -1,5 +1,5 @@
 {
-	"geode": "4.0.0",
+	"geode": "4.0.1",
 	"gd": {
 		"win": "2.2074",
 		"android": "2.2074",
@@ -46,6 +46,11 @@
         ]
     },
     "settings": {
+        "nodes-selections-title": {
+            "name": "Nodes Selections Settings",
+            "type": "title",
+            "description": "These settings allow you to customize the nodes that appear on the main menu."
+        },
         "stats-nodes-selection": {
             "name": "Stats Nodes Selection",
             "type": "custom:stats-nodes-selection"
@@ -53,6 +58,11 @@
         "main-buttons-selection": {
             "name": "Main Buttons Selection",
             "type": "custom:main-buttons-selection"
+        },
+        "main-buttons-title": {
+            "name": "Main Buttons Settings",
+            "type": "title",
+            "description": "These settings allow you to customize the appearances of the main buttons in the main menu. (Editor, Saved Levels, etc.)"
         },
         "rotate-buttons-logos": {
             "name": "Rotate Buttons Logos",
@@ -78,10 +88,38 @@
             "description": "Hide the static description texts of the main buttons.",
             "default": false
         },
+        "special-buttons-title": {
+            "name": "Special Buttons Settings",
+            "type": "title",
+            "description": "These settings allow you to customize the appearances of the special buttons in the main menu. (Main Levels, Daily Levels, etc.)"
+        },
         "goto-last-played-main": {
             "name": "Go to Last Played Main Level",
             "type": "bool",
             "description": "Go to the last played main level when pressing the main levels button.",
+            "default": false
+        },
+        "use-pusab": {
+            "name": "Use Pusab for Timer",
+            "type": "bool",
+            "description": "Use the default Pusab font for the Daily and Weekly levels' timers.",
+            "default": false
+        },
+        "hide-main-levels-stats": {
+            "name": "Hide Main levels stats",
+            "type": "bool",
+            "description": "Hide the stats of the level on the main levels button.",
+            "default": false
+        },
+        "miscellaneous-title": {
+            "name": "Miscellaneous Settings",
+            "type": "title",
+            "description": "These settings allow you to customize the miscellaneous features of this mod."
+        },
+        "events-check": {
+            "name": "Events Frequent Check",
+            "type": "bool",
+            "description": "Sends a request to the server every 10 seconds to check for event levels while inside the main menu. Enabling this setting may risk yourself getting rate-limited (checking every 10 seconds is vanilla behavior though, lol).",
             "default": false
         },
         "disable-creator-button": {
@@ -90,22 +128,10 @@
             "description": "Do not add the button for accessing CreatorLayer.",
             "default": true
         },
-        "use-pusab": {
-            "name": "Use Pusab for Timer",
-            "type": "bool",
-            "description": "Use the default Pusab font for the Daily and Weekly levels' timers.",
-            "default": false
-        },
         "alt-gddp-texture": {
             "name": "Alternative GDDP Button Texture",
             "type": "bool",
             "description": "Use the alternative GDDP button texture if you have GDDP Integration installed.",
-            "default": false
-        },
-        "hide-main-levels-stats": {
-            "name": "Hide Main levels stats",
-            "type": "bool",
-            "description": "Hide the stats of the level on the main levels button.",
             "default": false
         }
     }
