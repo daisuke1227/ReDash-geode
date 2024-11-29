@@ -339,7 +339,7 @@ void RDTimelyNode::setupLevelMenu(GJGameLevel* level) {
 }
 
 void RDTimelyNode::downloadThumbnailFinished(CCImage* image) {
-    if (this && m_mainNode && m_menu) {
+    if (m_mainNode && m_menu) {
         auto size = m_mainNode->getContentSize();
         auto key = fmt::format("thumbnail-{}", m_currentLevel->m_levelID.value());
         CCTexture2D* texture = new CCTexture2D();

@@ -83,7 +83,7 @@ class $modify(CrazyLayer, MenuLayer) {
 	};
 
 	static void onModify(auto& self) {
-        auto res = self.setHookPriority("MenuLayer::init", INT_MIN/2 + 1); // making sure its run before pages api but after index developer points
+        (void) self.setHookPriorityBeforePost("MenuLayer::init", "alphalaneous.vanilla_pages");
     }
 
 	void setupButtons() {
