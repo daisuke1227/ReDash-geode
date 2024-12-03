@@ -1,5 +1,7 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/GameLevelManager.hpp>
+#include <Macros.hpp>
+
 #include "../ui/timely/RDTimelyNode.hpp"
 #include "../ui/timely/RDDailyNode.hpp"
 #include "../ui/timely/RDWeeklyNode.hpp"
@@ -7,33 +9,6 @@
 #include "../ui/RDButton.hpp"
 using namespace geode::prelude;
 
-#define handleLevel(nodeID, IDUnk) \
-    if (auto node = typeinfo_cast<RDTimelyNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {         \
-        if (response != "-1") {                                                                                                                             \
-            if (auto level = this->getSavedDailyLevel(IDUnk)) {                                                                                             \
-                node->setupLevelMenu(level);                                                                                                                \
-            } else {                                                                                                                                        \
-                log::error("where did my {} level go??", nodeID);                                                                                           \
-            }                                                                                                                                               \
-        } else {                                                                                                                                            \
-            node->downloadLevelFailed();                                                                                                                    \
-        } \
-    }
-
-#define handleGetDaily(NodeType, nodeID, ID, IDUnk) \
-if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {                                                           \
-        if (auto node = typeinfo_cast<NodeType*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID(nodeID))) {         \
-            node->updateTimeLabel(1.f);                                                                                                                     \
-            node->schedule(schedule_selector(NodeType::updateTimeLabel), 1.f);                                                                              \
-            if (node->m_skipButton) {                                                                                                                       \
-                if (IDUnk < ID && (node->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(IDUnk))) {        \
-                    node->m_skipButton->setVisible(true);                                                                                                   \
-                } else {                                                                                                                                    \
-                    node->m_skipButton->setVisible(false);                                                                                                  \
-                }                                                                                                                                           \
-            }                                                                                                                                               \
-        } \
-    }
 
 class $modify(MyGLM, GameLevelManager) {
     void updateDailyTimer() {
@@ -152,11 +127,11 @@ class $modify(MyGLM, GameLevelManager) {
 
         if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
             if (tag == "-1_0") {
-                handleLevel("daily-node", this->m_dailyIDUnk);
+                RD_HANDLE_LEVEL("daily-node", this->m_dailyIDUnk);
             } else if (tag == "-2_0") {
-                handleLevel("weekly-node", this->m_weeklyIDUnk);
+                RD_HANDLE_LEVEL("weekly-node", this->m_weeklyIDUnk);
             } else if (tag == "-3_0") {
-                handleLevel("event-node", this->m_eventIDUnk);
+                RD_HANDLE_LEVEL("event-node", this->m_eventIDUnk);
             }
         }
     }
@@ -180,7 +155,7 @@ class $modify(MyGLM, GameLevelManager) {
                 Variables::DailyLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateDailyTimer), this, 1.f, false);
 
-                handleGetDaily(RDDailyNode, "daily-node", this->m_dailyID, this->m_dailyIDUnk);
+                RD_HANDLE_GET_DAILY(RDDailyNode, "daily-node", this->m_dailyID, this->m_dailyIDUnk);
             } else if (tag == "weekly_state") {
                 if (this->m_weeklyIDUnk == 0) {
                     this->downloadLevel(-2, false);
@@ -189,7 +164,7 @@ class $modify(MyGLM, GameLevelManager) {
                 Variables::WeeklyLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateWeeklyTimer), this, 1.f, false);
 
-                handleGetDaily(RDWeeklyNode, "weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
+                RD_HANDLE_GET_DAILY(RDWeeklyNode, "weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
             } else if (tag == "event_state") {
                 if (this->m_eventIDUnk == 0) {
                     this->downloadLevel(-3, false);

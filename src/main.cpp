@@ -21,18 +21,7 @@
 #include "settings/MainButtonsSettingNodeV3.hpp"
 
 #include <fmt/core.h>
-
-#define MAX_SECRET_COINS 164
-#define addCreatorButton(mod, id, selector, texture) \
-	if (loader->isModLoaded(mod) && selector != nullptr) {			\
-		auto btn = CCMenuItemSpriteExtra::create(					\
-			CCSprite::createWithSpriteFrameName(texture),			\
-			this,													\
-			selector												\
-		);															\
-		btn->setID(id);												\
-		rightMenu->addChild(btn); 									\
-	}
+#include <Macros.hpp>
 
 std::string getPathString(int n) {
 	switch (n) {
@@ -80,6 +69,12 @@ public:
 class $modify(CrazyLayer, MenuLayer) {
 	struct Fields {
 		CCMenuItemSpriteExtra* m_questBtn;
+		CCMenu* m_menu;
+		CCMenu* m_mainMenu;
+		CCMenu* m_timeliesMenu;
+		CCMenu* m_statsMenu;
+		CCMenu* m_bottomMenu;
+		CCMenu* m_topMenu;
 	};
 
 	static void onModify(auto& self) {
@@ -93,10 +88,8 @@ class $modify(CrazyLayer, MenuLayer) {
 
 		if (loader->isModLoaded("geode.texture-loader") && loader->isModLoaded("undefined0.gdtweaks")) {
 			if (loader->getLoadedMod("undefined0.gdtweaks")->getSettingValue<bool>("replace-more-games-w-texture")) {
-				if (auto menu = this->getChildByID("more-games-menu")) {
-					if (auto button = menu->getChildByID("geode.texture-loader/texture-loader-button")) {
-						rightMenu->addChild(button);
-					}
+				if (auto button = this->getChildByIDRecursive("geode.texture-loader/texture-loader-button")) {
+					rightMenu->addChild(button);
 				}
 			}
 		}
@@ -172,10 +165,10 @@ class $modify(CrazyLayer, MenuLayer) {
 			}
 		}
 
-		addCreatorButton("cvolton.betterinfo", "cvolton.betterinfo/main-button", Variables::BISelector, "RD_betterinfo.png"_spr);
-		addCreatorButton("xanii.super_expert", "super-expert-button", Variables::SupExSelector, "RD_superexpert.png"_spr);
-		addCreatorButton("minemaker0430.gddp_integration", "demon-progression-button", Variables::GDDPSelector, Mod::get()->getSettingValue<bool>("alt-gddp-texture") ? "RD_gddp2.png"_spr : "RD_gddp.png"_spr);
-		addCreatorButton("spaghettdev.gd-roulette", "spaghettdev.gd-roulette/roulette-button", Variables::RouletteSelector, "RD_roulette.png"_spr);
+		RD_ADD_CREATOR_BUTTON("cvolton.betterinfo", "cvolton.betterinfo/main-button", Variables::BISelector, "RD_betterinfo.png"_spr);
+		RD_ADD_CREATOR_BUTTON("xanii.super_expert", "super-expert-button", Variables::SupExSelector, "RD_superexpert.png"_spr);
+		RD_ADD_CREATOR_BUTTON("minemaker0430.gddp_integration", "demon-progression-button", Variables::GDDPSelector, Mod::get()->getSettingValue<bool>("alt-gddp-texture") ? "RD_gddp2.png"_spr : "RD_gddp.png"_spr);
+		RD_ADD_CREATOR_BUTTON("spaghettdev.gd-roulette", "spaghettdev.gd-roulette/roulette-button", Variables::RouletteSelector, "RD_roulette.png"_spr);
 
 		#ifdef GEODE_IS_ANDROID
 		if (loader->isModLoaded("geode.devtools")) {
@@ -191,25 +184,10 @@ class $modify(CrazyLayer, MenuLayer) {
 	}
 
 	void onHideMenu(CCObject* sender) {
-		if (!as<CCMenuItemToggler*>(sender)->isOn()) {
-			this->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->setVisible(false);
-			this->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->setVisible(false);
-			// this->getChildByID("bottom-menu")->setVisible(false);
-			// this->getChildByID("bottom-menu-bg"_spr)->setVisible(false);
-			// this->getChildByID("right-side-menu")->setVisible(false);
-			// profileMenu->setVisible(false);
-			// this->getChildByID("close-menu")->setVisible(false);
-			// playerUsername->setVisible(false);
-		} else {
-			this->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->setVisible(true);
-			this->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->setVisible(true);
-			// this->getChildByID("bottom-menu")->setVisible(true);
-			// this->getChildByID("bottom-menu-bg"_spr)->setVisible(true);
-			// this->getChildByID("right-side-menu")->setVisible(true);
-			// profileMenu->setVisible(true);
-			// this->getChildByID("close-menu")->setVisible(true);
-			// playerUsername->setVisible(true);
-		}
+		bool toggle = as<CCMenuItemToggler*>(sender)->isOn();
+
+		m_fields->m_mainMenu->setVisible(toggle);
+		m_fields->m_timeliesMenu->setVisible(toggle);
 	}
 
 	bool init() {
@@ -246,36 +224,31 @@ class $modify(CrazyLayer, MenuLayer) {
 		// MAIN MENU CHANGES (MIGHT BE BREAKING SOME STUFF) - ninXout
 		// no it ain't - Weebify
 		if (loader->isModLoaded("sofabeddd.geometry_dash")) {
-			if (this->getChildByID("sofabeddd.geometry_dash/main-title-menu")) {
-				this->getChildByID("sofabeddd.geometry_dash/main-title-menu")->setVisible(false);
-			}
+			RD_SETVISIBLE_SAFE(this, "sofabeddd.geometry_dash/main-title-menu", false);
 		} else {
-			this->getChildByID("main-title")->setVisible(false);
+			RD_SETVISIBLE_SAFE(this, "main-title", false);
 		}
 
 		if (loader->isModLoaded("shineua.minecraft_splash")) {
-			if (auto button = this->getChildByID("minecraft-splash")) {
-				button->setVisible(false);
-			}
+			RD_SETVISIBLE_SAFE(this, "minecraft-splash", false);
 		}
 
-		this->getChildByID("more-games-menu")->setVisible(false);
-		this->getChildByID("social-media-menu")->setVisible(false); // might make RobTop logo visible later // no
-		this->getChildByID("main-menu")->setVisible(false); // hehehehe >:D // ????
+		RD_SETVISIBLE_SAFE(this, "more-games-menu", false);
+		RD_SETVISIBLE_SAFE(this, "social-media-menu", false);
+		RD_SETVISIBLE_SAFE(this, "main-menu", false);
 
-		if (this->getChildByID("level-editor-hint")) this->getChildByID("level-editor-hint")->setVisible(false);
-		if (this->getChildByID("character-select-hint")) this->getChildByID("character-select-hint")->setVisible(false);
+		RD_SETVISIBLE_SAFE(this, "level-editor-hint", false);
+		RD_SETVISIBLE_SAFE(this, "character-select-hint", false);
 
 		// controller glyphs
-		if (this->getChildByID("play-gamepad-icon")) this->getChildByID("play-gamepad-icon")->setVisible(false);
-		if (this->getChildByID("editor-gamepad-icon")) this->getChildByID("editor-gamepad-icon")->setVisible(false);
-		if (this->getChildByID("icon-kit-gamepad-icon")) this->getChildByID("icon-kit-gamepad-icon")->setVisible(false);
-		if (this->getChildByID("settings-gamepad-icon")) this->getChildByID("settings-gamepad-icon")->setVisible(false);
-		if (this->getChildByID("mouse-gamepad-icon")) this->getChildByID("mouse-gamepad-icon")->setVisible(false);
-		if (this->getChildByID("mouse-gamepad-label")) this->getChildByID("mouse-gamepad-label")->setVisible(false);
-		if (this->getChildByID("click-gamepad-icon")) this->getChildByID("click-gamepad-icon")->setVisible(false);
-		if (this->getChildByID("click-gamepad-label")) this->getChildByID("click-gamepad-label")->setVisible(false);
-
+		RD_SETVISIBLE_SAFE(this, "play-gamepad-icon", false);
+		RD_SETVISIBLE_SAFE(this, "editor-gamepad-icon", false);
+		RD_SETVISIBLE_SAFE(this, "icon-kit-gamepad-icon", false);
+		RD_SETVISIBLE_SAFE(this, "settings-gamepad-icon", false);
+		RD_SETVISIBLE_SAFE(this, "mouse-gamepad-icon", false);
+		RD_SETVISIBLE_SAFE(this, "mouse-gamepad-label", false);
+		RD_SETVISIBLE_SAFE(this, "click-gamepad-icon", false);
+		RD_SETVISIBLE_SAFE(this, "click-gamepad-label", false);
 
 		auto bottomMenu = this->getChildByID("bottom-menu");
 		bottomMenu->setScale(0.75f);
@@ -345,6 +318,7 @@ class $modify(CrazyLayer, MenuLayer) {
 		menu->setID("redash-menu"_spr);
 		menu->setPosition({ 0.f , 0.f });
 		this->addChild(menu, 99);
+		m_fields->m_menu = menu;
 
 		CCMenu* mainMenu = CCMenu::create();
 		mainMenu->setID("main-menu"_spr);
@@ -359,6 +333,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setGrowCrossAxis(true)
 				->setAutoScale(false)
 		);
+		m_fields->m_mainMenu = mainMenu;
 
 		int activePath = gsm->m_activePath;
 		int pathProgress = gsm->getStat(std::to_string(activePath).c_str());
@@ -469,6 +444,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setGap(10.f)
 				->setAutoScale(false)
 		);
+		m_fields->m_timeliesMenu = dailiesMenu;
 
 		// if (Mod::get()->getSettingValue<bool>("preview-2.21")) {
 			dailiesMenu->addChild(RDMainButton::create({ 25.f , 0.f }, { 230.f , 152.7f }, "main-levels-button", 600/(230*4.f)));
@@ -513,6 +489,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setGap(25.f)
 				->setAutoScale(false)
 		);
+		m_fields->m_statsMenu = statsMenu;
 
 		std::map<std::string, std::pair<std::string, std::string>> statNodes = {
 			{"stars-stats", {fmt::format("{}", gsm->getStat("6")), "GJ_starsIcon_001.png"}},
@@ -550,6 +527,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 				->setGap(0.f)
 		);
+		m_fields->m_bottomMenu = menuButUnder;
 
 		if (!Mod::get()->getSettingValue<bool>("disable-creator-button")) {
 			auto creatorSpr = CCSprite::createWithSpriteFrameName("GJ_creatorBtn_001.png");
@@ -586,6 +564,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				->setAutoScale(false)
 				->setGap(10.f)
 		);
+		m_fields->m_topMenu = topMenu;
 
 		auto garageSpr = CCSprite::createWithSpriteFrameName("garageRope_001.png");
 		auto garageButton = CCMenuItemSpriteExtra::create(garageSpr, this, menu_selector(MenuLayer::onGarage));
