@@ -3,8 +3,8 @@
 #define RD_SETVISIBLE_SAFE(parent, id, visible) \
     if (auto child = parent->getChildByIDRecursive(id)) child->setVisible(visible);
 
-#define RD_GET_SELECTOR(id, var) \
-	if (auto button = creatorLayer->getChildByIDRecursive(id)) var = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
+#define RD_GET_SELECTOR(layer, id, var) \
+	if (auto button = layer->getChildByIDRecursive(id)) var = as<CCMenuItemSpriteExtra*>(button)->m_pfnSelector;
 	
 
 #define RD_ADD_CREATOR_BUTTON(mod, id, selector, texture) \

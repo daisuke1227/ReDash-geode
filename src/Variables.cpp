@@ -11,6 +11,7 @@ cocos2d::SEL_MenuHandler Variables::BISelector = nullptr;
 cocos2d::SEL_MenuHandler Variables::SupExSelector = nullptr;
 cocos2d::SEL_MenuHandler Variables::GDDPSelector = nullptr;
 cocos2d::SEL_MenuHandler Variables::RouletteSelector = nullptr;
+cocos2d::SEL_MenuHandler Variables::G3DSelector = nullptr;
 
 Ref<cocos2d::CCDictionary> Variables::ThumbnailsDict = CCDictionary::create();
 

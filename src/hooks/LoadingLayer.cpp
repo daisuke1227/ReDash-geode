@@ -16,10 +16,11 @@ class $modify(LoadingLayer) {
             auto creatorLayer = CreatorLayer::create(); // phantom layer rip
 
 			// thanks minecraftify
-			RD_GET_SELECTOR("cvolton.betterinfo/main-button", Variables::BISelector);
-			RD_GET_SELECTOR("spaghettdev.gd-roulette/roulette-button", Variables::RouletteSelector);
-			RD_GET_SELECTOR("super-expert-button", Variables::SupExSelector);
-			RD_GET_SELECTOR("demon-progression-button", Variables::GDDPSelector);
+			RD_GET_SELECTOR(creatorLayer, "cvolton.betterinfo/main-button", Variables::BISelector);
+			RD_GET_SELECTOR(creatorLayer, "spaghettdev.gd-roulette/roulette-button", Variables::RouletteSelector);
+			RD_GET_SELECTOR(creatorLayer, "super-expert-button", Variables::SupExSelector);
+			RD_GET_SELECTOR(creatorLayer, "demon-progression-button", Variables::GDDPSelector);
+            if (loader->isModLoaded("rainixgd.geome3dash")) Variables::G3DSelector = menu_selector(CreatorLayer::onAdventureMap);
 
             if (loader->isModLoaded("gdutilsdevs.gdutils")) {
                 creatorLayer->retain();
