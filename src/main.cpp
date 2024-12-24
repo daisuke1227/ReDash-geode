@@ -79,6 +79,7 @@ class $modify(CrazyLayer, MenuLayer) {
 
 	static void onModify(auto& self) {
         (void) self.setHookPriorityBeforePost("MenuLayer::init", "alphalaneous.vanilla_pages");
+		(void) self.setHookPriorityAfterPost("MenuLayer::init", "devcmb.cleanermenu");
     }
 
 	void setupButtons() {
@@ -368,7 +369,7 @@ class $modify(CrazyLayer, MenuLayer) {
 			{"saved-button", RDButtonData("RD_savedLabel.png"_spr, {"You have", fmt::format("{} Saved", abbreviateNumber(glm->getSavedLevels(false, 0)->count())), "Levels"}, "RD_saved.png"_spr, 0.95f, menu_selector(CreatorLayer::onSavedLevels))},
 			{"paths-button", RDButtonData("RD_pathsLabel.png"_spr, {getPathString(activePath - 29), fmt::format("{}/1000", pathProgress)}, "RD_paths.png"_spr, 0.8f, menu_selector(CreatorLayer::onPaths))},
 			{"leaderboards-button", RDButtonData("RD_leaderboardsLabel.png"_spr, {"Global", fmt::format("#{}", Variables::GlobalRank)}, "RD_leaderboards.png"_spr, 0.85f, menu_selector(CreatorLayer::onLeaderboards))},
-			{"gauntlets-button", RDButtonData("RD_gauntletsLabel.png"_spr, {"Forest", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets))},
+			{"gauntlets-button", RDButtonData("RD_gauntletsLabel.png"_spr, {"Force", "Gauntlet", "Added"}, "RD_gauntlets.png"_spr, 1.f, menu_selector(CreatorLayer::onGauntlets))},
 			{"featured-button", RDButtonData("RD_featuredLabel.png"_spr, {"Play new", "Featured", "levels"}, "RD_featured.png"_spr, 0.95f, menu_selector(CreatorLayer::onFeaturedLevels))},
 			{"lists-button", RDButtonData("RD_listsLabel.png"_spr, {"Play rated", "Lists"}, "RD_lists.png"_spr, 1.f, menu_selector(CreatorLayer::onTopLists))},
 			{"search-button", RDButtonData("RD_searchLabel.png"_spr, {"Search" , "For levels", "online"}, "RD_search.png"_spr, 0.9f, menu_selector(CreatorLayer::onOnlineLevels))},
@@ -620,7 +621,7 @@ class $modify(CrazyLayer, MenuLayer) {
 				bottomMenu->setUserObject("orientation", CCInteger::create(0)); // VERTICAL
 				bottomMenu->setUserObject("element-count", CCInteger::create(5));	
 			}
-
+			
 			if (pagesMod->getSettingValue<bool>("menulayer-right-menu")) {
 				rightMenu->setLayout(as<RowLayout*>(rightMenu->getLayout())->setAutoScale(false)->setAxisAlignment(AxisAlignment::Center));
 				rightMenu->setScale(0.95);
