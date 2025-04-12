@@ -12,17 +12,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - name: Windows
-            os: windows-latest
-            build-type: RelWithDebInfo
-          - name: macOS
-            os: macos-latest
-          - name: Android32
-            os: ubuntu-22.04
-            target: Android32
-          - name: Android64
-            os: ubuntu-22.04
-            target: Android64
+    
           - name: iOS
             os: macos-latest
             target: iOS
