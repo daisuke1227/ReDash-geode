@@ -9,8 +9,16 @@
 #include "../ui/RDButton.hpp"
 using namespace geode::prelude;
 
-
 class $modify(MyGLM, GameLevelManager) {
+public:
+    // Add missing member variables to match expected layout.
+    int m_dailyIDUnk = 0;
+    int m_weeklyIDUnk = 0;
+    int m_eventIDUnk = 0;
+
+    // Existing member variables like m_dailyID, m_weeklyID, etc. are assumed to be defined
+    // in the base class (GameLevelManager)
+
     void updateDailyTimer() {
         Variables::DailyLeft--;
 
@@ -32,7 +40,6 @@ class $modify(MyGLM, GameLevelManager) {
     void updateEventTimer() {
         Variables::EventLeft--;
 
-        // update event only happens if user is in menulayer
         if (auto scene = CCDirector::sharedDirector()->getRunningScene()) {
             if (auto layer = scene->getChildByType<MenuLayer>(0)) {
                 if (Variables::EventLeft < 1 && Mod::get()->getSettingValue<bool>("events-check")) {
@@ -45,12 +52,11 @@ class $modify(MyGLM, GameLevelManager) {
 
     void onGetGJChallengesCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetGJChallengesCompleted(response, tag);
-
         Variables::didGetGJChallenge = true;
         for (auto page : Variables::challengesPages) {
             if (page && page->retainCount() > 0) {
                 page->release();
-            };
+            }
         }
         Variables::challengesPages.clear();
     }
@@ -68,8 +74,10 @@ class $modify(MyGLM, GameLevelManager) {
                 if (Variables::GlobalRank != -1) {
                     std::string responseStd = response;
                     std::string name = GJAccountManager::get()->m_username;
-                    std::transform(responseStd.begin(), responseStd.end(), responseStd.begin(), [](unsigned char c) { return std::tolower(c); });
-                    std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+                    std::transform(responseStd.begin(), responseStd.end(), responseStd.begin(), 
+                                   [](unsigned char c) { return std::tolower(c); });
+                    std::transform(name.begin(), name.end(), name.begin(), 
+                                   [](unsigned char c) { return std::tolower(c); });
                     auto pos = responseStd.find(fmt::format("1:{}", name));
                     auto pos2 = responseStd.find("|", pos);
                     if (pos < responseStd.size()) {
@@ -81,7 +89,10 @@ class $modify(MyGLM, GameLevelManager) {
                         Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
 
                         if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
-                            if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                            if (auto button = typeinfo_cast<RDButton*>(
+                                    layer->getChildByID("redash-menu"_spr)
+                                         ->getChildByID("main-menu"_spr)
+                                         ->getChildByID("leaderboards-button"))) {
                                 button->updateLeaderboardLabel();
                             }
                         }
@@ -95,7 +106,10 @@ class $modify(MyGLM, GameLevelManager) {
             } else {
                 if (Variables::GlobalRank != -1) {
                     if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
-                        if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                        if (auto button = typeinfo_cast<RDButton*>(
+                                layer->getChildByID("redash-menu"_spr)
+                                     ->getChildByID("main-menu"_spr)
+                                     ->getChildByID("leaderboards-button"))) {
                             button->getLeaderboardRankFailed();
                         }
                     }
@@ -104,15 +118,18 @@ class $modify(MyGLM, GameLevelManager) {
         }
     }
 
-    // /* 0x158 0x4 int */ int	m_dailyTimeLeft;
-	// /* 0x15c 0x4 int */ int	m_dailyID;
-    // /* 0x160 0x4 int */ int	m_dailyIDUnk;
-	// /* 0x164 0x4 int */ int	m_weeklyTimeLeft;
-	// /* 0x168 0x4 int */ int	m_weeklyID;
-	// /* 0x16c 0x4 int */ int	m_weeklyIDUnk;
-	// /* 0x170 0x4 int */ int	m_eventTimeLeft;	
-	// /* 0x174 0x4 int */ int	m_eventID;
-	// /* 0x178 0x4 int */ int	m_eventIDUnk;
+    /*
+        Existing (documented) memory layout offsets for reference:
+        // /* 0x158 0x4 int */ int	m_dailyTimeLeft;
+        // /* 0x15c 0x4 int */ int	m_dailyID;
+        // /* 0x160 0x4 int */ int	m_dailyIDUnk;
+        // /* 0x164 0x4 int */ int	m_weeklyTimeLeft;
+        // /* 0x168 0x4 int */ int	m_weeklyID;
+        // /* 0x16c 0x4 int */ int	m_weeklyIDUnk;
+        // /* 0x170 0x4 int */ int	m_eventTimeLeft;	
+        // /* 0x174 0x4 int */ int	m_eventID;
+        // /* 0x178 0x4 int */ int	m_eventIDUnk;
+    */
 
     void processOnDownloadLevelCompleted(gd::string response, gd::string tag, bool p2) {
         GameLevelManager::processOnDownloadLevelCompleted(response, tag, p2);
@@ -138,8 +155,6 @@ class $modify(MyGLM, GameLevelManager) {
 
     void onGetGJDailyLevelStateCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetGJDailyLevelStateCompleted(response, tag);
-
-        // log::warn("onGetGJDailyLevelStateCompleted: '{}', '{}'", response, tag);
         
         if (response != "-1") {
             auto responseStd = std::string(response.c_str());
@@ -173,11 +188,15 @@ class $modify(MyGLM, GameLevelManager) {
                 Variables::EventLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateEventTimer), this, 1.f, false);
 
-                // handleGetDaily("event-node", this->m_eventID, this->m_eventIDUnk);
                 if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
-                    if (auto node = typeinfo_cast<RDEventNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("event-node"))) {
+                    if (auto node = typeinfo_cast<RDEventNode*>(
+                        layer->getChildByID("redash-menu"_spr)
+                             ->getChildByID("dailies-menu"_spr)
+                             ->getChildByID("event-node"))) {
                         if (node->m_skipButton) {
-                            if (this->m_eventIDUnk < this->m_eventID && (node->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(this->m_eventIDUnk))) {
+                            if (this->m_eventIDUnk < this->m_eventID && 
+                                (node->m_currentLevel->m_normalPercent < 100 ||
+                                 GameStatsManager::sharedState()->hasCompletedDailyLevel(this->m_eventIDUnk))) {
                                 node->m_skipButton->setVisible(true);
                             } else {
                                 node->m_skipButton->setVisible(false);
