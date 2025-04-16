@@ -11,13 +11,13 @@ using namespace geode::prelude;
 
 class $modify(MyGLM, GameLevelManager) {
 public:
-    // Add missing member variables to match expected layout.
-    int m_dailyIDUnk = 0;
-    int m_weeklyIDUnk = 0;
-    int m_eventIDUnk = 0;
-
-    // Existing member variables like m_dailyID, m_weeklyID, etc. are assumed to be defined
-    // in the base class (GameLevelManager)
+    // Instead of adding custom members directly,
+    // we add them to a nested Fields struct as required by Geode.
+    struct Fields {
+        int m_dailyIDUnk = 0;
+        int m_weeklyIDUnk = 0;
+        int m_eventIDUnk = 0;
+    };
 
     void updateDailyTimer() {
         Variables::DailyLeft--;
@@ -120,15 +120,15 @@ public:
 
     /*
         Existing (documented) memory layout offsets for reference:
-        // /* 0x158 0x4 int */ int	m_dailyTimeLeft;
-        // /* 0x15c 0x4 int */ int	m_dailyID;
-        // /* 0x160 0x4 int */ int	m_dailyIDUnk;
-        // /* 0x164 0x4 int */ int	m_weeklyTimeLeft;
-        // /* 0x168 0x4 int */ int	m_weeklyID;
-        // /* 0x16c 0x4 int */ int	m_weeklyIDUnk;
-        // /* 0x170 0x4 int */ int	m_eventTimeLeft;	
-        // /* 0x174 0x4 int */ int	m_eventID;
-        // /* 0x178 0x4 int */ int	m_eventIDUnk;
+        Offset 0x158: int m_dailyTimeLeft
+        Offset 0x15c: int m_dailyID
+        Offset 0x160: int m_dailyIDUnk
+        Offset 0x164: int m_weeklyTimeLeft
+        Offset 0x168: int m_weeklyID
+        Offset 0x16c: int m_weeklyIDUnk
+        Offset 0x170: int m_eventTimeLeft
+        Offset 0x174: int m_eventID
+        Offset 0x178: int m_eventIDUnk
     */
 
     void processOnDownloadLevelCompleted(gd::string response, gd::string tag, bool p2) {
@@ -136,19 +136,19 @@ public:
 
         if (response != "-1") {
             if (tag == "-1_0") {
-                this->m_dailyIDUnk = this->m_dailyID;
+                this->getFields()->m_dailyIDUnk = this->m_dailyID;
             } else if (tag == "-2_0") {
-                this->m_weeklyIDUnk = this->m_weeklyID;
+                this->getFields()->m_weeklyIDUnk = this->m_weeklyID;
             }
         }
 
         if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
             if (tag == "-1_0") {
-                RD_HANDLE_LEVEL("daily-node", this->m_dailyIDUnk);
+                RD_HANDLE_LEVEL("daily-node", this->getFields()->m_dailyIDUnk);
             } else if (tag == "-2_0") {
-                RD_HANDLE_LEVEL("weekly-node", this->m_weeklyIDUnk);
+                RD_HANDLE_LEVEL("weekly-node", this->getFields()->m_weeklyIDUnk);
             } else if (tag == "-3_0") {
-                RD_HANDLE_LEVEL("event-node", this->m_eventIDUnk);
+                RD_HANDLE_LEVEL("event-node", this->getFields()->m_eventIDUnk);
             }
         }
     }
@@ -163,25 +163,25 @@ public:
             auto timeLeft = std::stoi(responseStd.substr(pos));
             
             if (tag == "daily_state") {
-                if (this->m_dailyIDUnk == 0) {
+                if (this->getFields()->m_dailyIDUnk == 0) {
                     this->downloadLevel(-1, false);
                 }
 
                 Variables::DailyLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateDailyTimer), this, 1.f, false);
 
-                RD_HANDLE_GET_DAILY(RDDailyNode, "daily-node", this->m_dailyID, this->m_dailyIDUnk);
+                RD_HANDLE_GET_DAILY(RDDailyNode, "daily-node", this->m_dailyID, this->getFields()->m_dailyIDUnk);
             } else if (tag == "weekly_state") {
-                if (this->m_weeklyIDUnk == 0) {
+                if (this->getFields()->m_weeklyIDUnk == 0) {
                     this->downloadLevel(-2, false);
                 }
                 
                 Variables::WeeklyLeft = timeLeft;
                 CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateWeeklyTimer), this, 1.f, false);
 
-                RD_HANDLE_GET_DAILY(RDWeeklyNode, "weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
+                RD_HANDLE_GET_DAILY(RDWeeklyNode, "weekly-node", this->m_weeklyID, this->getFields()->m_weeklyIDUnk);
             } else if (tag == "event_state") {
-                if (this->m_eventIDUnk == 0) {
+                if (this->getFields()->m_eventIDUnk == 0) {
                     this->downloadLevel(-3, false);
                 }
 
@@ -194,14 +194,14 @@ public:
                              ->getChildByID("dailies-menu"_spr)
                              ->getChildByID("event-node"))) {
                         if (node->m_skipButton) {
-                            if (this->m_eventIDUnk < this->m_eventID && 
+                            if (this->getFields()->m_eventIDUnk < this->m_eventID && 
                                 (node->m_currentLevel->m_normalPercent < 100 ||
-                                 GameStatsManager::sharedState()->hasCompletedDailyLevel(this->m_eventIDUnk))) {
+                                 GameStatsManager::sharedState()->hasCompletedDailyLevel(this->getFields()->m_eventIDUnk))) {
                                 node->m_skipButton->setVisible(true);
                             } else {
                                 node->m_skipButton->setVisible(false);
-                            }                                                                                                                                           
-                        }                                                                                                                                               
+                            }
+                        }
                     }
                 }
             }
