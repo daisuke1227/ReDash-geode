@@ -18,9 +18,9 @@ public:
         int m_eventIDUnk = 0;
     };
 
-    // Define an accessor to retrieve the extra fields.
+    // Accessor for the extra fields using the inherited getExtra() helper.
     Fields& getFields() {
-        return geode::modifier::ModifyBase::template getExtra<Fields>();
+        return this->template getExtra<Fields>();
     }
 
     void updateDailyTimer() {
