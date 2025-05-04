@@ -9,8 +9,13 @@
 #include "../ui/RDButton.hpp"
 using namespace geode::prelude;
 
-
 class $modify(MyGLM, GameLevelManager) {
+public:
+    // Added backing fields for unknown IDs
+    int m_dailyIDUnk   = 0;
+    int m_weeklyIDUnk  = 0;
+    int m_eventIDUnk   = 0;
+
     void updateDailyTimer() {
         Variables::DailyLeft--;
 
@@ -50,7 +55,7 @@ class $modify(MyGLM, GameLevelManager) {
         for (auto page : Variables::challengesPages) {
             if (page && page->retainCount() > 0) {
                 page->release();
-            };
+            }
         }
         Variables::challengesPages.clear();
     }
@@ -68,34 +73,39 @@ class $modify(MyGLM, GameLevelManager) {
                 if (Variables::GlobalRank != -1) {
                     std::string responseStd = response;
                     std::string name = GJAccountManager::get()->m_username;
-                    std::transform(responseStd.begin(), responseStd.end(), responseStd.begin(), [](unsigned char c) { return std::tolower(c); });
-                    std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+                    std::transform(responseStd.begin(), responseStd.end(), responseStd.begin(), ::tolower);
+                    std::transform(name.begin(), name.end(), name.begin(), ::tolower);
                     auto pos = responseStd.find(fmt::format("1:{}", name));
                     auto pos2 = responseStd.find("|", pos);
                     if (pos < responseStd.size()) {
-                        if (pos2 >= responseStd.size()) {
-                            pos2 = responseStd.size() - 1;
-                        }
-                        auto dict = GameLevelManager::responseToDict(responseStd.substr(pos, pos2 - pos), false);
+                        if (pos2 >= responseStd.size()) pos2 = responseStd.size() - 1;
+                        auto dict = GameLevelManager::responseToDict(
+                            responseStd.substr(pos, pos2 - pos), false
+                        );
                         Variables::GlobalRank = as<CCString*>(dict->objectForKey("6"))->intValue();
                         Variables::OldStarsCount = GameStatsManager::sharedState()->getStat("6");
 
-                        if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
-                            if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                        if (auto layer = CCDirector::sharedDirector()->getRunningScene()
+                                ->getChildByType<MenuLayer>(0)) {
+                            if (auto button = typeinfo_cast<RDButton*>(
+                                    layer->getChildByID("redash-menu"_spr)
+                                         ->getChildByID("main-menu"_spr)
+                                         ->getChildByID("leaderboards-button"))) {
                                 button->updateLeaderboardLabel();
                             }
                         }
                     } else {
                         log::error("Failed to find player in leaderboard response");
-                        log::error("response: {}", responseStd);
-                        log::error("name: {}", name);
-                        log::error("pos: {}; pos2: {}", pos, pos2);
                     }
                 }
             } else {
                 if (Variables::GlobalRank != -1) {
-                    if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
-                        if (auto button = typeinfo_cast<RDButton*>(layer->getChildByID("redash-menu"_spr)->getChildByID("main-menu"_spr)->getChildByID("leaderboards-button"))) {
+                    if (auto layer = CCDirector::sharedDirector()->getRunningScene()
+                            ->getChildByType<MenuLayer>(0)) {
+                        if (auto button = typeinfo_cast<RDButton*>(
+                                layer->getChildByID("redash-menu"_spr)
+                                     ->getChildByID("main-menu"_spr)
+                                     ->getChildByID("leaderboards-button"))) {
                             button->getLeaderboardRankFailed();
                         }
                     }
@@ -103,16 +113,6 @@ class $modify(MyGLM, GameLevelManager) {
             }
         }
     }
-
-    // /* 0x158 0x4 int */ int	m_dailyTimeLeft;
-	// /* 0x15c 0x4 int */ int	m_dailyID;
-    // /* 0x160 0x4 int */ int	m_dailyIDUnk;
-	// /* 0x164 0x4 int */ int	m_weeklyTimeLeft;
-	// /* 0x168 0x4 int */ int	m_weeklyID;
-	// /* 0x16c 0x4 int */ int	m_weeklyIDUnk;
-	// /* 0x170 0x4 int */ int	m_eventTimeLeft;	
-	// /* 0x174 0x4 int */ int	m_eventID;
-	// /* 0x178 0x4 int */ int	m_eventIDUnk;
 
     void processOnDownloadLevelCompleted(gd::string response, gd::string tag, bool p2) {
         GameLevelManager::processOnDownloadLevelCompleted(response, tag, p2);
@@ -125,7 +125,8 @@ class $modify(MyGLM, GameLevelManager) {
             }
         }
 
-        if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
+        if (auto layer = CCDirector::sharedDirector()->getRunningScene()
+                ->getChildByType<MenuLayer>(0)) {
             if (tag == "-1_0") {
                 RD_HANDLE_LEVEL("daily-node", this->m_dailyIDUnk);
             } else if (tag == "-2_0") {
@@ -139,50 +140,61 @@ class $modify(MyGLM, GameLevelManager) {
     void onGetGJDailyLevelStateCompleted(gd::string response, gd::string tag) {
         GameLevelManager::onGetGJDailyLevelStateCompleted(response, tag);
 
-        // log::warn("onGetGJDailyLevelStateCompleted: '{}', '{}'", response, tag);
-        
         if (response != "-1") {
             auto responseStd = std::string(response.c_str());
             auto pos = responseStd.find('|') + 1;
             if (pos >= responseStd.size()) return;
             auto timeLeft = std::stoi(responseStd.substr(pos));
-            
+
             if (tag == "daily_state") {
-                if (this->m_dailyIDUnk == 0) {
+                if (this->m_dailyIDUnk == 0)
                     this->downloadLevel(-1, false);
-                }
 
                 Variables::DailyLeft = timeLeft;
-                CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateDailyTimer), this, 1.f, false);
+                CCScheduler::get()->scheduleSelector(
+                    schedule_selector(MyGLM::updateDailyTimer), this, 1.f, false
+                );
 
-                RD_HANDLE_GET_DAILY(RDDailyNode, "daily-node", this->m_dailyID, this->m_dailyIDUnk);
+                RD_HANDLE_GET_DAILY(RDDailyNode, "daily-node",
+                    this->m_dailyID, this->m_dailyIDUnk);
+
             } else if (tag == "weekly_state") {
-                if (this->m_weeklyIDUnk == 0) {
+                if (this->m_weeklyIDUnk == 0)
                     this->downloadLevel(-2, false);
-                }
-                
-                Variables::WeeklyLeft = timeLeft;
-                CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateWeeklyTimer), this, 1.f, false);
 
-                RD_HANDLE_GET_DAILY(RDWeeklyNode, "weekly-node", this->m_weeklyID, this->m_weeklyIDUnk);
+                Variables::WeeklyLeft = timeLeft;
+                CCScheduler::get()->scheduleSelector(
+                    schedule_selector(MyGLM::updateWeeklyTimer), this, 1.f, false
+                );
+
+                RD_HANDLE_GET_DAILY(RDWeeklyNode, "weekly-node",
+                    this->m_weeklyID, this->m_weeklyIDUnk);
+
             } else if (tag == "event_state") {
-                if (this->m_eventIDUnk == 0) {
+                if (this->m_eventIDUnk == 0)
                     this->downloadLevel(-3, false);
-                }
 
                 Variables::EventLeft = timeLeft;
-                CCScheduler::get()->scheduleSelector(schedule_selector(MyGLM::updateEventTimer), this, 1.f, false);
+                CCScheduler::get()->scheduleSelector(
+                    schedule_selector(MyGLM::updateEventTimer), this, 1.f, false
+                );
 
-                // handleGetDaily("event-node", this->m_eventID, this->m_eventIDUnk);
-                if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
-                    if (auto node = typeinfo_cast<RDEventNode*>(layer->getChildByID("redash-menu"_spr)->getChildByID("dailies-menu"_spr)->getChildByID("event-node"))) {
+                if (auto layer = CCDirector::sharedDirector()->getRunningScene()
+                        ->getChildByType<MenuLayer>(0)) {
+                    if (auto node = typeinfo_cast<RDEventNode*>(
+                            layer->getChildByID("redash-menu"_spr)
+                                 ->getChildByID("dailies-menu"_spr)
+                                 ->getChildByID("event-node"))) {
                         if (node->m_skipButton) {
-                            if (this->m_eventIDUnk < this->m_eventID && (node->m_currentLevel->m_normalPercent < 100 || GameStatsManager::sharedState()->hasCompletedDailyLevel(this->m_eventIDUnk))) {
+                            if (this->m_eventIDUnk < this->m_eventID 
+                                && (node->m_currentLevel->m_normalPercent < 100 
+                                || GameStatsManager::sharedState()
+                                    ->hasCompletedDailyLevel(this->m_eventIDUnk))) {
                                 node->m_skipButton->setVisible(true);
                             } else {
                                 node->m_skipButton->setVisible(false);
-                            }                                                                                                                                           
-                        }                                                                                                                                               
+                            }
+                        }
                     }
                 }
             }
