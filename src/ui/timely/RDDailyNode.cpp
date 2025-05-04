@@ -1,13 +1,13 @@
-// RDDailyNode.cpp
+// RDEventNode.cpp
 #include <Geode/Geode.hpp>
-#include <Geode/Fields.hpp>
-#include "RDDailyNode.hpp"
+#include <Geode/modify/Fields.hpp>
+#include "RDEventNode.hpp"
 #include "../hooks/GameLevelManager.hpp"
 
 using namespace geode::prelude;
 
-RDDailyNode* RDDailyNode::create(CCSize size, std::string id, float scale) {
-    auto ret = new RDDailyNode();
+RDEventNode* RDEventNode::create(CCSize size, std::string id, float scale) {
+    auto ret = new RDEventNode();
     if (ret && ret->init(size, id, scale)) {
         ret->autorelease();
         return ret;
@@ -16,92 +16,44 @@ RDDailyNode* RDDailyNode::create(CCSize size, std::string id, float scale) {
     return nullptr;
 }
 
-void RDDailyNode::updateTimeLabel(float) {
-    if (Variables::DailyLeft < 1) {
-        m_timeLabel->setVisible(false);
-        m_timeLeftLabel->setVisible(false);
-        m_timerLoadingCircle->setVisible(true);
-        this->unschedule(schedule_selector(RDDailyNode::updateTimeLabel));
-    } else {
-        m_timeLabel->setString(GameToolbox::getTimeString(Variables::DailyLeft, true).c_str());
-        // adjust scale if needed...
-        m_timeLabel->setVisible(true);
-        m_timeLeftLabel->setVisible(true);
-        m_timerLoadingCircle->setVisible(false);
-    }
-}
-
-bool RDDailyNode::init(CCSize size, std::string id, float scale) {
+bool RDEventNode::init(CCSize size, std::string id, float scale) {
     if (!RDTimelyNode::init(size, id, scale)) return false;
     auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
+    auto& fields = geode::getFields<MyGLM>(GLM);
 
-    // Crown and title sprites...
-    auto crown = CCSprite::createWithSpriteFrameName("gj_dailyCrown_001.png");
+    auto crown = CCSprite::createWithSpriteFrameName("RD_eventCrown_001.png"_spr);
     crown->setScale(0.75f);
     crown->setPosition({ size.width/2, size.height + 8.f });
     m_mainNode->addChild(crown);
 
-    auto title = CCSprite::createWithSpriteFrameName("dailyLevelLabel_001.png");
+    auto title = CCSprite::createWithSpriteFrameName("eventLevelLabel_001.png");
     title->setScale(0.7f);
     title->setPosition({ size.width/2, size.height - 22.5f });
     m_mainNode->addChild(title);
 
-    // Bonus menu offset
-    m_bonusMenu->setPositionX(m_bonusMenu->getPositionX() + 2.f);
+    m_bonusMenu->setPositionX(m_bonusMenu->getPositionX() + 5.f);
 
-    // Load or download level
-    if (auto level = GLM->getSavedDailyLevel(fields.m_dailyIDUnk)) {
+    if (auto level = GLM->getSavedDailyLevel(fields.m_eventIDUnk)) {
         setupLevelMenu(level);
     } else {
-        GLM->downloadLevel(-1, false);
+        GLM->downloadLevel(-3,false);
         m_loadingCircle->setVisible(true);
         m_bonusMenu->setVisible(false);
-    }
-
-    // Time labels
-    int t = std::max(0, Variables::DailyLeft);
-    m_timeLabel = CCLabelBMFont::create(
-        GameToolbox::getTimeString(t, true).c_str(),
-        Mod::get()->getSettingValue<bool>("use-pusab") ? "bigFont.fnt" : "gjFont16.fnt"
-    );
-    m_timeLabel->setScale(0.55f);
-    m_timeLabel->setAnchorPoint({1,0.5f});
-    m_timeLabel->setPosition({ m_innerBG->getPositionX() + m_innerBG->getScaledContentSize().width/2, size.height/9 });
-    m_mainNode->addChild(m_timeLabel);
-
-    m_timeLeftLabel = CCLabelBMFont::create("New Daily in:", "bigFont.fnt");
-    m_timeLeftLabel->setScale(0.3f);
-    m_timeLeftLabel->setAnchorPoint({1,0.5f});
-    m_timeLeftLabel->setPosition({ m_timeLabel->getPositionX(),
-        (m_safeButton->getPositionY() + m_innerBG->getPositionY() - m_innerBG->getScaledContentHeight()/2)/2 });
-    m_timeLeftLabel->setColor({200,200,200});
-    m_mainNode->addChild(m_timeLeftLabel);
-
-    m_timerLoadingCircle = LoadingCircle::create();
-    m_timerLoadingCircle->setScale(0.45f);
-    m_timerLoadingCircle->setVisible(false);
-    m_mainNode->addChild(m_timerLoadingCircle);
-
-    if (t == 0) {
-        m_timeLabel->setVisible(false);
-        m_timeLeftLabel->setVisible(false);
-        m_timerLoadingCircle->setVisible(true);
     }
 
     return true;
 }
 
-void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
+void RDEventNode::setupLevelMenu(GJGameLevel* level) {
     RDTimelyNode::setupLevelMenu(level);
     auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
+    auto& fields = geode::getFields<MyGLM>(GLM);
 
     auto skipBtn = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"),
-        this, menu_selector(RDDailyNode::onSkipLevel)
+        this, menu_selector(RDEventNode::onSkipLevel)
     );
-    skipBtn->setVisible(fields.m_dailyIDUnk < GLM->m_dailyID);
+    skipBtn->setVisible(fields.m_eventIDUnk < GLM->m_eventID);
     skipBtn->setScale(0.5f);
     skipBtn->setPositionX(m_innerBG->getPositionX() - m_innerBG->getScaledContentSize().width/2 + 5.f);
     skipBtn->setPositionY(m_innerBG->getPositionY() + m_innerBG->getScaledContentSize().height/2);
@@ -109,10 +61,10 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     m_skipButton = skipBtn;
 
     if (level->m_normalPercent.value() == 100
-        && !GameStatsManager::sharedState()->hasCompletedDailyLevel(fields.m_dailyIDUnk)) {
+        && !GameStatsManager::sharedState()->hasCompletedDailyLevel(fields.m_eventIDUnk)) {
         auto claimBtn = CCMenuItemSpriteExtra::create(
             CCSprite::createWithSpriteFrameName("GJ_rewardBtn_001.png"),
-            this, menu_selector(RDDailyNode::onClaimReward)
+            this, menu_selector(RDEventNode::onClaimReward)
         );
         claimBtn->setScale(0.6f);
         claimBtn->setPosition(m_viewButton->getPosition() + ccp(10,0));
@@ -121,47 +73,25 @@ void RDDailyNode::setupLevelMenu(GJGameLevel* level) {
     }
 }
 
-void RDDailyNode::onSkipLevel(CCObject*) {
+void RDEventNode::onSkipLevel(CCObject*) {
     auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
+    auto& fields = geode::getFields<MyGLM>(GLM);
 
     geode::createQuickPopup(
-        "Skip level",
-        "There is a <cy>new</c> daily level available.\nSkip?",
+        "Skip event",
+        "New event level available. Skip?",
         "Cancel","Skip",
         [this,&fields](auto, bool ok){
             if (ok) {
                 m_loadingCircle->setVisible(true);
                 m_menu->removeAllChildren();
                 m_bonusMenu->setVisible(false);
-                GameLevelManager::get()->downloadLevel(-1,false);
-                Mod::get()->setSavedValue("claimed-daily",false);
-                fields.m_dailyIDUnk = 0;
+                GLM->downloadLevel(-3,false);
+                Mod::get()->setSavedValue("claimed-event",false);
+                fields.m_eventIDUnk = 0;
             }
         }
     );
 }
 
-void RDDailyNode::onReload(CCObject*) {
-    m_loadingCircle->setVisible(true);
-    m_menu->removeAllChildren();
-    if (Variables::DailyLeft == 0)
-        GameLevelManager::get()->getGJDailyLevelState(GJTimedLevelType::Daily);
-    GameLevelManager::get()->downloadLevel(-1,false);
-}
-
-void RDDailyNode::onTheSafe(CCObject*) {
-    auto search = GJSearchObject::create(SearchType::DailySafe);
-    CCDirector::sharedDirector()->replaceScene(
-        CCTransitionFade::create(0.5f, LevelBrowserLayer::scene(search))
-    );
-}
-
-void RDDailyNode::onClaimReward(CCObject* sender) {
-    auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
-
-    Mod::get()->setSavedValue("claimed-daily", true);
-    // show reward UI...
-    m_skipButton->setVisible(fields.m_dailyIDUnk < GLM->m_dailyID);
-}
+// onReload, onTheSafe, onClaimReward analogous to daily but using event IDs

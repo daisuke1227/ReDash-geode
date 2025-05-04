@@ -1,6 +1,6 @@
 // RDEventNode.cpp
 #include <Geode/Geode.hpp>
-#include <Geode/Fields.hpp>
+#include <Geode/modify/Fields.hpp>
 #include "RDEventNode.hpp"
 #include "../hooks/GameLevelManager.hpp"
 
@@ -19,9 +19,8 @@ RDEventNode* RDEventNode::create(CCSize size, std::string id, float scale) {
 bool RDEventNode::init(CCSize size, std::string id, float scale) {
     if (!RDTimelyNode::init(size, id, scale)) return false;
     auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
+    auto& fields = geode::getFields<MyGLM>(GLM);
 
-    // Crown & title
     auto crown = CCSprite::createWithSpriteFrameName("RD_eventCrown_001.png"_spr);
     crown->setScale(0.75f);
     crown->setPosition({ size.width/2, size.height + 8.f });
@@ -32,7 +31,6 @@ bool RDEventNode::init(CCSize size, std::string id, float scale) {
     title->setPosition({ size.width/2, size.height - 22.5f });
     m_mainNode->addChild(title);
 
-    // Bonus offset
     m_bonusMenu->setPositionX(m_bonusMenu->getPositionX() + 5.f);
 
     if (auto level = GLM->getSavedDailyLevel(fields.m_eventIDUnk)) {
@@ -43,14 +41,13 @@ bool RDEventNode::init(CCSize size, std::string id, float scale) {
         m_bonusMenu->setVisible(false);
     }
 
-    // static time labels...
     return true;
 }
 
 void RDEventNode::setupLevelMenu(GJGameLevel* level) {
     RDTimelyNode::setupLevelMenu(level);
     auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
+    auto& fields = geode::getFields<MyGLM>(GLM);
 
     auto skipBtn = CCMenuItemSpriteExtra::create(
         CCSprite::createWithSpriteFrameName("GJ_deleteBtn_001.png"),
@@ -78,18 +75,18 @@ void RDEventNode::setupLevelMenu(GJGameLevel* level) {
 
 void RDEventNode::onSkipLevel(CCObject*) {
     auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
+    auto& fields = geode::getFields<MyGLM>(GLM);
 
     geode::createQuickPopup(
-        "Skip level",
-        "There is a <cy>new</c> event level available.\nSkip?",
+        "Skip event",
+        "New event level available. Skip?",
         "Cancel","Skip",
-        [this](auto, bool ok){
+        [this,&fields](auto, bool ok){
             if (ok) {
                 m_loadingCircle->setVisible(true);
                 m_menu->removeAllChildren();
                 m_bonusMenu->setVisible(false);
-                GameLevelManager::get()->downloadLevel(-3,false);
+                GLM->downloadLevel(-3,false);
                 Mod::get()->setSavedValue("claimed-event",false);
                 fields.m_eventIDUnk = 0;
             }
@@ -97,26 +94,4 @@ void RDEventNode::onSkipLevel(CCObject*) {
     );
 }
 
-void RDEventNode::onReload(CCObject*) {
-    m_loadingCircle->setVisible(true);
-    m_menu->removeAllChildren();
-    if (Variables::EventLeft == 0)
-        GameLevelManager::get()->getGJDailyLevelState(GJTimedLevelType::Event);
-    GameLevelManager::get()->downloadLevel(-3,false);
-}
-
-void RDEventNode::onTheSafe(CCObject*) {
-    auto search = GJSearchObject::create(SearchType::EventSafe);
-    CCDirector::sharedDirector()->replaceScene(
-        CCTransitionFade::create(0.5f, LevelBrowserLayer::scene(search))
-    );
-}
-
-void RDEventNode::onClaimReward(CCObject*) {
-    auto GLM = GameLevelManager::get();
-    auto &fields = geode::getFields<MyGLM>(GLM);
-
-    Mod::get()->setSavedValue("claimed-event", true);
-    // show reward...
-    m_skipButton->setVisible(fields.m_eventIDUnk < GLM->m_eventID);
-}
+// onReload, onTheSafe, onClaimReward analogous to daily but using event IDs
