@@ -57,7 +57,7 @@ public:
 
     void getGJChallenges() {
         GameLevelManager::getGJChallenges();
-        Variables::didGetGJChallenge = false;    
+        Variables::didGetGJChallenge = false;
     }
 
     void onGetLeaderboardScoresCompleted(gd::string response, gd::string tag) {
@@ -100,13 +100,20 @@ public:
     void processOnDownloadLevelCompleted(gd::string response, gd::string tag, bool p2) {
         GameLevelManager::processOnDownloadLevelCompleted(response, tag, p2);
         if (response != "-1") {
-            if (tag == "-1_0") m_fields->m_dailyIDUnk = this->m_dailyID;
-            else if (tag == "-2_0") m_fields->m_weeklyIDUnk = this->m_weeklyID;
+            if (tag == "-1_0") {
+                m_fields->m_dailyIDUnk = this->m_dailyID;
+            } else if (tag == "-2_0") {
+                m_fields->m_weeklyIDUnk = this->m_weeklyID;
+            }
         }
         if (auto layer = CCDirector::sharedDirector()->getRunningScene()->getChildByType<MenuLayer>(0)) {
-            if (tag == "-1_0")   RD_HANDLE_LEVEL("daily-node",   m_fields->m_dailyIDUnk);
-            else if (tag == "-2_0")RD_HANDLE_LEVEL("weekly-node",  m_fields->m_weeklyIDUnk);
-            else if (tag == "-3_0")RD_HANDLE_LEVEL("event-node",   m_fields->m_eventIDUnk);
+            if (tag == "-1_0") {
+                RD_HANDLE_LEVEL("daily-node", m_fields->m_dailyIDUnk);
+            } else if (tag == "-2_0") {
+                RD_HANDLE_LEVEL("weekly-node", m_fields->m_weeklyIDUnk);
+            } else if (tag == "-3_0") {
+                RD_HANDLE_LEVEL("event-node", m_fields->m_eventIDUnk);
+            }
         }
     }
 
